@@ -1,0 +1,549 @@
+{
+  "kind": "custom-sheet-character",
+  "version": 1,
+  "name": "Oko",
+  "record": {
+    "char": {
+      "name": "Oko",
+      "level": 11,
+      "classes": [
+        {
+          "name": "Sorcerer",
+          "level": 9,
+          "subclass": "Clockwork Sorcery"
+        },
+        {
+          "name": "Rogue",
+          "level": 1,
+          "subclass": ""
+        },
+        {
+          "name": "Paladin",
+          "level": 1,
+          "subclass": ""
+        }
+      ],
+      "abilities": {
+        "str": 13,
+        "dex": 14,
+        "con": 12,
+        "int": 12,
+        "wis": 8,
+        "cha": 20
+      },
+      "saves": {
+        "str": 0,
+        "dex": 1,
+        "con": 1,
+        "int": 1,
+        "wis": 1,
+        "cha": 1
+      },
+      "skills": {
+        "acrobatics": 0,
+        "animalHandling": 0,
+        "arcana": 1,
+        "athletics": 2,
+        "deception": 1,
+        "history": 1,
+        "insight": 0,
+        "intimidation": 0,
+        "investigation": 1,
+        "medicine": 0,
+        "nature": 0,
+        "perception": 0,
+        "performance": 0,
+        "persuasion": 1,
+        "religion": 0,
+        "sleightOfHand": 1,
+        "stealth": 2,
+        "survival": 0
+      },
+      "features": [
+        {
+          "key": "innateSorcery",
+          "name": "Innate sorcery",
+          "source": "Sorcerer",
+          "active": true,
+          "recovery": "long",
+          "bind": null,
+          "max": 2,
+          "left": 2,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "metamagic",
+          "name": "Metamagic",
+          "source": "Sorcerer",
+          "active": true,
+          "recovery": "long",
+          "bind": null,
+          "max": 9,
+          "left": 9,
+          "cost": "",
+          "short": null,
+          "hidden": true
+        },
+        {
+          "key": "sorcerousRest",
+          "name": "Sorcerous rest",
+          "source": "Sorcerer",
+          "active": true,
+          "recovery": "long",
+          "bind": null,
+          "max": 1,
+          "left": 1,
+          "cost": "",
+          "short": null,
+          "hidden": true
+        },
+        {
+          "key": "sorceryIncarnate",
+          "name": "Sorc incarnate",
+          "source": "Sorcerer",
+          "active": false,
+          "recovery": "passive",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "sorcerer-1-spellcasting",
+          "name": "Spellcasting",
+          "source": "Sorcerer",
+          "active": false,
+          "recovery": "passive",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "sorcerer-clockwork-3-clockwork-spells",
+          "name": "Clockwork Spells",
+          "source": "Clockwork",
+          "active": false,
+          "recovery": "passive",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "sorcerer-clockwork-3-restore-balance",
+          "name": "Restore Balance",
+          "source": "Clockwork",
+          "active": true,
+          "recovery": "long",
+          "bind": null,
+          "max": 5,
+          "left": 5,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "sorcerer-clockwork-6-bastion-of-law",
+          "name": "Bastion of Law",
+          "source": "Clockwork",
+          "active": true,
+          "recovery": "special",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "sp",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "rogue-1-sneak-attack",
+          "name": "Sneak Attack",
+          "source": "Rogue",
+          "active": false,
+          "recovery": "passive",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "rogue-1-thieves-cant",
+          "name": "Thieves' Cant",
+          "source": "Rogue",
+          "active": false,
+          "recovery": "passive",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "rogue-1-weapon-mastery",
+          "name": "Weapon Mastery",
+          "source": "Rogue",
+          "active": false,
+          "recovery": "passive",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "paladin-1-lay-on-hands",
+          "name": "Lay on Hands",
+          "source": "Paladin",
+          "active": false,
+          "recovery": "passive",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "paladin-1-spellcasting",
+          "name": "Spellcasting",
+          "source": "Paladin",
+          "active": false,
+          "recovery": "passive",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "paladin-1-weapon-mastery",
+          "name": "Weapon Mastery",
+          "source": "Paladin",
+          "active": false,
+          "recovery": "passive",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        }
+      ],
+      "init": 0,
+      "ac": null,
+      "hp": {
+        "current": 0,
+        "max": 0
+      },
+      "dice": [
+        {
+          "type": 6,
+          "spent": false
+        },
+        {
+          "type": 6,
+          "spent": false
+        },
+        {
+          "type": 6,
+          "spent": false
+        },
+        {
+          "type": 6,
+          "spent": false
+        },
+        {
+          "type": 6,
+          "spent": false
+        },
+        {
+          "type": 6,
+          "spent": false
+        },
+        {
+          "type": 6,
+          "spent": false
+        },
+        {
+          "type": 6,
+          "spent": false
+        },
+        {
+          "type": 6,
+          "spent": false
+        },
+        {
+          "type": 8,
+          "spent": false
+        },
+        {
+          "type": 10,
+          "spent": false
+        }
+      ],
+      "history": [],
+      "profs": [
+        {
+          "id": "disguiseKit",
+          "label": "Disguise kit"
+        },
+        {
+          "id": "tinkersTools",
+          "label": "Tinker's tools"
+        },
+        {
+          "id": "thievesTools",
+          "label": "Thieves' tools"
+        },
+        {
+          "id": "lightArmour",
+          "label": "Light armour"
+        },
+        {
+          "id": "simpleWeapons",
+          "label": "Simple weapons"
+        },
+        {
+          "id": "handCrossbow",
+          "label": "Hand crossbow"
+        },
+        {
+          "id": "rapier",
+          "label": "Rapier"
+        }
+      ]
+    },
+    "spells": {
+      "dc": 17,
+      "dcTouched": false,
+      "sp": 9,
+      "spMax": 9,
+      "cunning": false,
+      "sorcRest": false,
+      "sorcererLevel": 9,
+      "max": {
+        "1": 4,
+        "2": 3,
+        "3": 3,
+        "4": 3,
+        "5": 1,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "left": {
+        "1": 4,
+        "2": 3,
+        "3": 3,
+        "4": 3,
+        "5": 1,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "warlockMax": 0,
+      "warlockLeft": 0,
+      "warlockLevel": 0,
+      "slotsTouched": true,
+      "selected": 1,
+      "lists": {
+        "0": [
+          "True Strike",
+          "Mind Sliver",
+          "Blade Ward",
+          "Minor Illusion",
+          "Message",
+          "Mage Hand"
+        ],
+        "1": [
+          "Shield",
+          "Silvery Barbs",
+          "Absorb Elements",
+          "Jump",
+          "Divine Smite",
+          "Protection from Evil and Good",
+          "Alarm",
+          "Cure Wounds",
+          "Detect Magic",
+          "Bless",
+          "Purify Food and Drink",
+          "Detect Evil and Good",
+          "Fog Cloud",
+          "Comprehend Languages",
+          "Disguise Self",
+          "Feather Fall"
+        ],
+        "2": [
+          "Mirror Image",
+          "Misty Step",
+          "Lesser Restoration",
+          "Invisibility",
+          "Arcane Lock",
+          "Blindness/Deafness",
+          "Hold Person",
+          "Darkness",
+          "Prayer of Healing",
+          "Enhance Ability",
+          "Suggestion",
+          "Detect Thoughts",
+          "Knock",
+          "Find Steed"
+        ],
+        "3": [
+          "Fireball",
+          "Haste",
+          "Counterspell",
+          "Dispel Magic",
+          "Protection from Energy",
+          "Blink",
+          "Revivify",
+          "Fly",
+          "Remove Curse",
+          "Water Breathing",
+          "Water Walk",
+          "Sending",
+          "Create Food and Water",
+          "Daylight"
+        ],
+        "4": [
+          "Dimension Door",
+          "Fabricate",
+          "Summon Construct",
+          "Raulothim's Psychic Lance"
+        ],
+        "5": [
+          "Bigby's Hand",
+          "Hold Monster",
+          "Synaptic Static",
+          "Wall of Force",
+          "Greater Restoration",
+          "Seeming",
+          "Teleportation Circle"
+        ],
+        "6": [
+          "True Seeing",
+          "Mass Suggestion",
+          "Sunbeam",
+          "Scatter",
+          "Tasha's Otherworldly Guise"
+        ],
+        "7": [],
+        "8": [],
+        "9": []
+      },
+      "sources": {
+        "Shield": "Sorcerer",
+        "Silvery Barbs": "Sorcerer",
+        "Absorb Elements": "Sorcerer",
+        "Jump": "Sorcerer",
+        "Divine Smite": "Paladin",
+        "Protection from Evil and Good": "Clockwork",
+        "Alarm": "Clockwork",
+        "Cure Wounds": "Paladin",
+        "Detect Magic": "Paladin",
+        "Bless": "Paladin",
+        "Purify Food and Drink": "Paladin",
+        "Detect Evil and Good": "Paladin",
+        "Fog Cloud": "Scroll",
+        "Comprehend Languages": "Scroll",
+        "Disguise Self": "Scroll",
+        "Feather Fall": "Scroll",
+        "Mirror Image": "Sorcerer",
+        "Misty Step": "Sorcerer",
+        "Lesser Restoration": "Clockwork",
+        "Invisibility": "Sorcerer",
+        "Arcane Lock": "Clockwork",
+        "Blindness/Deafness": "Scroll",
+        "Hold Person": "Scroll",
+        "Darkness": "Scroll",
+        "Prayer of Healing": "Scroll",
+        "Enhance Ability": "Scroll",
+        "Suggestion": "Scroll",
+        "Detect Thoughts": "Scroll",
+        "Knock": "Scroll",
+        "Fireball": "Sorcerer",
+        "Haste": "Sorcerer",
+        "Counterspell": "Sorcerer",
+        "Dispel Magic": "Clockwork",
+        "Protection from Energy": "Clockwork",
+        "Blink": "Scroll",
+        "Revivify": "Scroll",
+        "Fly": "Scroll",
+        "Remove Curse": "Scroll",
+        "Water Breathing": "Scroll",
+        "Water Walk": "Scroll",
+        "Sending": "Scroll",
+        "Dimension Door": "Scroll",
+        "Fabricate": "Clockwork",
+        "Summon Construct": "Clockwork",
+        "Find Steed": "Scroll",
+        "Bigby's Hand": "Sorcerer",
+        "Hold Monster": "Sorcerer",
+        "Synaptic Static": "Sorcerer",
+        "Wall of Force": "Clockwork",
+        "Greater Restoration": "Clockwork",
+        "Seeming": "Scroll",
+        "Teleportation Circle": "Scroll",
+        "True Seeing": "Wish",
+        "Mass Suggestion": "Scroll",
+        "Create Food and Water": "Scroll",
+        "Daylight": "Scroll",
+        "Sunbeam": "Scroll",
+        "Raulothim's Psychic Lance": "Sorcerer",
+        "Scatter": "Wish",
+        "Tasha's Otherworldly Guise": "Wish"
+      },
+      "pick": "Sorcerer",
+      "classes": {
+        "Sorcerer": false,
+        "Paladin": false
+      },
+      "levelFilter": true,
+      "surge": null
+    },
+    "equipment": {
+      "items": [
+        {
+          "id": "rapier",
+          "name": "Rapier",
+          "category": "weapon",
+          "equipped": true,
+          "effect": "",
+          "mastery": "Vex"
+        },
+        {
+          "id": "handCrossbow",
+          "name": "Hand crossbow",
+          "category": "weapon",
+          "equipped": true,
+          "effect": "",
+          "mastery": "Vex"
+        }
+      ]
+    },
+    "pages": [
+      "spells",
+      "features",
+      "equipment"
+    ],
+    "theme": "",
+    "icon": "sigil"
+  },
+  "pages": []
+}

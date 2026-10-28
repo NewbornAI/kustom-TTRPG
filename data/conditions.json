@@ -1,0 +1,601 @@
+{
+  "edition": "The 2024 conditions of the Player's Handbook, the text from 5e.tools",
+  "source": "https://5e.tools/conditionsdiseases.html",
+  "fetched": "2026-10-25",
+  "conditions": [
+    {
+      "name": "Blinded",
+      "source": "XPHB",
+      "ref": {
+        "book": "XPHB",
+        "page": 361
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While you have the Blinded condition, you experience the following effects."
+        },
+        {
+          "t": "h",
+          "text": "Can't See"
+        },
+        {
+          "t": "p",
+          "text": "You can't see and automatically fail any ability check that requires sight."
+        },
+        {
+          "t": "h",
+          "text": "Attacks Affected"
+        },
+        {
+          "t": "p",
+          "text": "Attack rolls against you have Advantage, and your attack rolls have Disadvantage."
+        }
+      ]
+    },
+    {
+      "name": "Charmed",
+      "source": "XPHB",
+      "ref": {
+        "book": "XPHB",
+        "page": 361
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While you have the Charmed condition, you experience the following effects."
+        },
+        {
+          "t": "h",
+          "text": "Can't Harm the Charmer"
+        },
+        {
+          "t": "p",
+          "text": "You can't attack the charmer or target the charmer with damaging abilities or Magical Effect."
+        },
+        {
+          "t": "h",
+          "text": "Social Advantage"
+        },
+        {
+          "t": "p",
+          "text": "The charmer has Advantage on any ability check to interact with you socially."
+        }
+      ]
+    },
+    {
+      "name": "Deafened",
+      "source": "XPHB",
+      "ref": {
+        "book": "XPHB",
+        "page": 365
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While you have the Deafened condition, you experience the following effect."
+        },
+        {
+          "t": "h",
+          "text": "Can't Hear"
+        },
+        {
+          "t": "p",
+          "text": "You can't hear and automatically fail any ability check that requires hearing."
+        }
+      ]
+    },
+    {
+      "name": "Exhaustion",
+      "source": "XPHB",
+      "ref": {
+        "book": "XPHB",
+        "page": 365
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While you have the Exhaustion condition, you experience the following effects."
+        },
+        {
+          "t": "h",
+          "text": "Exhaustion Levels"
+        },
+        {
+          "t": "p",
+          "text": "This condition is cumulative. Each time you receive it, you gain 1 Exhaustion level. You die if your Exhaustion level is 6."
+        },
+        {
+          "t": "h",
+          "text": "D20 Tests Affected"
+        },
+        {
+          "t": "p",
+          "text": "When you make a D20 Test, the roll is reduced by 2 times your Exhaustion level."
+        },
+        {
+          "t": "h",
+          "text": "Speed Reduced"
+        },
+        {
+          "t": "p",
+          "text": "Your Speed is reduced by a number of feet equal to 5 times your Exhaustion level."
+        },
+        {
+          "t": "h",
+          "text": "Removing Exhaustion Levels"
+        },
+        {
+          "t": "p",
+          "text": "Finishing a Long Rest removes 1 of your Exhaustion levels. When your Exhaustion level reaches 0, the condition ends."
+        }
+      ]
+    },
+    {
+      "name": "Frightened",
+      "source": "XPHB",
+      "ref": {
+        "book": "XPHB",
+        "page": 367
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While you have the Frightened condition, you experience the following effects."
+        },
+        {
+          "t": "h",
+          "text": "Ability Checks and Attacks Affected"
+        },
+        {
+          "t": "p",
+          "text": "You have Disadvantage on ability checks and attack rolls while the source of fear is within line of sight."
+        },
+        {
+          "t": "h",
+          "text": "Can't Approach"
+        },
+        {
+          "t": "p",
+          "text": "You can't willingly move closer to the source of fear."
+        }
+      ]
+    },
+    {
+      "name": "Grappled",
+      "source": "XPHB",
+      "ref": {
+        "book": "XPHB",
+        "page": 367
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While you have the Grappled condition, you experience the following effects."
+        },
+        {
+          "t": "h",
+          "text": "Speed 0"
+        },
+        {
+          "t": "p",
+          "text": "Your Speed is 0 and can't increase."
+        },
+        {
+          "t": "h",
+          "text": "Attacks Affected"
+        },
+        {
+          "t": "p",
+          "text": "You have Disadvantage on attack rolls against any target other than the grappler."
+        },
+        {
+          "t": "h",
+          "text": "Movable"
+        },
+        {
+          "t": "p",
+          "text": "The grappler can drag or carry you when it moves, but every foot of movement costs it 1 extra foot unless you are Tiny or two or more sizes smaller than it."
+        }
+      ]
+    },
+    {
+      "name": "Incapacitated",
+      "source": "XPHB",
+      "ref": {
+        "book": "XPHB",
+        "page": 369
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While you have the Incapacitated condition, you experience the following effects."
+        },
+        {
+          "t": "h",
+          "text": "Inactive"
+        },
+        {
+          "t": "p",
+          "text": "You can't take any Action, Bonus Action, or Reaction."
+        },
+        {
+          "t": "h",
+          "text": "No Concentration"
+        },
+        {
+          "t": "p",
+          "text": "Your Concentration is broken."
+        },
+        {
+          "t": "h",
+          "text": "Speechless"
+        },
+        {
+          "t": "p",
+          "text": "You can't speak."
+        },
+        {
+          "t": "h",
+          "text": "Surprised"
+        },
+        {
+          "t": "p",
+          "text": "If you're Incapacitated when you roll Initiative, you have Disadvantage on the roll."
+        }
+      ]
+    },
+    {
+      "name": "Invisible",
+      "source": "XPHB",
+      "ref": {
+        "book": "XPHB",
+        "page": 370
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While you have the Invisible condition, you experience the following effects."
+        },
+        {
+          "t": "h",
+          "text": "Surprise"
+        },
+        {
+          "t": "p",
+          "text": "If you're Invisible when you roll Initiative, you have Advantage on the roll."
+        },
+        {
+          "t": "h",
+          "text": "Concealed"
+        },
+        {
+          "t": "p",
+          "text": "You aren't affected by any effect that requires its target to be seen unless the effect's creator can somehow see you. Any equipment you are wearing or carrying is also concealed."
+        },
+        {
+          "t": "h",
+          "text": "Attacks Affected"
+        },
+        {
+          "t": "p",
+          "text": "Attack rolls against you have Disadvantage, and your attack rolls have Advantage. If a creature can somehow see you, you don't gain this benefit against that creature."
+        }
+      ]
+    },
+    {
+      "name": "Paralyzed",
+      "source": "XPHB",
+      "ref": {
+        "book": "XPHB",
+        "page": 371
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While you have the Paralyzed condition, you experience the following effects."
+        },
+        {
+          "t": "h",
+          "text": "Incapacitated"
+        },
+        {
+          "t": "p",
+          "text": "You have the [[c:Incapacitated]] condition."
+        },
+        {
+          "t": "h",
+          "text": "Speed 0"
+        },
+        {
+          "t": "p",
+          "text": "Your Speed is 0 and can't increase."
+        },
+        {
+          "t": "h",
+          "text": "Saving Throws Affected"
+        },
+        {
+          "t": "p",
+          "text": "You automatically fail Strength and Dexterity Saving Throw."
+        },
+        {
+          "t": "h",
+          "text": "Attacks Affected"
+        },
+        {
+          "t": "p",
+          "text": "Attack rolls against you have Advantage."
+        },
+        {
+          "t": "h",
+          "text": "Automatic Critical Hits"
+        },
+        {
+          "t": "p",
+          "text": "Any attack roll that hits you is a Critical Hit if the attacker is within 5 feet of you."
+        }
+      ]
+    },
+    {
+      "name": "Petrified",
+      "source": "XPHB",
+      "ref": {
+        "book": "XPHB",
+        "page": 372
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While you have the Petrified condition, you experience the following effects."
+        },
+        {
+          "t": "h",
+          "text": "Turned to Inanimate Substance"
+        },
+        {
+          "t": "p",
+          "text": "You are transformed, along with any nonmagical objects you are wearing and carrying, into a solid inanimate substance (usually stone). Your weight increases by a factor of ten, and you cease aging."
+        },
+        {
+          "t": "h",
+          "text": "Incapacitated"
+        },
+        {
+          "t": "p",
+          "text": "You have the [[c:Incapacitated]] condition."
+        },
+        {
+          "t": "h",
+          "text": "Speed 0"
+        },
+        {
+          "t": "p",
+          "text": "Your Speed is 0 and can't increase."
+        },
+        {
+          "t": "h",
+          "text": "Attacks Affected"
+        },
+        {
+          "t": "p",
+          "text": "Attack rolls against you have Advantage."
+        },
+        {
+          "t": "h",
+          "text": "Saving Throws Affected"
+        },
+        {
+          "t": "p",
+          "text": "You automatically fail Strength and Dexterity Saving Throw."
+        },
+        {
+          "t": "h",
+          "text": "Resist Damage"
+        },
+        {
+          "t": "p",
+          "text": "You have Resistance to all damage."
+        },
+        {
+          "t": "h",
+          "text": "Poison Immunity"
+        },
+        {
+          "t": "p",
+          "text": "You have Immunity to the [[c:Poisoned]] condition."
+        }
+      ]
+    },
+    {
+      "name": "Poisoned",
+      "source": "XPHB",
+      "ref": {
+        "book": "XPHB",
+        "page": 372
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While you have the Poisoned condition, you experience the following effect."
+        },
+        {
+          "t": "h",
+          "text": "Ability Checks and Attacks Affected"
+        },
+        {
+          "t": "p",
+          "text": "You have Disadvantage on attack rolls and ability checks."
+        }
+      ]
+    },
+    {
+      "name": "Prone",
+      "source": "XPHB",
+      "ref": {
+        "book": "XPHB",
+        "page": 372
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While you have the Prone condition, you experience the following effects."
+        },
+        {
+          "t": "h",
+          "text": "Restricted Movement"
+        },
+        {
+          "t": "p",
+          "text": "Your only movement options are to Crawling or to spend an amount of movement equal to half your Speed (round down) to right yourself and thereby end the condition. If your Speed is 0, you can't right yourself."
+        },
+        {
+          "t": "h",
+          "text": "Attacks Affected"
+        },
+        {
+          "t": "p",
+          "text": "You have Disadvantage on attack rolls. An attack roll against you has Advantage if the attacker is within 5 feet of you. Otherwise, that attack roll has Disadvantage."
+        }
+      ]
+    },
+    {
+      "name": "Restrained",
+      "source": "XPHB",
+      "ref": {
+        "book": "XPHB",
+        "page": 373
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While you have the Restrained condition, you experience the following effects."
+        },
+        {
+          "t": "h",
+          "text": "Speed 0"
+        },
+        {
+          "t": "p",
+          "text": "Your Speed is 0 and can't increase."
+        },
+        {
+          "t": "h",
+          "text": "Attacks Affected"
+        },
+        {
+          "t": "p",
+          "text": "Attack rolls against you have Advantage, and your attack rolls have Disadvantage."
+        },
+        {
+          "t": "h",
+          "text": "Saving Throws Affected"
+        },
+        {
+          "t": "p",
+          "text": "You have Disadvantage on Dexterity Saving Throw."
+        }
+      ]
+    },
+    {
+      "name": "Stunned",
+      "source": "XPHB",
+      "ref": {
+        "book": "XPHB",
+        "page": 376
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While you have the Stunned condition, you experience the following effects."
+        },
+        {
+          "t": "h",
+          "text": "Incapacitated"
+        },
+        {
+          "t": "p",
+          "text": "You have the [[c:Incapacitated]] condition."
+        },
+        {
+          "t": "h",
+          "text": "Saving Throws Affected"
+        },
+        {
+          "t": "p",
+          "text": "You automatically fail Strength and Dexterity Saving Throw."
+        },
+        {
+          "t": "h",
+          "text": "Attacks Affected"
+        },
+        {
+          "t": "p",
+          "text": "Attack rolls against you have Advantage."
+        }
+      ]
+    },
+    {
+      "name": "Unconscious",
+      "source": "XPHB",
+      "ref": {
+        "book": "XPHB",
+        "page": 376
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While you have the Unconscious condition, you experience the following effects."
+        },
+        {
+          "t": "h",
+          "text": "Inert"
+        },
+        {
+          "t": "p",
+          "text": "You have the [[c:Incapacitated]] and [[c:Prone]] conditions, and you drop whatever you're holding. When this condition ends, you remain [[c:Prone]]."
+        },
+        {
+          "t": "h",
+          "text": "Speed 0"
+        },
+        {
+          "t": "p",
+          "text": "Your Speed is 0 and can't increase."
+        },
+        {
+          "t": "h",
+          "text": "Attacks Affected"
+        },
+        {
+          "t": "p",
+          "text": "Attack rolls against you have Advantage."
+        },
+        {
+          "t": "h",
+          "text": "Saving Throws Affected"
+        },
+        {
+          "t": "p",
+          "text": "You automatically fail Strength and Dexterity Saving Throw."
+        },
+        {
+          "t": "h",
+          "text": "Automatic Critical Hits"
+        },
+        {
+          "t": "p",
+          "text": "Any attack roll that hits you is a Critical Hit if the attacker is within 5 feet of you."
+        },
+        {
+          "t": "h",
+          "text": "Unaware"
+        },
+        {
+          "t": "p",
+          "text": "You're unaware of your surroundings."
+        }
+      ]
+    }
+  ]
+}

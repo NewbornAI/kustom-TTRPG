@@ -1,0 +1,199 @@
+{
+  "edition": "The rules of making a character, after the 2024 handbook and the System Reference Document 5.2, written for this app",
+  "source": "https://www.dndbeyond.com/srd",
+  "pointBuy": {
+    "budget": 27,
+    "min": 8,
+    "max": 15,
+    "cost": {
+      "8": 0,
+      "9": 1,
+      "10": 2,
+      "11": 3,
+      "12": 4,
+      "13": 5,
+      "14": 7,
+      "15": 9
+    }
+  },
+  "standardArray": [
+    15,
+    14,
+    13,
+    12,
+    10,
+    8
+  ],
+  "backgroundIncrease": {
+    "plans": [
+      [
+        2,
+        1
+      ],
+      [
+        1,
+        1,
+        1
+      ]
+    ],
+    "cap": 20
+  },
+  "customBackground": {
+    "abilities": 3,
+    "originFeats": 1,
+    "skills": 2,
+    "tools": 1,
+    "gold": 50,
+    "toolChoices": [
+      "Alchemist's Supplies",
+      "Brewer's Supplies",
+      "Calligrapher's Supplies",
+      "Carpenter's Tools",
+      "Cartographer's Tools",
+      "Cobbler's Tools",
+      "Cook's Utensils",
+      "Glassblower's Tools",
+      "Jeweler's Tools",
+      "Leatherworker's Tools",
+      "Mason's Tools",
+      "Painter's Supplies",
+      "Potter's Tools",
+      "Smith's Tools",
+      "Tinker's Tools",
+      "Weaver's Tools",
+      "Woodcarver's Tools",
+      "Disguise Kit",
+      "Forgery Kit",
+      "Gaming Set",
+      "Herbalism Kit",
+      "Musical Instrument",
+      "Navigator's Tools",
+      "Poisoner's Kit",
+      "Thieves' Tools"
+    ]
+  },
+  "rules": [
+    {
+      "key": "rule-ability-scores",
+      "name": "Ability scores at creation",
+      "blocks": [
+        {
+          "t": "p",
+          "text": "A new character has six ability scores, made in one of three ways, before its background raises any of them."
+        },
+        {
+          "t": "p",
+          "lead": "Standard Array.",
+          "text": "Assign 15, 14, 13, 12, 10 and 8, one to each ability."
+        },
+        {
+          "t": "p",
+          "lead": "Point Buy.",
+          "text": "Every score starts at 8, and you have 27 points to spend. No score can go above 15 this way. The cost of a score is its total, not a step: 8 costs 0, 9 costs 1, 10 costs 2, 11 costs 3, 12 costs 4, 13 costs 5, 14 costs 7 and 15 costs 9."
+        },
+        {
+          "t": "p",
+          "lead": "Random.",
+          "text": "Roll four d6 and add the three highest, six times, and assign the six totals."
+        },
+        {
+          "t": "p",
+          "text": "Then the background raises scores (see Background ability increases), and no score can go above 20 that way."
+        }
+      ]
+    },
+    {
+      "key": "rule-background-increase",
+      "name": "Background ability increases",
+      "blocks": [
+        {
+          "t": "p",
+          "text": "A background names three abilities. Increase one of them by 2 and another by 1, or increase all three by 1. None of these increases can raise a score above 20."
+        },
+        {
+          "t": "p",
+          "text": "In the 2024 rules the species does not raise ability scores: the increases come from the background."
+        }
+      ]
+    },
+    {
+      "key": "rule-custom-background",
+      "name": "Custom background",
+      "blocks": [
+        {
+          "t": "p",
+          "text": "With the Dungeon Master's agreement, a player can make a background of their own instead of one of the book's. It has:"
+        },
+        {
+          "t": "list",
+          "items": [
+            "Three abilities of your choice, raised as a background raises them: +2 and +1, or +1 to all three.",
+            "One Origin feat of your choice.",
+            "Proficiency in two skills of your choice.",
+            "Proficiency with one tool of your choice.",
+            "Equipment worth 50 GP, or 50 GP to spend."
+          ]
+        }
+      ]
+    },
+    {
+      "key": "rule-origin-feat",
+      "name": "Origin feat",
+      "blocks": [
+        {
+          "t": "p",
+          "text": "Every character gains one Origin feat at level 1, from its background. Origin feats are the feats of the Origin category (lookup kind feat, query Origin, lists them); a feat with prerequisites of level 4 or more is not one."
+        }
+      ]
+    },
+    {
+      "key": "rule-species",
+      "name": "Choosing a species",
+      "blocks": [
+        {
+          "t": "p",
+          "text": "A species gives a character its creature type, its size, its speed and its traits. Some traits ask for a choice made at creation: the lineage of an elf or a gnome, the ancestry of a dragonborn or a goliath, the legacy of a tiefling. Spells a lineage grants are cast with Intelligence, Wisdom or Charisma, chosen with the lineage."
+        },
+        {
+          "t": "p",
+          "text": "The 2024 species are Aasimar, Dragonborn, Dwarf, Elf, Gnome, Goliath, Halfling, Human, Orc and Tiefling (lookup kind species)."
+        }
+      ]
+    },
+    {
+      "key": "rule-hit-points",
+      "name": "Hit points by level",
+      "blocks": [
+        {
+          "t": "p",
+          "text": "At level 1 a character has the highest number of its class's Hit Die plus its Constitution modifier. Each level after adds the average of the die rounded up (4 for a d6, 5 for a d8, 6 for a d10, 7 for a d12) plus the Constitution modifier. The sheet works this out by itself unless it is set by hand in the settings."
+        }
+      ]
+    },
+    {
+      "key": "rule-sheet-language",
+      "name": "The sheet language: attributes, formulas, sets and effects",
+      "blocks": [
+        {
+          "t": "p",
+          "text": "Every value of the sheet is an attribute with a name: level, prof, str to cha and str.mod to cha.mod, hp, hp.temp, hpMax, AC, baseAC, init, speed, save.dex and save.dex.prof, skill.stealth and skill.stealth.prof, passive.perception, spellDC, spellAttack, attack and damage (and their .melee and .ranged), sp and sp.max, slot.1 to slot.9 and slot.N.max, and uses.<feature key> and uses.<feature key>.max. The list below says which can be set and which an effect moves."
+        },
+        {
+          "t": "p",
+          "lead": "Formulas.",
+          "text": "Numbers, + - * /, parentheses, min(a, b) and max(a, b), and any attribute by its name, plus <class>.level (e.g. rogue.level). @dex.mod is the same as dex.mod. A result that is not whole is rounded down."
+        },
+        {
+          "t": "p",
+          "lead": "A set (sheet_set).",
+          "text": "ATTRIBUTE = FORMULA, or += and -=, written once: dex = 16, skill.stealth.prof = 2, hp = hpMax, sp -= 2, uses.<key> = uses.<key>.max."
+        },
+        {
+          "t": "p",
+          "lead": "An effect (set_effect).",
+          "text": "Lasting, carried by a feature or a worn item, and counted every time the sheet is drawn: TARGET + FORMULA or TARGET = FORMULA, several split by ; . Alert: init + prof. Tough: hpMax + 2 * level. Mobile: speed + 10. A ring of protection: AC + 1; save.all + 1. Mage armour: baseAC = 13 + dex.mod. Archery: attack.ranged + 2. Dueling: damage.melee + 2. A rod of the pact keeper: spellAttack + 1; spellDC + 1. The targets are the attributes marked effect."
+        }
+      ]
+    }
+  ]
+}

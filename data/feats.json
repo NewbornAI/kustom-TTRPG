@@ -1,0 +1,496 @@
+{
+  "edition": "The feats of the books this app reads, the 2024 handbook first: XPHB, AU, BGG, DSotDQ, EFA, ERLW, FRHoF, FTD, LFL, MTF, PHB, PSK, PSX, RHW, SCC, TCE, XGE",
+  "source": "https://5e.tools/feats.html",
+  "fetched": "2026-10-27",
+  "feats": [
+    {
+      "name": "Ability Score Improvement",
+      "source": "XPHB",
+      "category": "General Feat",
+      "prerequisite": "Level 4+",
+      "head": "General Feat (Prerequisites: Level 4+)",
+      "blocks": [
+        {
+          "t": "p",
+          "text": "Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1. This feat can't increase an ability score above 20."
+        },
+        {
+          "t": "h",
+          "text": "Repeatable"
+        },
+        {
+          "t": "p",
+          "text": "You can take this feat more than once."
+        }
+      ],
+      "ref": {
+        "book": "XPHB",
+        "page": 202
+      }
+    },
+    {
+      "name": "Alert",
+      "source": "XPHB",
+      "category": "Origin Feat",
+      "prerequisite": "",
+      "head": "Origin Feat",
+      "blocks": [
+        {
+          "t": "p",
+          "text": "You gain the following benefits."
+        },
+        {
+          "t": "h",
+          "text": "Initiative Proficiency"
+        },
+        {
+          "t": "p",
+          "text": "When you roll Initiative, you can add your Proficiency to the roll."
+        },
+        {
+          "t": "h",
+          "text": "Initiative Swap"
+        },
+        {
+          "t": "p",
+          "text": "Immediately after you roll Initiative, you can swap your Initiative with the Initiative of one willing ally in the same combat. You can't make this swap if you or the ally has the [[c:Incapacitated]] condition."
+        }
+      ],
+      "ref": {
+        "book": "XPHB",
+        "page": 200
+      }
+    },
+    {
+      "name": "Archery",
+      "source": "XPHB",
+      "category": "Fighting Style Feat",
+      "prerequisite": "Fighting Style",
+      "head": "Fighting Style Feat (Prerequisites: Fighting Style)",
+      "blocks": [
+        {
+          "t": "p",
+          "text": "You gain a +2 bonus to attack rolls you make with Ranged weapons."
+        }
+      ],
+      "ref": {
+        "book": "XPHB",
+        "page": 209
+      }
+    },
+    {
+      "name": "Boon of Combat Prowess",
+      "source": "XPHB",
+      "category": "Epic Boon Feat",
+      "prerequisite": "Level 19+",
+      "head": "Epic Boon Feat (Prerequisites: Level 19+)",
+      "blocks": [
+        {
+          "t": "p",
+          "lead": "Ability Score Increase.",
+          "text": "Increase your Strength, Dexterity, Constitution, Intelligence, Wisdom, or Charisma by 1, to a maximum of 20."
+        },
+        {
+          "t": "p",
+          "text": "You gain the following benefits."
+        },
+        {
+          "t": "h",
+          "text": "Peerless Aim"
+        },
+        {
+          "t": "p",
+          "text": "When you miss with an attack roll, you can hit instead. Once you use this benefit, you can't use it again until the start of your next turn."
+        }
+      ],
+      "ref": {
+        "book": "XPHB",
+        "page": 210
+      }
+    },
+    {
+      "name": "Boon of Dimensional Travel",
+      "source": "XPHB",
+      "category": "Epic Boon Feat",
+      "prerequisite": "Level 19+",
+      "head": "Epic Boon Feat (Prerequisites: Level 19+)",
+      "blocks": [
+        {
+          "t": "p",
+          "lead": "Ability Score Increase.",
+          "text": "Increase your Strength, Dexterity, Constitution, Intelligence, Wisdom, or Charisma by 1, to a maximum of 20."
+        },
+        {
+          "t": "p",
+          "text": "You gain the following benefits."
+        },
+        {
+          "t": "h",
+          "text": "Blink Steps"
+        },
+        {
+          "t": "p",
+          "text": "Immediately after you take the Attack action or the Magic action, you can teleport up to 30 feet to an unoccupied space you can see."
+        }
+      ],
+      "ref": {
+        "book": "XPHB",
+        "page": 210
+      }
+    },
+    {
+      "name": "Boon of Fate",
+      "source": "XPHB",
+      "category": "Epic Boon Feat",
+      "prerequisite": "Level 19+",
+      "head": "Epic Boon Feat (Prerequisites: Level 19+)",
+      "blocks": [
+        {
+          "t": "p",
+          "lead": "Ability Score Increase.",
+          "text": "Increase your Strength, Dexterity, Constitution, Intelligence, Wisdom, or Charisma by 1, to a maximum of 20."
+        },
+        {
+          "t": "p",
+          "text": "You gain the following benefits."
+        },
+        {
+          "t": "h",
+          "text": "Improve Fate"
+        },
+        {
+          "t": "p",
+          "text": "When you or another creature within 60 feet of you succeeds on or fails a D20 Test, you can roll 2d4 and apply the total rolled as a bonus or penalty to the d20 roll. Once you use this benefit, you can't use it again until you roll Initiative or finish a Short Rest or Long Rest."
+        }
+      ],
+      "ref": {
+        "book": "XPHB",
+        "page": 210
+      }
+    },
+    {
+      "name": "Boon of Irresistible Offense",
+      "source": "XPHB",
+      "category": "Epic Boon Feat",
+      "prerequisite": "Level 19+",
+      "head": "Epic Boon Feat (Prerequisites: Level 19+)",
+      "blocks": [
+        {
+          "t": "p",
+          "lead": "Ability Score Increase.",
+          "text": "Increase your Strength, or Dexterity by 1, to a maximum of 20."
+        },
+        {
+          "t": "p",
+          "text": "You gain the following benefits."
+        },
+        {
+          "t": "h",
+          "text": "Overcome Defenses"
+        },
+        {
+          "t": "p",
+          "text": "The Bludgeoning, Piercing, and Slashing damage you deal always ignores Resistance."
+        },
+        {
+          "t": "h",
+          "text": "Overwhelming Strike"
+        },
+        {
+          "t": "p",
+          "text": "When you roll a 20 on the d20 for an attack roll, you can deal extra damage to the target equal to the ability score increased by this feat. The extra damage's type is the same as the attack's type."
+        }
+      ],
+      "ref": {
+        "book": "XPHB",
+        "page": 211
+      }
+    },
+    {
+      "name": "Boon of Spell Recall",
+      "source": "XPHB",
+      "category": "Epic Boon Feat",
+      "prerequisite": "Level 19+; Spellcasting or Pact Magic Feature",
+      "head": "Epic Boon Feat (Prerequisites: Level 19+; Spellcasting or Pact Magic Feature)",
+      "blocks": [
+        {
+          "t": "p",
+          "lead": "Ability Score Increase.",
+          "text": "Increase your Intelligence, Wisdom, or Charisma by 1, to a maximum of 20."
+        },
+        {
+          "t": "p",
+          "text": "You gain the following benefits."
+        },
+        {
+          "t": "h",
+          "text": "Free Casting"
+        },
+        {
+          "t": "p",
+          "text": "Whenever you cast a spell with a level 1-4 spell slot, roll 1d4. If the number you roll is the same as the slot's level, the slot isn't expended."
+        }
+      ],
+      "ref": {
+        "book": "XPHB",
+        "page": 211
+      }
+    },
+    {
+      "name": "Boon of the Night Spirit",
+      "source": "XPHB",
+      "category": "Epic Boon Feat",
+      "prerequisite": "Level 19+",
+      "head": "Epic Boon Feat (Prerequisites: Level 19+)",
+      "blocks": [
+        {
+          "t": "p",
+          "lead": "Ability Score Increase.",
+          "text": "Increase your Strength, Dexterity, Constitution, Intelligence, Wisdom, or Charisma by 1, to a maximum of 20."
+        },
+        {
+          "t": "p",
+          "text": "You gain the following benefits."
+        },
+        {
+          "t": "h",
+          "text": "Merge with Shadows"
+        },
+        {
+          "t": "p",
+          "text": "While within Dim Light or Darkness, you can give yourself the [[c:Invisible]] condition as a Bonus Action. The condition ends on you immediately after you take an action, a Bonus Action, or a Reaction."
+        },
+        {
+          "t": "h",
+          "text": "Shadowy Form"
+        },
+        {
+          "t": "p",
+          "text": "While within Dim Light or Darkness, you have Resistance to all damage except Psychic and Radiant."
+        }
+      ],
+      "ref": {
+        "book": "XPHB",
+        "page": 211
+      }
+    },
+    {
+      "name": "Boon of Truesight",
+      "source": "XPHB",
+      "category": "Epic Boon Feat",
+      "prerequisite": "Level 19+",
+      "head": "Epic Boon Feat (Prerequisites: Level 19+)",
+      "blocks": [
+        {
+          "t": "p",
+          "lead": "Ability Score Increase.",
+          "text": "Increase your Strength, Dexterity, Constitution, Intelligence, Wisdom, or Charisma by 1, to a maximum of 20."
+        },
+        {
+          "t": "p",
+          "text": "You gain the following benefits."
+        },
+        {
+          "t": "h",
+          "text": "Truesight"
+        },
+        {
+          "t": "p",
+          "text": "You have Truesight with a range of 60 feet."
+        }
+      ],
+      "ref": {
+        "book": "XPHB",
+        "page": 211
+      }
+    },
+    {
+      "name": "Defense",
+      "source": "XPHB",
+      "category": "Fighting Style Feat",
+      "prerequisite": "Fighting Style",
+      "head": "Fighting Style Feat (Prerequisites: Fighting Style)",
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While you're wearing Light, Medium, or Heavy armor, you gain a +1 bonus to Armor Class."
+        }
+      ],
+      "ref": {
+        "book": "XPHB",
+        "page": 209
+      }
+    },
+    {
+      "name": "Grappler",
+      "source": "XPHB",
+      "category": "General Feat",
+      "prerequisite": "Level 4+; Strength 13+; Level 4+; Dexterity 13+",
+      "head": "General Feat (Prerequisites: Level 4+; Strength 13+; Level 4+; Dexterity 13+)",
+      "blocks": [
+        {
+          "t": "p",
+          "lead": "Ability Score Increase.",
+          "text": "Increase your Strength, or Dexterity by 1, to a maximum of 20."
+        },
+        {
+          "t": "p",
+          "text": "You gain the following benefits."
+        },
+        {
+          "t": "h",
+          "text": "Punch and Grab"
+        },
+        {
+          "t": "p",
+          "text": "When you hit a creature with an Unarmed Strike as part of the Attack action on your turn, you can use both the Damage and the Grapple option. You can use this benefit only once per turn."
+        },
+        {
+          "t": "h",
+          "text": "Attack Advantage"
+        },
+        {
+          "t": "p",
+          "text": "You have Advantage on attack rolls against a creature [[c:Grappled]] by you."
+        },
+        {
+          "t": "h",
+          "text": "Fast Wrestler"
+        },
+        {
+          "t": "p",
+          "text": "You don't have to spend extra movement to move a creature [[c:Grappled]] by you if the creature is your size or smaller."
+        }
+      ],
+      "ref": {
+        "book": "XPHB",
+        "page": 204
+      }
+    },
+    {
+      "name": "Great Weapon Fighting",
+      "source": "XPHB",
+      "category": "Fighting Style Feat",
+      "prerequisite": "Fighting Style",
+      "head": "Fighting Style Feat (Prerequisites: Fighting Style)",
+      "blocks": [
+        {
+          "t": "p",
+          "text": "When you roll damage for an attack you make with a Melee weapon that you are holding with two hands, you can treat any 1 or 2 on a damage die as a 3. The weapon must have the 2h or V property to gain this benefit."
+        }
+      ],
+      "ref": {
+        "book": "XPHB",
+        "page": 209
+      }
+    },
+    {
+      "name": "Magic Initiate",
+      "source": "XPHB",
+      "category": "Origin Feat",
+      "prerequisite": "",
+      "head": "Origin Feat",
+      "blocks": [
+        {
+          "t": "p",
+          "text": "You gain the following benefits."
+        },
+        {
+          "t": "h",
+          "text": "Two Cantrips"
+        },
+        {
+          "t": "p",
+          "text": "You learn two cantrips of your choice from the Cleric, Druid, or Wizard spell list. Intelligence, Wisdom, or Charisma is your spellcasting ability for this feat's spells (choose when you select this feat)."
+        },
+        {
+          "t": "h",
+          "text": "Level 1 Spell"
+        },
+        {
+          "t": "p",
+          "text": "Choose a level 1 spell from the same list you selected for this feat's cantrips. You always have that spell prepared. You can cast it once without a spell slot, and you regain the ability to cast it in that way when you finish a Long Rest. You can also cast the spell using any spell slots you have."
+        },
+        {
+          "t": "h",
+          "text": "Spell Change"
+        },
+        {
+          "t": "p",
+          "text": "Whenever you gain a new level, you can replace one of the spells you chose for this feat with a different spell of the same level from the chosen spell list."
+        },
+        {
+          "t": "h",
+          "text": "Repeatable"
+        },
+        {
+          "t": "p",
+          "text": "You can take this feat more than once, but you must choose a different spell list each time."
+        }
+      ],
+      "ref": {
+        "book": "XPHB",
+        "page": 201
+      }
+    },
+    {
+      "name": "Savage Attacker",
+      "source": "XPHB",
+      "category": "Origin Feat",
+      "prerequisite": "",
+      "head": "Origin Feat",
+      "blocks": [
+        {
+          "t": "p",
+          "text": "You've trained to deal particularly damaging strikes. Once per turn when you hit a target with a weapon, you can roll the weapon's damage dice twice and use either roll against the target."
+        }
+      ],
+      "ref": {
+        "book": "XPHB",
+        "page": 201
+      }
+    },
+    {
+      "name": "Skilled",
+      "source": "XPHB",
+      "category": "Origin Feat",
+      "prerequisite": "",
+      "head": "Origin Feat",
+      "blocks": [
+        {
+          "t": "p",
+          "text": "You gain proficiency in any combination of three Skill List; Skills or tools of your choice."
+        },
+        {
+          "t": "h",
+          "text": "Repeatable"
+        },
+        {
+          "t": "p",
+          "text": "You can take this feat more than once."
+        }
+      ],
+      "ref": {
+        "book": "XPHB",
+        "page": 201
+      }
+    },
+    {
+      "name": "Two-Weapon Fighting",
+      "source": "XPHB",
+      "category": "Fighting Style Feat",
+      "prerequisite": "Fighting Style",
+      "head": "Fighting Style Feat (Prerequisites: Fighting Style)",
+      "blocks": [
+        {
+          "t": "p",
+          "text": "When you make an extra attack as a result of using a weapon that has the L property, you can add your ability modifier to the damage of that attack if you aren't already adding it to the damage."
+        }
+      ],
+      "ref": {
+        "book": "XPHB",
+        "page": 210
+      }
+    }
+  ]
+}

@@ -1,0 +1,3872 @@
+{
+  "edition": "The stat blocks the app names, from the bestiary of 5e.tools",
+  "source": "https://5e.tools/bestiary.html",
+  "fetched": "2026-10-27",
+  "creatures": {
+    "bat": {
+      "name": "Bat",
+      "source": "XMM",
+      "cr": "0",
+      "xp": 10,
+      "initiative": null,
+      "speed": "walk 5 ft., fly 30 ft.",
+      "size": "Tiny",
+      "type": "beast",
+      "ac": 12,
+      "acText": "",
+      "acTerms": null,
+      "hp": 1,
+      "hpText": "1d4 - 1",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Bite",
+          "bonus": "4",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "Melee attack: +4 to hit to hit, reach 5 ft. 1 Piercing damage."
+        }
+      ],
+      "traits": [],
+      "alignment": "Unaligned",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 2
+        },
+        {
+          "name": "Dexterity",
+          "score": 15
+        },
+        {
+          "name": "Constitution",
+          "score": 8
+        },
+        {
+          "name": "Intelligence",
+          "score": 2
+        },
+        {
+          "name": "Wisdom",
+          "score": 12
+        },
+        {
+          "name": "Charisma",
+          "score": 4
+        }
+      ],
+      "saves": null,
+      "skills": null,
+      "senses": [
+        {
+          "text": "Blindsight 60 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 11",
+          "note": ""
+        }
+      ],
+      "languages": "",
+      "resist": null,
+      "immune": null,
+      "vulnerable": null,
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "cat": {
+      "name": "Cat",
+      "source": "XMM",
+      "cr": "0",
+      "xp": 10,
+      "initiative": null,
+      "speed": "walk 40 ft., climb 40 ft.",
+      "size": "Tiny",
+      "type": "beast",
+      "ac": 12,
+      "acText": "",
+      "acTerms": null,
+      "hp": 2,
+      "hpText": "1d4",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Scratch",
+          "bonus": "4",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "Melee attack: +4 to hit, reach 5 ft. 1 Slashing damage."
+        }
+      ],
+      "traits": [
+        {
+          "name": "Jumper",
+          "text": "The cat's jump distance is determined using its Dexterity rather than its Strength."
+        }
+      ],
+      "alignment": "Unaligned",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 3
+        },
+        {
+          "name": "Dexterity",
+          "score": 15
+        },
+        {
+          "name": "Constitution",
+          "score": 10
+        },
+        {
+          "name": "Intelligence",
+          "score": 3
+        },
+        {
+          "name": "Wisdom",
+          "score": 12
+        },
+        {
+          "name": "Charisma",
+          "score": 7
+        }
+      ],
+      "saves": [
+        {
+          "key": "dex",
+          "name": "Dexterity",
+          "value": "+4"
+        }
+      ],
+      "skills": [
+        {
+          "name": "Perception",
+          "value": "+3"
+        },
+        {
+          "name": "Stealth",
+          "value": "+4"
+        }
+      ],
+      "senses": [
+        {
+          "text": "Darkvision 60 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 13",
+          "note": ""
+        }
+      ],
+      "languages": "",
+      "resist": null,
+      "immune": null,
+      "vulnerable": null,
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "frog": {
+      "name": "Frog",
+      "source": "XMM",
+      "cr": "0",
+      "xp": 10,
+      "initiative": null,
+      "speed": "walk 20 ft., swim 20 ft.",
+      "size": "Tiny",
+      "type": "beast",
+      "ac": 11,
+      "acText": "",
+      "acTerms": null,
+      "hp": 1,
+      "hpText": "1d4 - 1",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Bite",
+          "bonus": "3",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "Melee attack: +3 to hit, reach 5 ft. 1 Piercing damage."
+        }
+      ],
+      "traits": [
+        {
+          "name": "Amphibious",
+          "text": "The frog can breathe air and water."
+        },
+        {
+          "name": "Standing Leap",
+          "text": "The frog's Long Jump is up to 10 feet and its High Jump is up to 5 feet with or without a running start."
+        }
+      ],
+      "alignment": "Unaligned",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 1
+        },
+        {
+          "name": "Dexterity",
+          "score": 13
+        },
+        {
+          "name": "Constitution",
+          "score": 8
+        },
+        {
+          "name": "Intelligence",
+          "score": 1
+        },
+        {
+          "name": "Wisdom",
+          "score": 8
+        },
+        {
+          "name": "Charisma",
+          "score": 3
+        }
+      ],
+      "saves": null,
+      "skills": [
+        {
+          "name": "Perception",
+          "value": "+1"
+        },
+        {
+          "name": "Stealth",
+          "value": "+3"
+        }
+      ],
+      "senses": [
+        {
+          "text": "Darkvision 30 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 11",
+          "note": ""
+        }
+      ],
+      "languages": "",
+      "resist": null,
+      "immune": null,
+      "vulnerable": null,
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "hawk": {
+      "name": "Hawk",
+      "source": "XMM",
+      "cr": "0",
+      "xp": 10,
+      "initiative": null,
+      "speed": "walk 10 ft., fly 60 ft.",
+      "size": "Tiny",
+      "type": "beast",
+      "ac": 13,
+      "acText": "",
+      "acTerms": null,
+      "hp": 1,
+      "hpText": "1d4 - 1",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Talons",
+          "bonus": "5",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "Melee attack: +5 to hit, reach 5 ft. 1 Slashing damage."
+        }
+      ],
+      "traits": [],
+      "alignment": "Unaligned",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 5
+        },
+        {
+          "name": "Dexterity",
+          "score": 16
+        },
+        {
+          "name": "Constitution",
+          "score": 8
+        },
+        {
+          "name": "Intelligence",
+          "score": 2
+        },
+        {
+          "name": "Wisdom",
+          "score": 14
+        },
+        {
+          "name": "Charisma",
+          "score": 6
+        }
+      ],
+      "saves": null,
+      "skills": [
+        {
+          "name": "Perception",
+          "value": "+6"
+        }
+      ],
+      "senses": [
+        {
+          "text": "passive Perception 16",
+          "note": ""
+        }
+      ],
+      "languages": "",
+      "resist": null,
+      "immune": null,
+      "vulnerable": null,
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "lizard": {
+      "name": "Lizard",
+      "source": "XMM",
+      "cr": "0",
+      "xp": 10,
+      "initiative": null,
+      "speed": "walk 20 ft., climb 20 ft.",
+      "size": "Tiny",
+      "type": "beast",
+      "ac": 10,
+      "acText": "",
+      "acTerms": null,
+      "hp": 2,
+      "hpText": "1d4",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Bite",
+          "bonus": "2",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "Melee attack: +2 to hit, reach 5 ft. 1 Piercing damage."
+        }
+      ],
+      "traits": [
+        {
+          "name": "Spider Climb",
+          "text": "The lizard can climb difficult surfaces, including along ceilings, without needing to make an ability check."
+        }
+      ],
+      "alignment": "Unaligned",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 2
+        },
+        {
+          "name": "Dexterity",
+          "score": 11
+        },
+        {
+          "name": "Constitution",
+          "score": 10
+        },
+        {
+          "name": "Intelligence",
+          "score": 1
+        },
+        {
+          "name": "Wisdom",
+          "score": 8
+        },
+        {
+          "name": "Charisma",
+          "score": 3
+        }
+      ],
+      "saves": null,
+      "skills": null,
+      "senses": [
+        {
+          "text": "Darkvision 30 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 9",
+          "note": ""
+        }
+      ],
+      "languages": "",
+      "resist": null,
+      "immune": null,
+      "vulnerable": null,
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "octopus": {
+      "name": "Octopus",
+      "source": "XMM",
+      "cr": "0",
+      "xp": 10,
+      "initiative": null,
+      "speed": "walk 5 ft., swim 30 ft.",
+      "size": "Small",
+      "type": "beast",
+      "ac": 12,
+      "acText": "",
+      "acTerms": null,
+      "hp": 3,
+      "hpText": "1d6",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Tentacles",
+          "bonus": "4",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "Melee attack: +4 to hit, reach 5 ft. 1 Bludgeoning damage."
+        }
+      ],
+      "traits": [
+        {
+          "name": "Compression",
+          "text": "The octopus can move through a space as narrow as 1 inch without expending extra movement to do so."
+        },
+        {
+          "name": "Water Breathing",
+          "text": "The octopus can breathe only underwater."
+        }
+      ],
+      "alignment": "Unaligned",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 4
+        },
+        {
+          "name": "Dexterity",
+          "score": 15
+        },
+        {
+          "name": "Constitution",
+          "score": 11
+        },
+        {
+          "name": "Intelligence",
+          "score": 3
+        },
+        {
+          "name": "Wisdom",
+          "score": 10
+        },
+        {
+          "name": "Charisma",
+          "score": 4
+        }
+      ],
+      "saves": null,
+      "skills": [
+        {
+          "name": "Perception",
+          "value": "+2"
+        },
+        {
+          "name": "Stealth",
+          "value": "+6"
+        }
+      ],
+      "senses": [
+        {
+          "text": "Darkvision 30 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 12",
+          "note": ""
+        }
+      ],
+      "languages": "",
+      "resist": null,
+      "immune": null,
+      "vulnerable": null,
+      "conditionImmune": null,
+      "reactions": [
+        {
+          "name": "Ink Cloud (1/Day)",
+          "text": "A creature ends its turn within 5 feet of the octopus while underwater. The octopus releases ink that fills a 5-foot Cube [Area of Effect] centered on itself, and the octopus moves up to its Swim Speed. The Cube [Area of Effect] is Heavily Obscured for 1 minute or until a strong current or similar effect disperses the ink."
+        }
+      ],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "owl": {
+      "name": "Owl",
+      "source": "XMM",
+      "cr": "0",
+      "xp": 10,
+      "initiative": null,
+      "speed": "walk 5 ft., fly 60 ft.",
+      "size": "Tiny",
+      "type": "beast",
+      "ac": 11,
+      "acText": "",
+      "acTerms": null,
+      "hp": 1,
+      "hpText": "1d4 - 1",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Talons",
+          "bonus": "3",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "Melee attack: +3 to hit, reach 5 ft. 1 Slashing damage."
+        }
+      ],
+      "traits": [
+        {
+          "name": "Flyby",
+          "text": "The owl doesn't provoke Opportunity Attack when it flies out of an enemy's reach."
+        }
+      ],
+      "alignment": "Unaligned",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 3
+        },
+        {
+          "name": "Dexterity",
+          "score": 13
+        },
+        {
+          "name": "Constitution",
+          "score": 8
+        },
+        {
+          "name": "Intelligence",
+          "score": 2
+        },
+        {
+          "name": "Wisdom",
+          "score": 12
+        },
+        {
+          "name": "Charisma",
+          "score": 7
+        }
+      ],
+      "saves": null,
+      "skills": [
+        {
+          "name": "Perception",
+          "value": "+5"
+        },
+        {
+          "name": "Stealth",
+          "value": "+5"
+        }
+      ],
+      "senses": [
+        {
+          "text": "Darkvision 120 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 15",
+          "note": ""
+        }
+      ],
+      "languages": "",
+      "resist": null,
+      "immune": null,
+      "vulnerable": null,
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "rat": {
+      "name": "Rat",
+      "source": "XMM",
+      "cr": "0",
+      "xp": 10,
+      "initiative": null,
+      "speed": "walk 20 ft., climb 20 ft.",
+      "size": "Tiny",
+      "type": "beast",
+      "ac": 10,
+      "acText": "",
+      "acTerms": null,
+      "hp": 1,
+      "hpText": "1d4 - 1",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Bite",
+          "bonus": "2",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "Melee attack: +2 to hit, reach 5 ft. 1 Piercing damage."
+        }
+      ],
+      "traits": [
+        {
+          "name": "Agile",
+          "text": "The rat doesn't provoke Opportunity Attack when it moves out of an enemy's reach."
+        }
+      ],
+      "alignment": "Unaligned",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 2
+        },
+        {
+          "name": "Dexterity",
+          "score": 11
+        },
+        {
+          "name": "Constitution",
+          "score": 9
+        },
+        {
+          "name": "Intelligence",
+          "score": 2
+        },
+        {
+          "name": "Wisdom",
+          "score": 10
+        },
+        {
+          "name": "Charisma",
+          "score": 4
+        }
+      ],
+      "saves": null,
+      "skills": [
+        {
+          "name": "Perception",
+          "value": "+2"
+        }
+      ],
+      "senses": [
+        {
+          "text": "Darkvision 30 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 12",
+          "note": ""
+        }
+      ],
+      "languages": "",
+      "resist": null,
+      "immune": null,
+      "vulnerable": null,
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "raven": {
+      "name": "Raven",
+      "source": "XMM",
+      "cr": "0",
+      "xp": 10,
+      "initiative": null,
+      "speed": "walk 10 ft., fly 50 ft.",
+      "size": "Tiny",
+      "type": "beast",
+      "ac": 12,
+      "acText": "",
+      "acTerms": null,
+      "hp": 2,
+      "hpText": "1d4",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Beak",
+          "bonus": "4",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "Melee attack: +4 to hit, reach 5 ft. 1 Piercing damage."
+        }
+      ],
+      "traits": [
+        {
+          "name": "Mimicry",
+          "text": "The raven can mimic simple sounds it has heard, such as a whisper or chitter. A hearer can discern the sounds are imitations with a successful DC 10 Wisdom (Insight) check."
+        }
+      ],
+      "alignment": "Unaligned",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 2
+        },
+        {
+          "name": "Dexterity",
+          "score": 14
+        },
+        {
+          "name": "Constitution",
+          "score": 10
+        },
+        {
+          "name": "Intelligence",
+          "score": 5
+        },
+        {
+          "name": "Wisdom",
+          "score": 13
+        },
+        {
+          "name": "Charisma",
+          "score": 6
+        }
+      ],
+      "saves": null,
+      "skills": [
+        {
+          "name": "Perception",
+          "value": "+3"
+        }
+      ],
+      "senses": [
+        {
+          "text": "passive Perception 13",
+          "note": ""
+        }
+      ],
+      "languages": "",
+      "resist": null,
+      "immune": null,
+      "vulnerable": null,
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "spider": {
+      "name": "Spider",
+      "source": "XMM",
+      "cr": "0",
+      "xp": 10,
+      "initiative": null,
+      "speed": "walk 20 ft., climb 20 ft.",
+      "size": "Tiny",
+      "type": "beast",
+      "ac": 12,
+      "acText": "",
+      "acTerms": null,
+      "hp": 1,
+      "hpText": "1d4 - 1",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Bite",
+          "bonus": "4",
+          "damage": "1d4",
+          "damageParts": {
+            "dice": {
+              "size": 4,
+              "count": 1
+            },
+            "flat": []
+          },
+          "type": "poison",
+          "text": "Melee attack: +4 to hit, reach 5 ft. 1 Piercing damage plus 2 ([[d:1d4]]) Poison damage."
+        }
+      ],
+      "traits": [
+        {
+          "name": "Spider Climb",
+          "text": "The spider can climb difficult surfaces, including along ceilings, without needing to make an ability check."
+        },
+        {
+          "name": "Web Walker",
+          "text": "The spider ignores movement restrictions caused by webs, and the spider knows the location of any other creature in contact with the same web."
+        }
+      ],
+      "alignment": "Unaligned",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 2
+        },
+        {
+          "name": "Dexterity",
+          "score": 14
+        },
+        {
+          "name": "Constitution",
+          "score": 8
+        },
+        {
+          "name": "Intelligence",
+          "score": 1
+        },
+        {
+          "name": "Wisdom",
+          "score": 10
+        },
+        {
+          "name": "Charisma",
+          "score": 2
+        }
+      ],
+      "saves": null,
+      "skills": [
+        {
+          "name": "Stealth",
+          "value": "+4"
+        }
+      ],
+      "senses": [
+        {
+          "text": "Darkvision 30 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 10",
+          "note": ""
+        }
+      ],
+      "languages": "",
+      "resist": null,
+      "immune": null,
+      "vulnerable": null,
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "weasel": {
+      "name": "Weasel",
+      "source": "XMM",
+      "cr": "0",
+      "xp": 10,
+      "initiative": null,
+      "speed": "walk 30 ft., climb 30 ft.",
+      "size": "Tiny",
+      "type": "beast",
+      "ac": 13,
+      "acText": "",
+      "acTerms": null,
+      "hp": 1,
+      "hpText": "1d4 - 1",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Bite",
+          "bonus": "5",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "Melee attack: +5 to hit, reach 5 ft. 1 Piercing damage."
+        }
+      ],
+      "traits": [],
+      "alignment": "Unaligned",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 3
+        },
+        {
+          "name": "Dexterity",
+          "score": 16
+        },
+        {
+          "name": "Constitution",
+          "score": 8
+        },
+        {
+          "name": "Intelligence",
+          "score": 2
+        },
+        {
+          "name": "Wisdom",
+          "score": 12
+        },
+        {
+          "name": "Charisma",
+          "score": 3
+        }
+      ],
+      "saves": null,
+      "skills": [
+        {
+          "name": "Acrobatics",
+          "value": "+5"
+        },
+        {
+          "name": "Perception",
+          "value": "+3"
+        },
+        {
+          "name": "Stealth",
+          "value": "+5"
+        }
+      ],
+      "senses": [
+        {
+          "text": "Darkvision 60 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 13",
+          "note": ""
+        }
+      ],
+      "languages": "",
+      "resist": null,
+      "immune": null,
+      "vulnerable": null,
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "otherworldly steed": {
+      "name": "Otherworldly Steed",
+      "source": "XPHB",
+      "cr": "",
+      "xp": 0,
+      "initiative": null,
+      "speed": "walk 60 ft., fly 60 ft. (requires level 4+ spell)",
+      "size": "Large",
+      "type": "Celestial, Fey, or Fiend",
+      "ac": 0,
+      "acText": "10 + 1 per spell level",
+      "acTerms": {
+        "text": "10 + 1 per spell level",
+        "branches": [
+          {
+            "qualifier": "",
+            "terms": [
+              {
+                "const": 10
+              },
+              {
+                "perLevel": 1
+              }
+            ]
+          }
+        ]
+      },
+      "hp": 0,
+      "hpText": "5 + 10 per spell level (the steed has a number of Hit Dice [d10s] equal to the spell's level)",
+      "hpTerms": {
+        "text": "5 + 10 per spell level (the steed has a number of Hit Dice [d10s] equal to the spell's level)",
+        "branches": [
+          {
+            "qualifier": "the steed has a number of Hit Dice [d10s] equal to the spell's level",
+            "terms": [
+              {
+                "const": 5
+              },
+              {
+                "perLevel": 10
+              }
+            ]
+          }
+        ]
+      },
+      "actions": [
+        {
+          "name": "Otherworldly Slam",
+          "bonus": "",
+          "damage": "1d8 + summonSpellLevel",
+          "damageParts": {
+            "dice": {
+              "size": 8,
+              "count": 1
+            },
+            "flat": [
+              {
+                "level": 1
+              }
+            ]
+          },
+          "type": "",
+          "text": "Melee attack: your spell attack modifier, reach 5 ft. [[d:1d8 + summonSpellLevel]] of Radiant (Celestial), Psychic (Fey), or Necrotic (Fiend) damage."
+        }
+      ],
+      "traits": [
+        {
+          "name": "Life Bond",
+          "text": "When you regain Hit Points from a level 1+ spell, the steed regains the same number of Hit Points if you're within 5 feet of it."
+        }
+      ],
+      "alignment": "Neutral",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 18
+        },
+        {
+          "name": "Dexterity",
+          "score": 12
+        },
+        {
+          "name": "Constitution",
+          "score": 14
+        },
+        {
+          "name": "Intelligence",
+          "score": 6
+        },
+        {
+          "name": "Wisdom",
+          "score": 12
+        },
+        {
+          "name": "Charisma",
+          "score": 8
+        }
+      ],
+      "saves": null,
+      "skills": null,
+      "senses": [
+        {
+          "text": "passive Perception 11",
+          "note": ""
+        }
+      ],
+      "languages": "telepathy 1 mile (works only with you)",
+      "resist": null,
+      "immune": null,
+      "vulnerable": null,
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [
+        {
+          "name": "Fell Glare (Fiend Only; Recharges after a Long Rest)",
+          "text": "[[s:Wisdom saving throw]] DC equals your spell save DC, one creature within 60 feet the steed can see. The target has the [[c:Frightened]] condition until the end of your next turn."
+        },
+        {
+          "name": "Fey Step (Fey Only; Recharges after a Long Rest)",
+          "text": "The steed teleports, along with its rider, to an unoccupied space of your choice up to 60 feet away from itself."
+        },
+        {
+          "name": "Healing Touch (Celestial Only; Recharges after a Long Rest)",
+          "text": "One creature within 5 feet of the steed regains a number of Hit Points equal to 2d8 + summonSpellLevel."
+        }
+      ],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": "equals your Proficiency Bonus",
+      "forms": [
+        {
+          "id": "celestial",
+          "name": "Celestial",
+          "ac": 0,
+          "acText": "10 + 1 per spell level",
+          "acTerms": {
+            "text": "10 + 1 per spell level",
+            "branches": [
+              {
+                "qualifier": "",
+                "terms": [
+                  {
+                    "const": 10
+                  },
+                  {
+                    "perLevel": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "hp": 0,
+          "hpText": "5 + 10 per spell level (the steed has a number of Hit Dice [d10s] equal to the spell's level)",
+          "hpTerms": {
+            "text": "5 + 10 per spell level (the steed has a number of Hit Dice [d10s] equal to the spell's level)",
+            "branches": [
+              {
+                "qualifier": "the steed has a number of Hit Dice [d10s] equal to the spell's level",
+                "terms": [
+                  {
+                    "const": 5
+                  },
+                  {
+                    "perLevel": 10
+                  }
+                ]
+              }
+            ]
+          },
+          "speed": "walk 60 ft., fly 60 ft. (requires level 4+ spell)",
+          "actions": [
+            {
+              "name": "Otherworldly Slam",
+              "bonus": "",
+              "damage": "1d8 + summonSpellLevel",
+              "damageParts": {
+                "dice": {
+                  "size": 8,
+                  "count": 1
+                },
+                "flat": [
+                  {
+                    "level": 1
+                  }
+                ]
+              },
+              "type": "",
+              "text": "Melee attack: your spell attack modifier, reach 5 ft. [[d:1d8 + summonSpellLevel]] of Radiant (Celestial), Psychic (Fey), or Necrotic (Fiend) damage."
+            }
+          ],
+          "traits": [
+            {
+              "name": "Life Bond",
+              "text": "When you regain Hit Points from a level 1+ spell, the steed regains the same number of Hit Points if you're within 5 feet of it."
+            }
+          ],
+          "bonusActions": [
+            {
+              "name": "Healing Touch (Recharges after a Long Rest)",
+              "text": "One creature within 5 feet of the steed regains a number of Hit Points equal to 2d8 + summonSpellLevel."
+            }
+          ],
+          "reactions": [],
+          "legendary": [],
+          "spellcasting": null
+        },
+        {
+          "id": "fey",
+          "name": "Fey",
+          "ac": 0,
+          "acText": "10 + 1 per spell level",
+          "acTerms": {
+            "text": "10 + 1 per spell level",
+            "branches": [
+              {
+                "qualifier": "",
+                "terms": [
+                  {
+                    "const": 10
+                  },
+                  {
+                    "perLevel": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "hp": 0,
+          "hpText": "5 + 10 per spell level (the steed has a number of Hit Dice [d10s] equal to the spell's level)",
+          "hpTerms": {
+            "text": "5 + 10 per spell level (the steed has a number of Hit Dice [d10s] equal to the spell's level)",
+            "branches": [
+              {
+                "qualifier": "the steed has a number of Hit Dice [d10s] equal to the spell's level",
+                "terms": [
+                  {
+                    "const": 5
+                  },
+                  {
+                    "perLevel": 10
+                  }
+                ]
+              }
+            ]
+          },
+          "speed": "walk 60 ft., fly 60 ft. (requires level 4+ spell)",
+          "actions": [
+            {
+              "name": "Otherworldly Slam",
+              "bonus": "",
+              "damage": "1d8 + summonSpellLevel",
+              "damageParts": {
+                "dice": {
+                  "size": 8,
+                  "count": 1
+                },
+                "flat": [
+                  {
+                    "level": 1
+                  }
+                ]
+              },
+              "type": "",
+              "text": "Melee attack: your spell attack modifier, reach 5 ft. [[d:1d8 + summonSpellLevel]] of Radiant (Celestial), Psychic (Fey), or Necrotic (Fiend) damage."
+            }
+          ],
+          "traits": [
+            {
+              "name": "Life Bond",
+              "text": "When you regain Hit Points from a level 1+ spell, the steed regains the same number of Hit Points if you're within 5 feet of it."
+            }
+          ],
+          "bonusActions": [
+            {
+              "name": "Fey Step (Recharges after a Long Rest)",
+              "text": "The steed teleports, along with its rider, to an unoccupied space of your choice up to 60 feet away from itself."
+            }
+          ],
+          "reactions": [],
+          "legendary": [],
+          "spellcasting": null
+        },
+        {
+          "id": "fiend",
+          "name": "Fiend",
+          "ac": 0,
+          "acText": "10 + 1 per spell level",
+          "acTerms": {
+            "text": "10 + 1 per spell level",
+            "branches": [
+              {
+                "qualifier": "",
+                "terms": [
+                  {
+                    "const": 10
+                  },
+                  {
+                    "perLevel": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "hp": 0,
+          "hpText": "5 + 10 per spell level (the steed has a number of Hit Dice [d10s] equal to the spell's level)",
+          "hpTerms": {
+            "text": "5 + 10 per spell level (the steed has a number of Hit Dice [d10s] equal to the spell's level)",
+            "branches": [
+              {
+                "qualifier": "the steed has a number of Hit Dice [d10s] equal to the spell's level",
+                "terms": [
+                  {
+                    "const": 5
+                  },
+                  {
+                    "perLevel": 10
+                  }
+                ]
+              }
+            ]
+          },
+          "speed": "walk 60 ft., fly 60 ft. (requires level 4+ spell)",
+          "actions": [
+            {
+              "name": "Otherworldly Slam",
+              "bonus": "",
+              "damage": "1d8 + summonSpellLevel",
+              "damageParts": {
+                "dice": {
+                  "size": 8,
+                  "count": 1
+                },
+                "flat": [
+                  {
+                    "level": 1
+                  }
+                ]
+              },
+              "type": "",
+              "text": "Melee attack: your spell attack modifier, reach 5 ft. [[d:1d8 + summonSpellLevel]] of Radiant (Celestial), Psychic (Fey), or Necrotic (Fiend) damage."
+            }
+          ],
+          "traits": [
+            {
+              "name": "Life Bond",
+              "text": "When you regain Hit Points from a level 1+ spell, the steed regains the same number of Hit Points if you're within 5 feet of it."
+            }
+          ],
+          "bonusActions": [
+            {
+              "name": "Fell Glare (Recharges after a Long Rest)",
+              "text": "[[s:Wisdom saving throw]] DC equals your spell save DC, one creature within 60 feet the steed can see. The target has the [[c:Frightened]] condition until the end of your next turn."
+            }
+          ],
+          "reactions": [],
+          "legendary": [],
+          "spellcasting": null
+        }
+      ]
+    },
+    "skeleton": {
+      "name": "Skeleton",
+      "source": "XMM",
+      "cr": "1/4",
+      "xp": 50,
+      "initiative": null,
+      "speed": "walk 30 ft.",
+      "size": "Medium",
+      "type": "undead",
+      "ac": 14,
+      "acText": "",
+      "acTerms": null,
+      "hp": 13,
+      "hpText": "2d8 + 4",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Shortsword",
+          "bonus": "5",
+          "damage": "1d6 + 3",
+          "damageParts": {
+            "dice": {
+              "size": 6,
+              "count": 1
+            },
+            "flat": [
+              {
+                "const": 3
+              }
+            ]
+          },
+          "type": "piercing",
+          "text": "Melee attack: +5 to hit, reach 5 ft. 6 ([[d:1d6 + 3]]) Piercing damage."
+        },
+        {
+          "name": "Shortbow",
+          "bonus": "5",
+          "damage": "1d6 + 3",
+          "damageParts": {
+            "dice": {
+              "size": 6,
+              "count": 1
+            },
+            "flat": [
+              {
+                "const": 3
+              }
+            ]
+          },
+          "type": "piercing",
+          "text": "Ranged attack: +5 to hit, range 80/320 ft. 6 ([[d:1d6 + 3]]) Piercing damage."
+        }
+      ],
+      "traits": [],
+      "alignment": "L Evil",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 10
+        },
+        {
+          "name": "Dexterity",
+          "score": 16
+        },
+        {
+          "name": "Constitution",
+          "score": 15
+        },
+        {
+          "name": "Intelligence",
+          "score": 6
+        },
+        {
+          "name": "Wisdom",
+          "score": 8
+        },
+        {
+          "name": "Charisma",
+          "score": 5
+        }
+      ],
+      "saves": null,
+      "skills": null,
+      "senses": [
+        {
+          "text": "Darkvision 60 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 9",
+          "note": ""
+        }
+      ],
+      "languages": "understands Common plus one other language but can't speak",
+      "resist": null,
+      "immune": [
+        {
+          "text": "poison",
+          "note": ""
+        }
+      ],
+      "vulnerable": [
+        {
+          "text": "bludgeoning",
+          "note": ""
+        }
+      ],
+      "conditionImmune": [
+        {
+          "text": "exhaustion",
+          "note": ""
+        },
+        {
+          "text": "poisoned",
+          "note": ""
+        }
+      ],
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "zombie": {
+      "name": "Zombie",
+      "source": "XMM",
+      "cr": "1/4",
+      "xp": 50,
+      "initiative": null,
+      "speed": "walk 20 ft.",
+      "size": "Medium",
+      "type": "undead",
+      "ac": 8,
+      "acText": "",
+      "acTerms": null,
+      "hp": 15,
+      "hpText": "2d8 + 6",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Slam",
+          "bonus": "3",
+          "damage": "1d8 + 1",
+          "damageParts": {
+            "dice": {
+              "size": 8,
+              "count": 1
+            },
+            "flat": [
+              {
+                "const": 1
+              }
+            ]
+          },
+          "type": "bludgeoning",
+          "text": "Melee attack: +3 to hit, reach 5 ft. 5 ([[d:1d8 + 1]]) Bludgeoning damage."
+        }
+      ],
+      "traits": [
+        {
+          "name": "Undead Fortitude",
+          "text": "If damage reduces the zombie to 0 Hit Points, it makes a [[s:Constitution saving throw]] (DC 5 plus the damage taken) unless the damage is Radiant or from a Critical Hit. On a successful save, the zombie drops to 1 Hit Points instead."
+        }
+      ],
+      "alignment": "Neutral Evil",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 13
+        },
+        {
+          "name": "Dexterity",
+          "score": 6
+        },
+        {
+          "name": "Constitution",
+          "score": 16
+        },
+        {
+          "name": "Intelligence",
+          "score": 3
+        },
+        {
+          "name": "Wisdom",
+          "score": 6
+        },
+        {
+          "name": "Charisma",
+          "score": 5
+        }
+      ],
+      "saves": [
+        {
+          "key": "wis",
+          "name": "Wisdom",
+          "value": "+0"
+        }
+      ],
+      "skills": null,
+      "senses": [
+        {
+          "text": "Darkvision 60 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 8",
+          "note": ""
+        }
+      ],
+      "languages": "understands Common plus one other language but can't speak",
+      "resist": null,
+      "immune": [
+        {
+          "text": "poison",
+          "note": ""
+        }
+      ],
+      "vulnerable": null,
+      "conditionImmune": [
+        {
+          "text": "exhaustion",
+          "note": ""
+        },
+        {
+          "text": "poisoned",
+          "note": ""
+        }
+      ],
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "riding horse": {
+      "name": "Riding Horse",
+      "source": "XMM",
+      "cr": "1/4",
+      "xp": 50,
+      "initiative": null,
+      "speed": "walk 60 ft.",
+      "size": "Large",
+      "type": "beast",
+      "ac": 11,
+      "acText": "",
+      "acTerms": null,
+      "hp": 13,
+      "hpText": "2d10 + 2",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Hooves",
+          "bonus": "5",
+          "damage": "1d8 + 3",
+          "damageParts": {
+            "dice": {
+              "size": 8,
+              "count": 1
+            },
+            "flat": [
+              {
+                "const": 3
+              }
+            ]
+          },
+          "type": "bludgeoning",
+          "text": "Melee attack: +5 to hit, reach 5 ft. 7 ([[d:1d8 + 3]]) Bludgeoning damage."
+        }
+      ],
+      "traits": [],
+      "alignment": "Unaligned",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 16
+        },
+        {
+          "name": "Dexterity",
+          "score": 13
+        },
+        {
+          "name": "Constitution",
+          "score": 12
+        },
+        {
+          "name": "Intelligence",
+          "score": 2
+        },
+        {
+          "name": "Wisdom",
+          "score": 11
+        },
+        {
+          "name": "Charisma",
+          "score": 7
+        }
+      ],
+      "saves": null,
+      "skills": null,
+      "senses": [
+        {
+          "text": "passive Perception 10",
+          "note": ""
+        }
+      ],
+      "languages": "",
+      "resist": null,
+      "immune": null,
+      "vulnerable": null,
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "giant insect": {
+      "name": "Giant Insect",
+      "source": "XPHB",
+      "cr": "",
+      "xp": 0,
+      "initiative": null,
+      "speed": "walk 40 ft., climb 40 ft., fly 40 ft. (Wasp only)",
+      "size": "Large",
+      "type": "beast",
+      "ac": 0,
+      "acText": "11 + the spell's level",
+      "acTerms": {
+        "text": "11 + the spell's level",
+        "branches": [
+          {
+            "qualifier": "",
+            "terms": [
+              {
+                "const": 11
+              },
+              {
+                "level": 1
+              }
+            ]
+          }
+        ]
+      },
+      "hp": 0,
+      "hpText": "30 + 10 for each spell level above 4",
+      "hpTerms": {
+        "text": "30 + 10 for each spell level above 4",
+        "branches": [
+          {
+            "qualifier": "",
+            "terms": [
+              {
+                "const": 30
+              },
+              {
+                "perLevelAbove": 10,
+                "above": 4
+              }
+            ]
+          }
+        ]
+      },
+      "actions": [
+        {
+          "name": "Multiattack",
+          "bonus": "",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "The insect makes a number of attacks equal to half this spell's level (round down).",
+          "count": {
+            "half": true
+          }
+        },
+        {
+          "name": "Poison Jab",
+          "bonus": "",
+          "damage": "1d6 + 3 + summonSpellLevel",
+          "damageParts": {
+            "dice": {
+              "size": 6,
+              "count": 1
+            },
+            "flat": [
+              {
+                "const": 3
+              },
+              {
+                "level": 1
+              }
+            ]
+          },
+          "type": "piercing",
+          "text": "Melee attack: your spell attack modifier, reach 10 ft. [[d:1d6 + 3 + summonSpellLevel Piercing damage]] plus [[d:1d4 Poison damage]]."
+        },
+        {
+          "name": "Web Bolt (Spider Only)",
+          "bonus": "",
+          "damage": "1d10 + 3 + summonSpellLevel",
+          "damageParts": {
+            "dice": {
+              "size": 10,
+              "count": 1
+            },
+            "flat": [
+              {
+                "const": 3
+              },
+              {
+                "level": 1
+              }
+            ]
+          },
+          "type": "bludgeoning",
+          "text": "Ranged attack: your spell attack modifier, range 60 ft. [[d:1d10 + 3 + summonSpellLevel Bludgeoning damage]], and the target's Speed is reduced to 0 until the start of the insect's next turn."
+        }
+      ],
+      "traits": [
+        {
+          "name": "Spider Climb",
+          "text": "The insect can climb difficult surfaces, including along ceilings, without needing to make an ability check."
+        }
+      ],
+      "alignment": "Unaligned",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 17
+        },
+        {
+          "name": "Dexterity",
+          "score": 13
+        },
+        {
+          "name": "Constitution",
+          "score": 15
+        },
+        {
+          "name": "Intelligence",
+          "score": 4
+        },
+        {
+          "name": "Wisdom",
+          "score": 14
+        },
+        {
+          "name": "Charisma",
+          "score": 3
+        }
+      ],
+      "saves": null,
+      "skills": null,
+      "senses": [
+        {
+          "text": "Darkvision 60 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 12",
+          "note": ""
+        }
+      ],
+      "languages": "understands the languages you know",
+      "resist": null,
+      "immune": null,
+      "vulnerable": null,
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [
+        {
+          "name": "Venomous Spew (Centipede Only)",
+          "text": "[[s:Constitution saving throw]] Your spell save DC, one creature the insect can see within 10 feet. The target has the [[c:Poisoned]] condition until the start of the insect's next turn."
+        }
+      ],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": "equals your Proficiency Bonus",
+      "forms": [
+        {
+          "id": "centipede",
+          "name": "Centipede",
+          "ac": 0,
+          "acText": "11 + the spell's level",
+          "acTerms": {
+            "text": "11 + the spell's level",
+            "branches": [
+              {
+                "qualifier": "",
+                "terms": [
+                  {
+                    "const": 11
+                  },
+                  {
+                    "level": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "hp": 0,
+          "hpText": "30 + 10 for each spell level above 4",
+          "hpTerms": {
+            "text": "30 + 10 for each spell level above 4",
+            "branches": [
+              {
+                "qualifier": "",
+                "terms": [
+                  {
+                    "const": 30
+                  },
+                  {
+                    "perLevelAbove": 10,
+                    "above": 4
+                  }
+                ]
+              }
+            ]
+          },
+          "speed": "walk 40 ft., climb 40 ft.",
+          "actions": [
+            {
+              "name": "Multiattack",
+              "bonus": "",
+              "damage": "",
+              "damageParts": null,
+              "type": "",
+              "text": "The insect makes a number of attacks equal to half this spell's level (round down).",
+              "count": {
+                "half": true
+              }
+            },
+            {
+              "name": "Poison Jab",
+              "bonus": "",
+              "damage": "1d6 + 3 + summonSpellLevel",
+              "damageParts": {
+                "dice": {
+                  "size": 6,
+                  "count": 1
+                },
+                "flat": [
+                  {
+                    "const": 3
+                  },
+                  {
+                    "level": 1
+                  }
+                ]
+              },
+              "type": "piercing",
+              "text": "Melee attack: your spell attack modifier, reach 10 ft. [[d:1d6 + 3 + summonSpellLevel Piercing damage]] plus [[d:1d4 Poison damage]]."
+            }
+          ],
+          "traits": [
+            {
+              "name": "Spider Climb",
+              "text": "The insect can climb difficult surfaces, including along ceilings, without needing to make an ability check."
+            }
+          ],
+          "bonusActions": [
+            {
+              "name": "Venomous Spew (Centipede Only)",
+              "text": "[[s:Constitution saving throw]] Your spell save DC, one creature the insect can see within 10 feet. The target has the [[c:Poisoned]] condition until the start of the insect's next turn."
+            }
+          ],
+          "reactions": [],
+          "legendary": [],
+          "spellcasting": null
+        },
+        {
+          "id": "spider",
+          "name": "Spider",
+          "ac": 0,
+          "acText": "11 + the spell's level",
+          "acTerms": {
+            "text": "11 + the spell's level",
+            "branches": [
+              {
+                "qualifier": "",
+                "terms": [
+                  {
+                    "const": 11
+                  },
+                  {
+                    "level": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "hp": 0,
+          "hpText": "30 + 10 for each spell level above 4",
+          "hpTerms": {
+            "text": "30 + 10 for each spell level above 4",
+            "branches": [
+              {
+                "qualifier": "",
+                "terms": [
+                  {
+                    "const": 30
+                  },
+                  {
+                    "perLevelAbove": 10,
+                    "above": 4
+                  }
+                ]
+              }
+            ]
+          },
+          "speed": "walk 40 ft., climb 40 ft.",
+          "actions": [
+            {
+              "name": "Multiattack",
+              "bonus": "",
+              "damage": "",
+              "damageParts": null,
+              "type": "",
+              "text": "The insect makes a number of attacks equal to half this spell's level (round down).",
+              "count": {
+                "half": true
+              }
+            },
+            {
+              "name": "Poison Jab",
+              "bonus": "",
+              "damage": "1d6 + 3 + summonSpellLevel",
+              "damageParts": {
+                "dice": {
+                  "size": 6,
+                  "count": 1
+                },
+                "flat": [
+                  {
+                    "const": 3
+                  },
+                  {
+                    "level": 1
+                  }
+                ]
+              },
+              "type": "piercing",
+              "text": "Melee attack: your spell attack modifier, reach 10 ft. [[d:1d6 + 3 + summonSpellLevel Piercing damage]] plus [[d:1d4 Poison damage]]."
+            },
+            {
+              "name": "Web Bolt",
+              "bonus": "",
+              "damage": "1d10 + 3 + summonSpellLevel",
+              "damageParts": {
+                "dice": {
+                  "size": 10,
+                  "count": 1
+                },
+                "flat": [
+                  {
+                    "const": 3
+                  },
+                  {
+                    "level": 1
+                  }
+                ]
+              },
+              "type": "bludgeoning",
+              "text": "Ranged attack: your spell attack modifier, range 60 ft. [[d:1d10 + 3 + summonSpellLevel Bludgeoning damage]], and the target's Speed is reduced to 0 until the start of the insect's next turn."
+            }
+          ],
+          "traits": [
+            {
+              "name": "Spider Climb",
+              "text": "The insect can climb difficult surfaces, including along ceilings, without needing to make an ability check."
+            }
+          ],
+          "bonusActions": [],
+          "reactions": [],
+          "legendary": [],
+          "spellcasting": null
+        },
+        {
+          "id": "wasp",
+          "name": "Wasp",
+          "ac": 0,
+          "acText": "11 + the spell's level",
+          "acTerms": {
+            "text": "11 + the spell's level",
+            "branches": [
+              {
+                "qualifier": "",
+                "terms": [
+                  {
+                    "const": 11
+                  },
+                  {
+                    "level": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "hp": 0,
+          "hpText": "30 + 10 for each spell level above 4",
+          "hpTerms": {
+            "text": "30 + 10 for each spell level above 4",
+            "branches": [
+              {
+                "qualifier": "",
+                "terms": [
+                  {
+                    "const": 30
+                  },
+                  {
+                    "perLevelAbove": 10,
+                    "above": 4
+                  }
+                ]
+              }
+            ]
+          },
+          "speed": "walk 40 ft., climb 40 ft., fly 40 ft.",
+          "actions": [
+            {
+              "name": "Multiattack",
+              "bonus": "",
+              "damage": "",
+              "damageParts": null,
+              "type": "",
+              "text": "The insect makes a number of attacks equal to half this spell's level (round down).",
+              "count": {
+                "half": true
+              }
+            },
+            {
+              "name": "Poison Jab",
+              "bonus": "",
+              "damage": "1d6 + 3 + summonSpellLevel",
+              "damageParts": {
+                "dice": {
+                  "size": 6,
+                  "count": 1
+                },
+                "flat": [
+                  {
+                    "const": 3
+                  },
+                  {
+                    "level": 1
+                  }
+                ]
+              },
+              "type": "piercing",
+              "text": "Melee attack: your spell attack modifier, reach 10 ft. [[d:1d6 + 3 + summonSpellLevel Piercing damage]] plus [[d:1d4 Poison damage]]."
+            }
+          ],
+          "traits": [
+            {
+              "name": "Spider Climb",
+              "text": "The insect can climb difficult surfaces, including along ceilings, without needing to make an ability check."
+            }
+          ],
+          "bonusActions": [],
+          "reactions": [],
+          "legendary": [],
+          "spellcasting": null
+        }
+      ]
+    },
+    "animated object": {
+      "name": "Animated Object",
+      "source": "XPHB",
+      "cr": "",
+      "xp": 0,
+      "initiative": null,
+      "speed": "walk 30 ft.",
+      "size": "Tiny or Small or Medium or Large or Huge",
+      "type": "construct",
+      "ac": 15,
+      "acText": "",
+      "acTerms": null,
+      "hp": 0,
+      "hpText": "10 (Medium or smaller), 20 (Large), 40 (Huge)",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Slam",
+          "bonus": "",
+          "damage": "(summonSpellLevel - 4)d4 + 3",
+          "damageParts": {
+            "dice": {
+              "size": 4,
+              "levelCount": -4
+            },
+            "flat": [
+              {
+                "const": 3
+              }
+            ]
+          },
+          "type": "",
+          "text": "Melee attack: your spell attack modifier, reach 5 ft. Force damage equal to [[d:(summonSpellLevel - 4)d4 + 3|1d4 + 3]], [[d:(summonSpellLevel - 3)d6 + 3|2d6 + 3]] + your spellcasting ability modifier (Large), or [[d:(summonSpellLevel - 3)d12 + 3|2d12 + 3]] + your spellcasting ability modifier (Huge)."
+        }
+      ],
+      "traits": [],
+      "alignment": "Unaligned",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 16
+        },
+        {
+          "name": "Dexterity",
+          "score": 10
+        },
+        {
+          "name": "Constitution",
+          "score": 10
+        },
+        {
+          "name": "Intelligence",
+          "score": 3
+        },
+        {
+          "name": "Wisdom",
+          "score": 3
+        },
+        {
+          "name": "Charisma",
+          "score": 1
+        }
+      ],
+      "saves": null,
+      "skills": null,
+      "senses": [
+        {
+          "text": "Blindsight 30 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 6",
+          "note": ""
+        }
+      ],
+      "languages": "understands the languages you know",
+      "resist": null,
+      "immune": null,
+      "vulnerable": null,
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": "equals your Proficiency Bonus",
+      "forms": [
+        {
+          "id": "huge",
+          "name": "Huge",
+          "ac": 15,
+          "acText": "",
+          "acTerms": null,
+          "hp": 0,
+          "hpText": "40",
+          "hpTerms": {
+            "text": "40",
+            "branches": [
+              {
+                "qualifier": "",
+                "terms": [
+                  {
+                    "const": 40
+                  }
+                ]
+              }
+            ]
+          },
+          "speed": "walk 30 ft.",
+          "actions": [
+            {
+              "name": "Slam",
+              "bonus": "",
+              "damage": "(summonSpellLevel - 4)d4 + 3",
+              "damageParts": {
+                "dice": {
+                  "size": 4,
+                  "levelCount": -4
+                },
+                "flat": [
+                  {
+                    "const": 3
+                  }
+                ]
+              },
+              "type": "",
+              "text": "Melee attack: your spell attack modifier, reach 5 ft. Force damage equal to [[d:(summonSpellLevel - 4)d4 + 3|1d4 + 3]], [[d:(summonSpellLevel - 3)d6 + 3|2d6 + 3]] + your spellcasting ability modifier (Large), or [[d:(summonSpellLevel - 3)d12 + 3|2d12 + 3]] + your spellcasting ability modifier (Huge)."
+            }
+          ],
+          "traits": [],
+          "bonusActions": [],
+          "reactions": [],
+          "legendary": [],
+          "spellcasting": null
+        },
+        {
+          "id": "large",
+          "name": "Large",
+          "ac": 15,
+          "acText": "",
+          "acTerms": null,
+          "hp": 0,
+          "hpText": "20",
+          "hpTerms": {
+            "text": "20",
+            "branches": [
+              {
+                "qualifier": "",
+                "terms": [
+                  {
+                    "const": 20
+                  }
+                ]
+              }
+            ]
+          },
+          "speed": "walk 30 ft.",
+          "actions": [
+            {
+              "name": "Slam",
+              "bonus": "",
+              "damage": "(summonSpellLevel - 4)d4 + 3",
+              "damageParts": {
+                "dice": {
+                  "size": 4,
+                  "levelCount": -4
+                },
+                "flat": [
+                  {
+                    "const": 3
+                  }
+                ]
+              },
+              "type": "",
+              "text": "Melee attack: your spell attack modifier, reach 5 ft. Force damage equal to [[d:(summonSpellLevel - 4)d4 + 3|1d4 + 3]], [[d:(summonSpellLevel - 3)d6 + 3|2d6 + 3]] + your spellcasting ability modifier (Large), or [[d:(summonSpellLevel - 3)d12 + 3|2d12 + 3]] + your spellcasting ability modifier (Huge)."
+            }
+          ],
+          "traits": [],
+          "bonusActions": [],
+          "reactions": [],
+          "legendary": [],
+          "spellcasting": null
+        },
+        {
+          "id": "medium-or-smaller",
+          "name": "Medium or Smaller",
+          "ac": 15,
+          "acText": "",
+          "acTerms": null,
+          "hp": 0,
+          "hpText": "10",
+          "hpTerms": {
+            "text": "10",
+            "branches": [
+              {
+                "qualifier": "",
+                "terms": [
+                  {
+                    "const": 10
+                  }
+                ]
+              }
+            ]
+          },
+          "speed": "walk 30 ft.",
+          "actions": [
+            {
+              "name": "Slam",
+              "bonus": "",
+              "damage": "(summonSpellLevel - 4)d4 + 3",
+              "damageParts": {
+                "dice": {
+                  "size": 4,
+                  "levelCount": -4
+                },
+                "flat": [
+                  {
+                    "const": 3
+                  }
+                ]
+              },
+              "type": "",
+              "text": "Melee attack: your spell attack modifier, reach 5 ft. Force damage equal to [[d:(summonSpellLevel - 4)d4 + 3|1d4 + 3]], [[d:(summonSpellLevel - 3)d6 + 3|2d6 + 3]] + your spellcasting ability modifier (Large), or [[d:(summonSpellLevel - 3)d12 + 3|2d12 + 3]] + your spellcasting ability modifier (Huge)."
+            }
+          ],
+          "traits": [],
+          "bonusActions": [],
+          "reactions": [],
+          "legendary": [],
+          "spellcasting": null
+        }
+      ]
+    },
+    "awakened shrub": {
+      "name": "Awakened Shrub",
+      "source": "XMM",
+      "cr": "0",
+      "xp": 10,
+      "initiative": null,
+      "speed": "walk 20 ft.",
+      "size": "Small",
+      "type": "plant",
+      "ac": 9,
+      "acText": "",
+      "acTerms": null,
+      "hp": 10,
+      "hpText": "3d6",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Rake",
+          "bonus": "1",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "Melee attack: +1 to hit, reach 5 ft. 1 Slashing damage."
+        }
+      ],
+      "traits": [],
+      "alignment": "Neutral",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 3
+        },
+        {
+          "name": "Dexterity",
+          "score": 8
+        },
+        {
+          "name": "Constitution",
+          "score": 11
+        },
+        {
+          "name": "Intelligence",
+          "score": 10
+        },
+        {
+          "name": "Wisdom",
+          "score": 10
+        },
+        {
+          "name": "Charisma",
+          "score": 6
+        }
+      ],
+      "saves": null,
+      "skills": null,
+      "senses": [
+        {
+          "text": "passive Perception 10",
+          "note": ""
+        }
+      ],
+      "languages": "Common plus one other language",
+      "resist": [
+        {
+          "text": "piercing",
+          "note": ""
+        }
+      ],
+      "immune": null,
+      "vulnerable": [
+        {
+          "text": "fire",
+          "note": ""
+        }
+      ],
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "awakened tree": {
+      "name": "Awakened Tree",
+      "source": "XMM",
+      "cr": "2",
+      "xp": 450,
+      "initiative": null,
+      "speed": "walk 20 ft.",
+      "size": "Huge",
+      "type": "plant",
+      "ac": 13,
+      "acText": "",
+      "acTerms": null,
+      "hp": 59,
+      "hpText": "7d12 + 14",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Slam",
+          "bonus": "6",
+          "damage": "2d8 + 4",
+          "damageParts": {
+            "dice": {
+              "size": 8,
+              "count": 2
+            },
+            "flat": [
+              {
+                "const": 4
+              }
+            ]
+          },
+          "type": "bludgeoning",
+          "text": "Melee attack: +6 to hit, reach 10 ft. 13 ([[d:2d8 + 4]]) Bludgeoning damage."
+        }
+      ],
+      "traits": [],
+      "alignment": "Neutral",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 19
+        },
+        {
+          "name": "Dexterity",
+          "score": 6
+        },
+        {
+          "name": "Constitution",
+          "score": 15
+        },
+        {
+          "name": "Intelligence",
+          "score": 10
+        },
+        {
+          "name": "Wisdom",
+          "score": 10
+        },
+        {
+          "name": "Charisma",
+          "score": 7
+        }
+      ],
+      "saves": null,
+      "skills": null,
+      "senses": [
+        {
+          "text": "passive Perception 10",
+          "note": ""
+        }
+      ],
+      "languages": "Common plus one other language",
+      "resist": [
+        {
+          "text": "bludgeoning",
+          "note": ""
+        },
+        {
+          "text": "piercing",
+          "note": ""
+        }
+      ],
+      "immune": null,
+      "vulnerable": [
+        {
+          "text": "fire",
+          "note": ""
+        }
+      ],
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "draconic spirit": {
+      "name": "Draconic Spirit",
+      "source": "XPHB",
+      "cr": "",
+      "xp": 0,
+      "initiative": null,
+      "speed": "walk 30 ft., fly 60 ft., swim 30 ft.",
+      "size": "Large",
+      "type": "dragon",
+      "ac": 0,
+      "acText": "14 + the spell's level",
+      "acTerms": {
+        "text": "14 + the spell's level",
+        "branches": [
+          {
+            "qualifier": "",
+            "terms": [
+              {
+                "const": 14
+              },
+              {
+                "level": 1
+              }
+            ]
+          }
+        ]
+      },
+      "hp": 0,
+      "hpText": "50 + 10 for each spell level above 5",
+      "hpTerms": {
+        "text": "50 + 10 for each spell level above 5",
+        "branches": [
+          {
+            "qualifier": "",
+            "terms": [
+              {
+                "const": 50
+              },
+              {
+                "perLevelAbove": 10,
+                "above": 5
+              }
+            ]
+          }
+        ]
+      },
+      "actions": [
+        {
+          "name": "Multiattack",
+          "bonus": "",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "The spirit makes a number of Rend attacks equal to half the spell's level (round down), and it uses Breath Weapon."
+        },
+        {
+          "name": "Rend",
+          "bonus": "",
+          "damage": "1d6 + 4 + summonSpellLevel",
+          "damageParts": {
+            "dice": {
+              "size": 6,
+              "count": 1
+            },
+            "flat": [
+              {
+                "const": 4
+              },
+              {
+                "level": 1
+              }
+            ]
+          },
+          "type": "piercing",
+          "text": "Melee attack: your spell attack modifier, reach 10 feet. [[d:1d6 + 4 + summonSpellLevel Piercing damage]]."
+        },
+        {
+          "name": "Breath Weapon",
+          "bonus": "",
+          "damage": "2d6",
+          "damageParts": {
+            "dice": {
+              "size": 6,
+              "count": 2
+            },
+            "flat": []
+          },
+          "type": "",
+          "text": "[[s:Dexterity saving throw]] DC equals your spell save DC, each creature in a 30-foot Cone [Area of Effect]. [[d:2d6]] damage of a type this spirit has Resistance to (your choice when you cast the spell). Half damage."
+        }
+      ],
+      "traits": [
+        {
+          "name": "Shared Resistances",
+          "text": "When you summon the spirit, choose one of its Resistances. You have Resistance to the chosen damage type until the spell ends."
+        }
+      ],
+      "alignment": "Neutral",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 19
+        },
+        {
+          "name": "Dexterity",
+          "score": 14
+        },
+        {
+          "name": "Constitution",
+          "score": 17
+        },
+        {
+          "name": "Intelligence",
+          "score": 10
+        },
+        {
+          "name": "Wisdom",
+          "score": 14
+        },
+        {
+          "name": "Charisma",
+          "score": 14
+        }
+      ],
+      "saves": null,
+      "skills": null,
+      "senses": [
+        {
+          "text": "Blindsight 30 ft.",
+          "note": ""
+        },
+        {
+          "text": "Darkvision 60 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 12",
+          "note": ""
+        }
+      ],
+      "languages": "Draconic, understands the languages you know",
+      "resist": [
+        {
+          "text": "acid",
+          "note": ""
+        },
+        {
+          "text": "cold",
+          "note": ""
+        },
+        {
+          "text": "fire",
+          "note": ""
+        },
+        {
+          "text": "lightning",
+          "note": ""
+        },
+        {
+          "text": "poison",
+          "note": ""
+        }
+      ],
+      "immune": null,
+      "vulnerable": null,
+      "conditionImmune": [
+        {
+          "text": "charmed",
+          "note": ""
+        },
+        {
+          "text": "frightened",
+          "note": ""
+        },
+        {
+          "text": "poisoned",
+          "note": ""
+        }
+      ],
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": "equals your Proficiency Bonus"
+    },
+    "ghoul": {
+      "name": "Ghoul",
+      "source": "XMM",
+      "cr": "1",
+      "xp": 200,
+      "initiative": null,
+      "speed": "walk 30 ft.",
+      "size": "Medium",
+      "type": "undead",
+      "ac": 12,
+      "acText": "",
+      "acTerms": null,
+      "hp": 22,
+      "hpText": "5d8",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Multiattack",
+          "bonus": "",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "The ghoul makes two Bite attacks."
+        },
+        {
+          "name": "Bite",
+          "bonus": "4",
+          "damage": "1d6 + 2",
+          "damageParts": {
+            "dice": {
+              "size": 6,
+              "count": 1
+            },
+            "flat": [
+              {
+                "const": 2
+              }
+            ]
+          },
+          "type": "piercing",
+          "text": "Melee attack: +4 to hit, reach 5 ft. 5 ([[d:1d6 + 2]]) Piercing damage plus 3 ([[d:1d6]]) Necrotic damage."
+        },
+        {
+          "name": "Claw",
+          "bonus": "4",
+          "damage": "1d4 + 2",
+          "damageParts": {
+            "dice": {
+              "size": 4,
+              "count": 1
+            },
+            "flat": [
+              {
+                "const": 2
+              }
+            ]
+          },
+          "type": "slashing",
+          "text": "Melee attack: +4 to hit, reach 5 ft. 4 ([[d:1d4 + 2]]) Slashing damage. If the target is a creature that isn't an Undead or elf, it is subjected to the following effect. [[s:Constitution saving throw]] DC 10. The target has the [[c:Paralyzed]] condition until the end of its next turn."
+        }
+      ],
+      "traits": [],
+      "alignment": "C Evil",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 13
+        },
+        {
+          "name": "Dexterity",
+          "score": 15
+        },
+        {
+          "name": "Constitution",
+          "score": 10
+        },
+        {
+          "name": "Intelligence",
+          "score": 7
+        },
+        {
+          "name": "Wisdom",
+          "score": 10
+        },
+        {
+          "name": "Charisma",
+          "score": 6
+        }
+      ],
+      "saves": null,
+      "skills": null,
+      "senses": [
+        {
+          "text": "Darkvision 60 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 10",
+          "note": ""
+        }
+      ],
+      "languages": "Common",
+      "resist": null,
+      "immune": [
+        {
+          "text": "poison",
+          "note": ""
+        }
+      ],
+      "vulnerable": null,
+      "conditionImmune": [
+        {
+          "text": "charmed",
+          "note": ""
+        },
+        {
+          "text": "exhaustion",
+          "note": ""
+        },
+        {
+          "text": "poisoned",
+          "note": ""
+        }
+      ],
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "ghast": {
+      "name": "Ghast",
+      "source": "XMM",
+      "cr": "2",
+      "xp": 450,
+      "initiative": null,
+      "speed": "walk 30 ft.",
+      "size": "Medium",
+      "type": "undead",
+      "ac": 13,
+      "acText": "",
+      "acTerms": null,
+      "hp": 36,
+      "hpText": "8d8",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Bite",
+          "bonus": "5",
+          "damage": "1d8 + 3",
+          "damageParts": {
+            "dice": {
+              "size": 8,
+              "count": 1
+            },
+            "flat": [
+              {
+                "const": 3
+              }
+            ]
+          },
+          "type": "piercing",
+          "text": "Melee attack: +5 to hit, reach 5 ft. 7 ([[d:1d8 + 3]]) Piercing damage plus 9 ([[d:2d8]]) Necrotic damage."
+        },
+        {
+          "name": "Claw",
+          "bonus": "5",
+          "damage": "2d6 + 3",
+          "damageParts": {
+            "dice": {
+              "size": 6,
+              "count": 2
+            },
+            "flat": [
+              {
+                "const": 3
+              }
+            ]
+          },
+          "type": "slashing",
+          "text": "Melee attack: +5 to hit, reach 5 ft. 10 ([[d:2d6 + 3]]) Slashing damage. If the target is a non-Undead creature, it is subjected to the following effect. [[s:Constitution saving throw]] DC 10. The target has the [[c:Paralyzed]] condition until the end of its next turn."
+        }
+      ],
+      "traits": [
+        {
+          "name": "Stench",
+          "text": "[[s:Constitution saving throw]] DC 10, any creature that starts its turn in a 5-foot Emanation [Area of Effect] originating from the ghast. The target has the [[c:Poisoned]] condition until the start of its next turn. The target is immune to this ghast's Stench for 24 hours."
+        }
+      ],
+      "alignment": "C Evil",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 16
+        },
+        {
+          "name": "Dexterity",
+          "score": 17
+        },
+        {
+          "name": "Constitution",
+          "score": 10
+        },
+        {
+          "name": "Intelligence",
+          "score": 11
+        },
+        {
+          "name": "Wisdom",
+          "score": 10
+        },
+        {
+          "name": "Charisma",
+          "score": 8
+        }
+      ],
+      "saves": [
+        {
+          "key": "wis",
+          "name": "Wisdom",
+          "value": "+2"
+        }
+      ],
+      "skills": null,
+      "senses": [
+        {
+          "text": "Darkvision 60 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 10",
+          "note": ""
+        }
+      ],
+      "languages": "Common",
+      "resist": [
+        {
+          "text": "necrotic",
+          "note": ""
+        }
+      ],
+      "immune": [
+        {
+          "text": "poison",
+          "note": ""
+        }
+      ],
+      "vulnerable": null,
+      "conditionImmune": [
+        {
+          "text": "charmed",
+          "note": ""
+        },
+        {
+          "text": "exhaustion",
+          "note": ""
+        },
+        {
+          "text": "poisoned",
+          "note": ""
+        }
+      ],
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "wight": {
+      "name": "Wight",
+      "source": "XMM",
+      "cr": "3",
+      "xp": 700,
+      "initiative": {
+        "value": 4,
+        "advantage": false,
+        "proficiency": 1
+      },
+      "speed": "walk 30 ft.",
+      "size": "Medium",
+      "type": "undead",
+      "ac": 14,
+      "acText": "",
+      "acTerms": null,
+      "hp": 82,
+      "hpText": "11d8 + 33",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Multiattack",
+          "bonus": "",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "The wight makes two attacks, using Necrotic Sword or Necrotic Bow in any combination. It can replace one attack with a use of Life Drain."
+        },
+        {
+          "name": "Necrotic Sword",
+          "bonus": "4",
+          "damage": "1d8 + 2",
+          "damageParts": {
+            "dice": {
+              "size": 8,
+              "count": 1
+            },
+            "flat": [
+              {
+                "const": 2
+              }
+            ]
+          },
+          "type": "slashing",
+          "text": "Melee attack: +4 to hit, reach 5 ft. 6 ([[d:1d8 + 2]]) Slashing damage plus 4 ([[d:1d8]]) Necrotic damage."
+        },
+        {
+          "name": "Necrotic Bow",
+          "bonus": "4",
+          "damage": "1d8 + 2",
+          "damageParts": {
+            "dice": {
+              "size": 8,
+              "count": 1
+            },
+            "flat": [
+              {
+                "const": 2
+              }
+            ]
+          },
+          "type": "piercing",
+          "text": "Ranged attack: +4 to hit, range 150/600 ft. 6 ([[d:1d8 + 2]]) Piercing damage plus 4 ([[d:1d8]]) Necrotic damage."
+        },
+        {
+          "name": "Life Drain",
+          "bonus": "",
+          "damage": "1d8 + 2",
+          "damageParts": {
+            "dice": {
+              "size": 8,
+              "count": 1
+            },
+            "flat": [
+              {
+                "const": 2
+              }
+            ]
+          },
+          "type": "necrotic",
+          "text": "[[s:Constitution saving throw]] DC 13, one creature within 5 feet. 6 ([[d:1d8 + 2]]) Necrotic damage, and the target's Hit Points maximum decreases by an amount equal to the damage taken. A Humanoid slain by this attack rises 24 hours later as a Zombie under the wight's control, unless the Humanoid is restored to life or its body is destroyed. The wight can have no more than twelve zombies under its control at a time."
+        }
+      ],
+      "traits": [
+        {
+          "name": "Sunlight Sensitivity",
+          "text": "While in sunlight, the wight has Disadvantage on ability checks and attack rolls."
+        }
+      ],
+      "alignment": "Neutral Evil",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 15
+        },
+        {
+          "name": "Dexterity",
+          "score": 14
+        },
+        {
+          "name": "Constitution",
+          "score": 16
+        },
+        {
+          "name": "Intelligence",
+          "score": 10
+        },
+        {
+          "name": "Wisdom",
+          "score": 13
+        },
+        {
+          "name": "Charisma",
+          "score": 15
+        }
+      ],
+      "saves": null,
+      "skills": [
+        {
+          "name": "Perception",
+          "value": "+3"
+        },
+        {
+          "name": "Stealth",
+          "value": "+4"
+        }
+      ],
+      "senses": [
+        {
+          "text": "Darkvision 60 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 13",
+          "note": ""
+        }
+      ],
+      "languages": "Common plus one other language",
+      "resist": [
+        {
+          "text": "necrotic",
+          "note": ""
+        }
+      ],
+      "immune": [
+        {
+          "text": "poison",
+          "note": ""
+        }
+      ],
+      "vulnerable": null,
+      "conditionImmune": [
+        {
+          "text": "exhaustion",
+          "note": ""
+        },
+        {
+          "text": "poisoned",
+          "note": ""
+        }
+      ],
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "mummy": {
+      "name": "Mummy",
+      "source": "XMM",
+      "cr": "3",
+      "xp": 700,
+      "initiative": null,
+      "speed": "walk 20 ft.",
+      "size": "Small or Medium",
+      "type": "undead",
+      "ac": 11,
+      "acText": "",
+      "acTerms": null,
+      "hp": 58,
+      "hpText": "9d8 + 18",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Multiattack",
+          "bonus": "",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "The mummy makes two Rotting Fist attacks and uses Dreadful Glare."
+        },
+        {
+          "name": "Rotting Fist",
+          "bonus": "5",
+          "damage": "1d10 + 3",
+          "damageParts": {
+            "dice": {
+              "size": 10,
+              "count": 1
+            },
+            "flat": [
+              {
+                "const": 3
+              }
+            ]
+          },
+          "type": "bludgeoning",
+          "text": "Melee attack: +5 to hit, reach 5 ft. 8 ([[d:1d10 + 3]]) Bludgeoning damage plus 10 ([[d:3d6]]) Necrotic damage. If the target is a creature, it is cursed. While cursed, the target can't regain Hit Points, its Hit Points maximum doesn't return to normal when finishing a Long Rest, and its Hit Points maximum decreases by 10 (3d6) every 24 hours that elapse. A creature dies and turns to dust if reduced to 0 Hit Points by this attack."
+        },
+        {
+          "name": "Dreadful Glare",
+          "bonus": "",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "[[s:Wisdom saving throw]] DC 11, one creature the mummy can see within 60 feet. The target has the [[c:Frightened]] condition until the end of the mummy's next turn. The target is immune to this mummy's Dreadful Glare for 24 hours."
+        }
+      ],
+      "traits": [],
+      "alignment": "L Evil",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 16
+        },
+        {
+          "name": "Dexterity",
+          "score": 8
+        },
+        {
+          "name": "Constitution",
+          "score": 15
+        },
+        {
+          "name": "Intelligence",
+          "score": 6
+        },
+        {
+          "name": "Wisdom",
+          "score": 12
+        },
+        {
+          "name": "Charisma",
+          "score": 12
+        }
+      ],
+      "saves": [
+        {
+          "key": "wis",
+          "name": "Wisdom",
+          "value": "+3"
+        }
+      ],
+      "skills": null,
+      "senses": [
+        {
+          "text": "Darkvision 60 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 11",
+          "note": ""
+        }
+      ],
+      "languages": "Common plus two other languages",
+      "resist": null,
+      "immune": [
+        {
+          "text": "necrotic",
+          "note": ""
+        },
+        {
+          "text": "poison",
+          "note": ""
+        }
+      ],
+      "vulnerable": [
+        {
+          "text": "fire",
+          "note": ""
+        }
+      ],
+      "conditionImmune": [
+        {
+          "text": "charmed",
+          "note": ""
+        },
+        {
+          "text": "exhaustion",
+          "note": ""
+        },
+        {
+          "text": "frightened",
+          "note": ""
+        },
+        {
+          "text": "paralyzed",
+          "note": ""
+        },
+        {
+          "text": "poisoned",
+          "note": ""
+        }
+      ],
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "wolf": {
+      "name": "Wolf",
+      "source": "XMM",
+      "cr": "1/4",
+      "xp": 50,
+      "initiative": null,
+      "speed": "walk 40 ft.",
+      "size": "Medium",
+      "type": "beast",
+      "ac": 12,
+      "acText": "",
+      "acTerms": null,
+      "hp": 11,
+      "hpText": "2d8 + 2",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Bite",
+          "bonus": "4",
+          "damage": "1d6 + 2",
+          "damageParts": {
+            "dice": {
+              "size": 6,
+              "count": 1
+            },
+            "flat": [
+              {
+                "const": 2
+              }
+            ]
+          },
+          "type": "piercing",
+          "text": "Melee attack: +4 to hit, reach 5 ft. 5 ([[d:1d6 + 2]]) Piercing damage. If the target is a Medium or smaller creature, it has the [[c:Prone]] condition."
+        }
+      ],
+      "traits": [
+        {
+          "name": "Pack Tactics",
+          "text": "The wolf has Advantage on attack rolls against a creature if at least one of the wolf's allies is within 5 feet of the creature and the ally doesn't have the [[c:Incapacitated]] condition."
+        }
+      ],
+      "alignment": "Unaligned",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 14
+        },
+        {
+          "name": "Dexterity",
+          "score": 15
+        },
+        {
+          "name": "Constitution",
+          "score": 12
+        },
+        {
+          "name": "Intelligence",
+          "score": 3
+        },
+        {
+          "name": "Wisdom",
+          "score": 12
+        },
+        {
+          "name": "Charisma",
+          "score": 6
+        }
+      ],
+      "saves": null,
+      "skills": [
+        {
+          "name": "Perception",
+          "value": "+5"
+        },
+        {
+          "name": "Stealth",
+          "value": "+4"
+        }
+      ],
+      "senses": [
+        {
+          "text": "Darkvision 60 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 15",
+          "note": ""
+        }
+      ],
+      "languages": "",
+      "resist": null,
+      "immune": null,
+      "vulnerable": null,
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    },
+    "djinni": {
+      "name": "Djinni",
+      "source": "XMM",
+      "cr": "11",
+      "xp": 7200,
+      "initiative": null,
+      "speed": "walk 30 ft., fly 90 ft. (hover)",
+      "size": "Large",
+      "type": "elemental",
+      "ac": 17,
+      "acText": "",
+      "acTerms": null,
+      "hp": 218,
+      "hpText": "19d10 + 114",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Multiattack",
+          "bonus": "",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "The djinni makes three attacks, using Storm Blade or Storm Bolt in any combination."
+        },
+        {
+          "name": "Storm Blade",
+          "bonus": "9",
+          "damage": "2d6 + 5",
+          "damageParts": {
+            "dice": {
+              "size": 6,
+              "count": 2
+            },
+            "flat": [
+              {
+                "const": 5
+              }
+            ]
+          },
+          "type": "slashing",
+          "text": "Melee attack: +9 to hit, reach 5 feet. 12 ([[d:2d6 + 5]]) Slashing damage plus 7 ([[d:2d6]]) Lightning damage."
+        },
+        {
+          "name": "Storm Bolt",
+          "bonus": "9",
+          "damage": "3d8",
+          "damageParts": {
+            "dice": {
+              "size": 8,
+              "count": 3
+            },
+            "flat": []
+          },
+          "type": "thunder",
+          "text": "Ranged attack: +9 to hit, range 120 feet. 13 ([[d:3d8]]) Thunder damage. If the target is a Large or smaller creature, it has the [[c:Prone]] condition."
+        },
+        {
+          "name": "Create Whirlwind",
+          "bonus": "",
+          "damage": "6d6",
+          "damageParts": {
+            "dice": {
+              "size": 6,
+              "count": 6
+            },
+            "flat": []
+          },
+          "type": "thunder",
+          "text": "The djinni conjures a whirlwind at a point it can see within 120 feet. The whirlwind fills a 20-foot-radius, 60-foot-high Cylinder [Area of Effect] centered on that point. The whirlwind lasts until the djinni's Concentration on it ends. The djinni can move the whirlwind up to 20 feet at the start of each of its turns. Whenever the whirlwind enters a creature's space or a creature enters the whirlwind, that creature is subjected to the following effect. [[s:Strength saving throw]] DC 17 (a creature makes this save only once per turn, and the djinni is unaffected). While in the whirlwind, the target has the [[c:Restrained]] condition and moves with the whirlwind. At the start of each of its turns, the [[c:Restrained]] target takes 21 ([[d:6d6]]) Thunder damage. At the end of each of its turns, the target repeats the save, ending the effect on itself on a success."
+        }
+      ],
+      "traits": [
+        {
+          "name": "Elemental Restoration",
+          "text": "If the djinni dies outside the Elemental Plane of Air, its body dissolves into mist, and it gains a new body in 1d4 days, reviving with all its Hit Points somewhere on the Plane of Air."
+        },
+        {
+          "name": "Magic Resistance",
+          "text": "The djinni has Advantage on saving throws against spells and other magical effects."
+        },
+        {
+          "name": "Wishes",
+          "text": "The djinni has a 30 percent chance of knowing the Wish spell. If the djinni knows it, the djinni can cast it only on behalf of a non-genie creature who communicates a wish in a way the djinni can understand. If the djinni casts the spell for the creature, the djinni suffers none of the spell's stress. Once the djinni has cast it three times, the djinni can't do so again for 365 days."
+        }
+      ],
+      "alignment": "C Good",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 21
+        },
+        {
+          "name": "Dexterity",
+          "score": 15
+        },
+        {
+          "name": "Constitution",
+          "score": 22
+        },
+        {
+          "name": "Intelligence",
+          "score": 15
+        },
+        {
+          "name": "Wisdom",
+          "score": 16
+        },
+        {
+          "name": "Charisma",
+          "score": 20
+        }
+      ],
+      "saves": [
+        {
+          "key": "dex",
+          "name": "Dexterity",
+          "value": "+6"
+        },
+        {
+          "key": "wis",
+          "name": "Wisdom",
+          "value": "+7"
+        }
+      ],
+      "skills": null,
+      "senses": [
+        {
+          "text": "Darkvision 120 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 13",
+          "note": ""
+        }
+      ],
+      "languages": "Primordial (Auran)",
+      "resist": null,
+      "immune": [
+        {
+          "text": "lightning",
+          "note": ""
+        },
+        {
+          "text": "thunder",
+          "note": ""
+        }
+      ],
+      "vulnerable": null,
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": [
+        {
+          "name": "Spellcasting",
+          "header": "The djinni casts one of the following spells, requiring no Material components and using Charisma as the spellcasting ability (spell save DC 17):",
+          "text": "At will: Detect Evil and Good, Detect Magic. each day: Create Food and Water (can create wine instead of water), Tongues, Wind Walk. each day: Creation, Gaseous Form, Invisibility, Major Image, Plane Shift"
+        }
+      ],
+      "note": ""
+    },
+    "efreeti": {
+      "name": "Efreeti",
+      "source": "XMM",
+      "cr": "11",
+      "xp": 7200,
+      "initiative": null,
+      "speed": "walk 40 ft., fly 60 ft. (hover)",
+      "size": "Large",
+      "type": "elemental",
+      "ac": 17,
+      "acText": "",
+      "acTerms": null,
+      "hp": 212,
+      "hpText": "17d10 + 119",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Multiattack",
+          "bonus": "",
+          "damage": "",
+          "damageParts": null,
+          "type": "",
+          "text": "The efreeti makes three attacks, using Heated Blade or Hurl Flame in any combination."
+        },
+        {
+          "name": "Heated Blade",
+          "bonus": "10",
+          "damage": "2d6 + 6",
+          "damageParts": {
+            "dice": {
+              "size": 6,
+              "count": 2
+            },
+            "flat": [
+              {
+                "const": 6
+              }
+            ]
+          },
+          "type": "slashing",
+          "text": "Melee attack: +10 to hit, reach 5 ft. 13 ([[d:2d6 + 6]]) Slashing damage plus 13 ([[d:2d12]]) Fire damage."
+        },
+        {
+          "name": "Hurl Flame",
+          "bonus": "8",
+          "damage": "7d6",
+          "damageParts": {
+            "dice": {
+              "size": 6,
+              "count": 7
+            },
+            "flat": []
+          },
+          "type": "fire",
+          "text": "Ranged attack: +8 to hit, range 120 ft. 24 ([[d:7d6]]) Fire damage."
+        }
+      ],
+      "traits": [
+        {
+          "name": "Elemental Restoration",
+          "text": "If the efreeti dies outside the Elemental Plane of Fire, its body dissolves into ash, and it gains a new body in 1d4 days, reviving with all its Hit Points somewhere on the Plane of Fire."
+        },
+        {
+          "name": "Magic Resistance",
+          "text": "The efreeti has Advantage on saving throws against spells and other magical effects."
+        },
+        {
+          "name": "Wishes",
+          "text": "The efreeti has a 30 percent chance of knowing the Wish spell. If the efreeti knows it, the efreeti can cast it only on behalf of a non-genie creature who communicates a wish in a way the efreeti can understand. If the efreeti casts the spell for the creature, the efreeti suffers none of the spell's stress. Once the efreeti has cast it three times, the efreeti can't do so again for 365 days."
+        }
+      ],
+      "alignment": "Neutral",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 22
+        },
+        {
+          "name": "Dexterity",
+          "score": 12
+        },
+        {
+          "name": "Constitution",
+          "score": 24
+        },
+        {
+          "name": "Intelligence",
+          "score": 16
+        },
+        {
+          "name": "Wisdom",
+          "score": 15
+        },
+        {
+          "name": "Charisma",
+          "score": 19
+        }
+      ],
+      "saves": [
+        {
+          "key": "wis",
+          "name": "Wisdom",
+          "value": "+6"
+        },
+        {
+          "key": "cha",
+          "name": "Charisma",
+          "value": "+8"
+        }
+      ],
+      "skills": null,
+      "senses": [
+        {
+          "text": "Darkvision 120 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 12",
+          "note": ""
+        }
+      ],
+      "languages": "Primordial (Ignan)",
+      "resist": null,
+      "immune": [
+        {
+          "text": "fire",
+          "note": ""
+        }
+      ],
+      "vulnerable": null,
+      "conditionImmune": null,
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": [
+        {
+          "name": "Spellcasting",
+          "header": "The efreeti casts one of the following spells, requiring no Material components and using Charisma as the spellcasting ability (spell save DC 16):",
+          "text": "At will: Detect Magic, Elementalism. each day: Gaseous Form, Invisibility, Major Image, Plane Shift, Tongues, Wall of Fire (level 7 version)"
+        }
+      ],
+      "note": ""
+    },
+    "specter": {
+      "name": "Specter",
+      "source": "XMM",
+      "cr": "1",
+      "xp": 200,
+      "initiative": null,
+      "speed": "walk 30 ft., fly 50 ft. (hover)",
+      "size": "Medium",
+      "type": "undead",
+      "ac": 12,
+      "acText": "",
+      "acTerms": null,
+      "hp": 22,
+      "hpText": "5d8",
+      "hpTerms": null,
+      "actions": [
+        {
+          "name": "Life Drain",
+          "bonus": "4",
+          "damage": "2d6",
+          "damageParts": {
+            "dice": {
+              "size": 6,
+              "count": 2
+            },
+            "flat": []
+          },
+          "type": "necrotic",
+          "text": "Melee attack: +4 to hit, reach 5 ft. 7 ([[d:2d6]]) Necrotic damage. If the target is a creature, its Hit Points maximum decreases by an amount equal to the damage taken."
+        }
+      ],
+      "traits": [
+        {
+          "name": "Incorporeal Movement",
+          "text": "The specter can move through other creatures and objects as if they were Difficult Terrain. It takes 5 ([[d:1d10]]) Force damage if it ends its turn inside an object."
+        },
+        {
+          "name": "Sunlight Sensitivity",
+          "text": "While in sunlight, the specter has Disadvantage on ability checks and attack rolls."
+        }
+      ],
+      "alignment": "C Evil",
+      "ability": [
+        {
+          "name": "Strength",
+          "score": 1
+        },
+        {
+          "name": "Dexterity",
+          "score": 14
+        },
+        {
+          "name": "Constitution",
+          "score": 11
+        },
+        {
+          "name": "Intelligence",
+          "score": 10
+        },
+        {
+          "name": "Wisdom",
+          "score": 10
+        },
+        {
+          "name": "Charisma",
+          "score": 11
+        }
+      ],
+      "saves": null,
+      "skills": null,
+      "senses": [
+        {
+          "text": "Darkvision 60 ft.",
+          "note": ""
+        },
+        {
+          "text": "passive Perception 10",
+          "note": ""
+        }
+      ],
+      "languages": "understands Common plus one other language but can't speak",
+      "resist": [
+        {
+          "text": "acid",
+          "note": ""
+        },
+        {
+          "text": "bludgeoning",
+          "note": ""
+        },
+        {
+          "text": "cold",
+          "note": ""
+        },
+        {
+          "text": "fire",
+          "note": ""
+        },
+        {
+          "text": "lightning",
+          "note": ""
+        },
+        {
+          "text": "piercing",
+          "note": ""
+        },
+        {
+          "text": "slashing",
+          "note": ""
+        },
+        {
+          "text": "thunder",
+          "note": ""
+        }
+      ],
+      "immune": [
+        {
+          "text": "necrotic",
+          "note": ""
+        },
+        {
+          "text": "poison",
+          "note": ""
+        }
+      ],
+      "vulnerable": null,
+      "conditionImmune": [
+        {
+          "text": "charmed",
+          "note": ""
+        },
+        {
+          "text": "exhaustion",
+          "note": ""
+        },
+        {
+          "text": "grappled",
+          "note": ""
+        },
+        {
+          "text": "paralyzed",
+          "note": ""
+        },
+        {
+          "text": "petrified",
+          "note": ""
+        },
+        {
+          "text": "poisoned",
+          "note": ""
+        },
+        {
+          "text": "prone",
+          "note": ""
+        },
+        {
+          "text": "restrained",
+          "note": ""
+        },
+        {
+          "text": "unconscious",
+          "note": ""
+        }
+      ],
+      "reactions": [],
+      "bonusActions": [],
+      "legendary": [],
+      "legendaryActions": null,
+      "spellcasting": null,
+      "note": ""
+    }
+  }
+}

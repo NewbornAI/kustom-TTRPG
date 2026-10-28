@@ -1,0 +1,687 @@
+{
+  "edition": "The weapons of the books this app reads, the 2024 handbook first: XPHB, DSotDQ, ERLW",
+  "source": "https://5e.tools/items.html",
+  "fetched": "2026-10-25",
+  "weapons": [
+    {
+      "name": "Battleaxe",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Melee Weapon",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": [
+        "Versatile"
+      ],
+      "mastery": "Topple",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Blowgun",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Ranged Weapon",
+      "damage": "1",
+      "damageType": "piercing",
+      "properties": [
+        "Ammunition",
+        "Loading"
+      ],
+      "mastery": "Vex",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Club",
+      "source": "XPHB",
+      "category": "simple",
+      "kind": "Melee Weapon",
+      "damage": "1d4",
+      "damageType": "bludgeoning",
+      "properties": [
+        "Light"
+      ],
+      "mastery": "Slow",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Dagger",
+      "source": "XPHB",
+      "category": "simple",
+      "kind": "Melee Weapon",
+      "damage": "1d4",
+      "damageType": "piercing",
+      "properties": [
+        "Finesse",
+        "Light",
+        "Thrown"
+      ],
+      "mastery": "Nick",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Dart",
+      "source": "XPHB",
+      "category": "simple",
+      "kind": "Ranged Weapon",
+      "damage": "1d4",
+      "damageType": "piercing",
+      "properties": [
+        "Finesse",
+        "Thrown"
+      ],
+      "mastery": "Vex",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Flail",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Melee Weapon",
+      "damage": "1d8",
+      "damageType": "bludgeoning",
+      "properties": [],
+      "mastery": "Sap",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Glaive",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Melee Weapon",
+      "damage": "1d10",
+      "damageType": "slashing",
+      "properties": [
+        "Heavy",
+        "Reach",
+        "Two-Handed"
+      ],
+      "mastery": "Graze",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Greataxe",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Melee Weapon",
+      "damage": "1d12",
+      "damageType": "slashing",
+      "properties": [
+        "Heavy",
+        "Two-Handed"
+      ],
+      "mastery": "Cleave",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Greatclub",
+      "source": "XPHB",
+      "category": "simple",
+      "kind": "Melee Weapon",
+      "damage": "1d8",
+      "damageType": "bludgeoning",
+      "properties": [
+        "Two-Handed"
+      ],
+      "mastery": "Push",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Greatsword",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Melee Weapon",
+      "damage": "2d6",
+      "damageType": "slashing",
+      "properties": [
+        "Heavy",
+        "Two-Handed"
+      ],
+      "mastery": "Graze",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Halberd",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Melee Weapon",
+      "damage": "1d10",
+      "damageType": "slashing",
+      "properties": [
+        "Heavy",
+        "Reach",
+        "Two-Handed"
+      ],
+      "mastery": "Cleave",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Hand Crossbow",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Ranged Weapon",
+      "damage": "1d6",
+      "damageType": "piercing",
+      "properties": [
+        "Ammunition",
+        "Light",
+        "Loading"
+      ],
+      "mastery": "Vex",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Handaxe",
+      "source": "XPHB",
+      "category": "simple",
+      "kind": "Melee Weapon",
+      "damage": "1d6",
+      "damageType": "slashing",
+      "properties": [
+        "Light",
+        "Thrown"
+      ],
+      "mastery": "Vex",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Heavy Crossbow",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Ranged Weapon",
+      "damage": "1d10",
+      "damageType": "piercing",
+      "properties": [
+        "Ammunition",
+        "Heavy",
+        "Loading",
+        "Two-Handed"
+      ],
+      "mastery": "Push",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Javelin",
+      "source": "XPHB",
+      "category": "simple",
+      "kind": "Melee Weapon",
+      "damage": "1d6",
+      "damageType": "piercing",
+      "properties": [
+        "Thrown"
+      ],
+      "mastery": "Slow",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Lance",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Melee Weapon",
+      "damage": "1d10",
+      "damageType": "piercing",
+      "properties": [
+        "Heavy",
+        "Reach",
+        "Two-Handed (unless mounted)"
+      ],
+      "mastery": "Topple",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "A Lance requires two hands to wield when you aren't mounted."
+        }
+      ]
+    },
+    {
+      "name": "Light Crossbow",
+      "source": "XPHB",
+      "category": "simple",
+      "kind": "Ranged Weapon",
+      "damage": "1d8",
+      "damageType": "piercing",
+      "properties": [
+        "Ammunition",
+        "Loading",
+        "Two-Handed"
+      ],
+      "mastery": "Slow",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Light Hammer",
+      "source": "XPHB",
+      "category": "simple",
+      "kind": "Melee Weapon",
+      "damage": "1d4",
+      "damageType": "bludgeoning",
+      "properties": [
+        "Light",
+        "Thrown"
+      ],
+      "mastery": "Nick",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Longbow",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Ranged Weapon",
+      "damage": "1d8",
+      "damageType": "piercing",
+      "properties": [
+        "Ammunition",
+        "Heavy",
+        "Two-Handed"
+      ],
+      "mastery": "Slow",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Longsword",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Melee Weapon",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": [
+        "Versatile"
+      ],
+      "mastery": "Sap",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Mace",
+      "source": "XPHB",
+      "category": "simple",
+      "kind": "Melee Weapon",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": [],
+      "mastery": "Sap",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Maul",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Melee Weapon",
+      "damage": "2d6",
+      "damageType": "bludgeoning",
+      "properties": [
+        "Heavy",
+        "Two-Handed"
+      ],
+      "mastery": "Topple",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Morningstar",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Melee Weapon",
+      "damage": "1d8",
+      "damageType": "piercing",
+      "properties": [],
+      "mastery": "Sap",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Musket",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Ranged Weapon",
+      "damage": "1d12",
+      "damageType": "piercing",
+      "properties": [
+        "Ammunition",
+        "Loading",
+        "Two-Handed"
+      ],
+      "mastery": "Slow",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Pike",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Melee Weapon",
+      "damage": "1d10",
+      "damageType": "piercing",
+      "properties": [
+        "Heavy",
+        "Reach",
+        "Two-Handed"
+      ],
+      "mastery": "Push",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Pistol",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Ranged Weapon",
+      "damage": "1d10",
+      "damageType": "piercing",
+      "properties": [
+        "Ammunition",
+        "Loading"
+      ],
+      "mastery": "Vex",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Quarterstaff",
+      "source": "XPHB",
+      "category": "simple",
+      "kind": "Melee Weapon",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": [
+        "Versatile"
+      ],
+      "mastery": "Topple",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Rapier",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Melee Weapon",
+      "damage": "1d8",
+      "damageType": "piercing",
+      "properties": [
+        "Finesse"
+      ],
+      "mastery": "Vex",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Scimitar",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Melee Weapon",
+      "damage": "1d6",
+      "damageType": "slashing",
+      "properties": [
+        "Finesse",
+        "Light"
+      ],
+      "mastery": "Nick",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Shortbow",
+      "source": "XPHB",
+      "category": "simple",
+      "kind": "Ranged Weapon",
+      "damage": "1d6",
+      "damageType": "piercing",
+      "properties": [
+        "Ammunition",
+        "Two-Handed"
+      ],
+      "mastery": "Vex",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Shortsword",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Melee Weapon",
+      "damage": "1d6",
+      "damageType": "piercing",
+      "properties": [
+        "Finesse",
+        "Light"
+      ],
+      "mastery": "Vex",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Sickle",
+      "source": "XPHB",
+      "category": "simple",
+      "kind": "Melee Weapon",
+      "damage": "1d4",
+      "damageType": "slashing",
+      "properties": [
+        "Light"
+      ],
+      "mastery": "Nick",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Sling",
+      "source": "XPHB",
+      "category": "simple",
+      "kind": "Ranged Weapon",
+      "damage": "1d4",
+      "damageType": "bludgeoning",
+      "properties": [
+        "Ammunition"
+      ],
+      "mastery": "Slow",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Spear",
+      "source": "XPHB",
+      "category": "simple",
+      "kind": "Melee Weapon",
+      "damage": "1d6",
+      "damageType": "piercing",
+      "properties": [
+        "Thrown",
+        "Versatile"
+      ],
+      "mastery": "Sap",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Trident",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Melee Weapon",
+      "damage": "1d8",
+      "damageType": "piercing",
+      "properties": [
+        "Thrown",
+        "Versatile"
+      ],
+      "mastery": "Topple",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "War Pick",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Melee Weapon",
+      "damage": "1d8",
+      "damageType": "piercing",
+      "properties": [
+        "Versatile"
+      ],
+      "mastery": "Sap",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Warhammer",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Melee Weapon",
+      "damage": "1d8",
+      "damageType": "bludgeoning",
+      "properties": [
+        "Versatile"
+      ],
+      "mastery": "Push",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    },
+    {
+      "name": "Whip",
+      "source": "XPHB",
+      "category": "martial",
+      "kind": "Melee Weapon",
+      "damage": "1d4",
+      "damageType": "slashing",
+      "properties": [
+        "Finesse",
+        "Reach"
+      ],
+      "mastery": "Slow",
+      "ref": {
+        "book": "XPHB",
+        "page": 215
+      },
+      "blocks": []
+    }
+  ]
+}

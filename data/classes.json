@@ -1,0 +1,842 @@
+{
+  "edition": "The 2024 Player's Handbook classes, with every subclass that is not a reprint",
+  "source": "https://5e.tools/classes.html",
+  "fetched": "2026-10-27",
+  "classes": [
+    {
+      "name": "Barbarian",
+      "source": "XPHB",
+      "ability": "",
+      "caster": "",
+      "prepared": [],
+      "hd": 12,
+      "saves": [
+        "str",
+        "con"
+      ],
+      "proficiencies": {
+        "armour": [
+          "light",
+          "medium",
+          "shield"
+        ],
+        "weapons": [
+          "simple",
+          "martial"
+        ],
+        "tools": [],
+        "skills": {
+          "choose": 2,
+          "from": [
+            "animal handling",
+            "athletics",
+            "intimidation",
+            "nature",
+            "perception",
+            "survival"
+          ]
+        }
+      },
+      "multiclass": {
+        "armour": [
+          "shield"
+        ],
+        "weapons": [
+          "martial"
+        ],
+        "tools": [],
+        "skills": null
+      },
+      "subclassTitle": "Barbarian Subclass",
+      "subclasses": [
+        {
+          "name": "Path of the Berserker",
+          "short": "Berserker",
+          "source": "XPHB"
+        }
+      ]
+    },
+    {
+      "name": "Bard",
+      "source": "XPHB",
+      "ability": "cha",
+      "caster": "full",
+      "prepared": [
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        11,
+        12,
+        14,
+        15,
+        16,
+        16,
+        17,
+        17,
+        18,
+        18,
+        19,
+        20,
+        21,
+        22
+      ],
+      "hd": 8,
+      "saves": [
+        "dex",
+        "cha"
+      ],
+      "proficiencies": {
+        "armour": [
+          "light"
+        ],
+        "weapons": [
+          "simple"
+        ],
+        "tools": [
+          "Choose three Musical Instrument"
+        ],
+        "skills": {
+          "choose": 3,
+          "from": [
+            "any"
+          ]
+        }
+      },
+      "multiclass": {
+        "armour": [
+          "light"
+        ],
+        "weapons": [],
+        "tools": [
+          "Choose one Musical Instrument"
+        ],
+        "skills": {
+          "choose": 1,
+          "from": [
+            "athletics",
+            "acrobatics",
+            "sleight of hand",
+            "stealth",
+            "arcana",
+            "history",
+            "investigation",
+            "nature",
+            "religion",
+            "animal handling",
+            "insight",
+            "medicine",
+            "perception",
+            "survival",
+            "deception",
+            "intimidation",
+            "performance",
+            "persuasion"
+          ]
+        }
+      },
+      "subclassTitle": "Bard Subclass",
+      "subclasses": [
+        {
+          "name": "College of Lore",
+          "short": "Lore",
+          "source": "XPHB"
+        }
+      ]
+    },
+    {
+      "name": "Cleric",
+      "source": "XPHB",
+      "ability": "wis",
+      "caster": "full",
+      "prepared": [
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        11,
+        12,
+        14,
+        15,
+        16,
+        16,
+        17,
+        17,
+        18,
+        18,
+        19,
+        20,
+        21,
+        22
+      ],
+      "hd": 8,
+      "saves": [
+        "wis",
+        "cha"
+      ],
+      "proficiencies": {
+        "armour": [
+          "light",
+          "medium",
+          "shield"
+        ],
+        "weapons": [
+          "simple"
+        ],
+        "tools": [],
+        "skills": {
+          "choose": 2,
+          "from": [
+            "history",
+            "insight",
+            "medicine",
+            "persuasion",
+            "religion"
+          ]
+        }
+      },
+      "multiclass": {
+        "armour": [
+          "light",
+          "medium",
+          "shield"
+        ],
+        "weapons": [],
+        "tools": [],
+        "skills": null
+      },
+      "subclassTitle": "Cleric Subclass",
+      "subclasses": [
+        {
+          "name": "Life Domain",
+          "short": "Life",
+          "source": "XPHB"
+        }
+      ]
+    },
+    {
+      "name": "Druid",
+      "source": "XPHB",
+      "ability": "wis",
+      "caster": "full",
+      "prepared": [
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        11,
+        12,
+        14,
+        15,
+        16,
+        16,
+        17,
+        17,
+        18,
+        18,
+        19,
+        20,
+        21,
+        22
+      ],
+      "hd": 8,
+      "saves": [
+        "int",
+        "wis"
+      ],
+      "proficiencies": {
+        "armour": [
+          "light",
+          "shield"
+        ],
+        "weapons": [
+          "simple"
+        ],
+        "tools": [
+          "Herbalism Kit"
+        ],
+        "skills": {
+          "choose": 2,
+          "from": [
+            "arcana",
+            "animal handling",
+            "insight",
+            "medicine",
+            "nature",
+            "perception",
+            "religion",
+            "survival"
+          ]
+        }
+      },
+      "multiclass": {
+        "armour": [
+          "light",
+          "shield"
+        ],
+        "weapons": [],
+        "tools": [],
+        "skills": null
+      },
+      "subclassTitle": "Druid Subclass",
+      "subclasses": [
+        {
+          "name": "Circle of the Land",
+          "short": "Land",
+          "source": "XPHB"
+        }
+      ]
+    },
+    {
+      "name": "Fighter",
+      "source": "XPHB",
+      "ability": "",
+      "caster": "",
+      "prepared": [],
+      "hd": 10,
+      "saves": [
+        "str",
+        "con"
+      ],
+      "proficiencies": {
+        "armour": [
+          "light",
+          "medium",
+          "heavy",
+          "shield"
+        ],
+        "weapons": [
+          "simple",
+          "martial"
+        ],
+        "tools": [],
+        "skills": {
+          "choose": 2,
+          "from": [
+            "acrobatics",
+            "animal handling",
+            "athletics",
+            "history",
+            "insight",
+            "intimidation",
+            "persuasion",
+            "perception",
+            "survival"
+          ]
+        }
+      },
+      "multiclass": {
+        "armour": [
+          "light",
+          "medium",
+          "shield"
+        ],
+        "weapons": [
+          "martial"
+        ],
+        "tools": [],
+        "skills": null
+      },
+      "subclassTitle": "Fighter Subclass",
+      "subclasses": [
+        {
+          "name": "Champion",
+          "short": "Champion",
+          "source": "XPHB"
+        }
+      ]
+    },
+    {
+      "name": "Monk",
+      "source": "XPHB",
+      "ability": "",
+      "caster": "",
+      "prepared": [],
+      "hd": 8,
+      "saves": [
+        "str",
+        "dex"
+      ],
+      "proficiencies": {
+        "armour": [],
+        "weapons": [
+          "simple",
+          "Martial weapons that have the Light property"
+        ],
+        "tools": [
+          "Choose one type of Artisan's Tools or Musical Instrument"
+        ],
+        "skills": {
+          "choose": 2,
+          "from": [
+            "acrobatics",
+            "athletics",
+            "history",
+            "insight",
+            "religion",
+            "stealth"
+          ]
+        }
+      },
+      "multiclass": {
+        "armour": [],
+        "weapons": [],
+        "tools": [],
+        "skills": null
+      },
+      "subclassTitle": "Monk Subclass",
+      "subclasses": [
+        {
+          "name": "Warrior of the Open Hand",
+          "short": "Open Hand",
+          "source": "XPHB"
+        }
+      ]
+    },
+    {
+      "name": "Paladin",
+      "source": "XPHB",
+      "ability": "cha",
+      "caster": "artificer",
+      "prepared": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        6,
+        7,
+        7,
+        9,
+        9,
+        10,
+        10,
+        11,
+        11,
+        12,
+        12,
+        14,
+        14,
+        15,
+        15
+      ],
+      "hd": 10,
+      "saves": [
+        "wis",
+        "cha"
+      ],
+      "proficiencies": {
+        "armour": [
+          "light",
+          "medium",
+          "heavy",
+          "shield"
+        ],
+        "weapons": [
+          "simple",
+          "martial"
+        ],
+        "tools": [],
+        "skills": {
+          "choose": 2,
+          "from": [
+            "athletics",
+            "insight",
+            "intimidation",
+            "medicine",
+            "persuasion",
+            "religion"
+          ]
+        }
+      },
+      "multiclass": {
+        "armour": [
+          "light",
+          "medium",
+          "shield"
+        ],
+        "weapons": [
+          "martial"
+        ],
+        "tools": [],
+        "skills": null
+      },
+      "subclassTitle": "Paladin Subclass",
+      "subclasses": [
+        {
+          "name": "Oath of Devotion",
+          "short": "Devotion",
+          "source": "XPHB"
+        }
+      ]
+    },
+    {
+      "name": "Ranger",
+      "source": "XPHB",
+      "ability": "wis",
+      "caster": "artificer",
+      "prepared": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        6,
+        7,
+        7,
+        9,
+        9,
+        10,
+        10,
+        11,
+        11,
+        12,
+        12,
+        14,
+        14,
+        15,
+        15
+      ],
+      "hd": 10,
+      "saves": [
+        "str",
+        "dex"
+      ],
+      "proficiencies": {
+        "armour": [
+          "light",
+          "medium",
+          "shield"
+        ],
+        "weapons": [
+          "simple",
+          "martial"
+        ],
+        "tools": [],
+        "skills": {
+          "choose": 3,
+          "from": [
+            "animal handling",
+            "athletics",
+            "insight",
+            "investigation",
+            "nature",
+            "perception",
+            "stealth",
+            "survival"
+          ]
+        }
+      },
+      "multiclass": {
+        "armour": [
+          "light",
+          "medium",
+          "shield"
+        ],
+        "weapons": [
+          "martial"
+        ],
+        "tools": [],
+        "skills": {
+          "choose": 1,
+          "from": [
+            "animal handling",
+            "athletics",
+            "insight",
+            "investigation",
+            "nature",
+            "perception",
+            "stealth",
+            "survival"
+          ]
+        }
+      },
+      "subclassTitle": "Ranger Subclass",
+      "subclasses": [
+        {
+          "name": "Hunter",
+          "short": "Hunter",
+          "source": "XPHB"
+        }
+      ]
+    },
+    {
+      "name": "Rogue",
+      "source": "XPHB",
+      "ability": "",
+      "caster": "",
+      "prepared": [],
+      "hd": 8,
+      "saves": [
+        "dex",
+        "int"
+      ],
+      "proficiencies": {
+        "armour": [
+          "light"
+        ],
+        "weapons": [
+          "simple",
+          "Martial weapons that have the Finesse or Light property"
+        ],
+        "tools": [
+          "Thieves' Tools"
+        ],
+        "skills": {
+          "choose": 4,
+          "from": [
+            "acrobatics",
+            "athletics",
+            "deception",
+            "insight",
+            "intimidation",
+            "investigation",
+            "perception",
+            "persuasion",
+            "sleight of hand",
+            "stealth"
+          ]
+        }
+      },
+      "multiclass": {
+        "armour": [
+          "light"
+        ],
+        "weapons": [],
+        "tools": [
+          "Thieves' Tools"
+        ],
+        "skills": {
+          "choose": 1,
+          "from": [
+            "acrobatics",
+            "athletics",
+            "deception",
+            "insight",
+            "intimidation",
+            "investigation",
+            "perception",
+            "persuasion",
+            "sleight of hand",
+            "stealth"
+          ]
+        }
+      },
+      "subclassTitle": "Rogue Subclass",
+      "subclasses": [
+        {
+          "name": "Thief",
+          "short": "Thief",
+          "source": "XPHB"
+        }
+      ]
+    },
+    {
+      "name": "Sorcerer",
+      "source": "XPHB",
+      "ability": "cha",
+      "caster": "full",
+      "prepared": [
+        2,
+        4,
+        6,
+        7,
+        9,
+        10,
+        11,
+        12,
+        14,
+        15,
+        16,
+        16,
+        17,
+        17,
+        18,
+        18,
+        19,
+        20,
+        21,
+        22
+      ],
+      "hd": 6,
+      "saves": [
+        "con",
+        "cha"
+      ],
+      "proficiencies": {
+        "armour": [],
+        "weapons": [
+          "simple"
+        ],
+        "tools": [],
+        "skills": {
+          "choose": 2,
+          "from": [
+            "arcana",
+            "deception",
+            "insight",
+            "intimidation",
+            "persuasion",
+            "religion"
+          ]
+        }
+      },
+      "multiclass": {
+        "armour": [],
+        "weapons": [],
+        "tools": [],
+        "skills": null
+      },
+      "subclassTitle": "Sorcerer Subclass",
+      "subclasses": [
+        {
+          "name": "Draconic Sorcery",
+          "short": "Draconic",
+          "source": "XPHB"
+        }
+      ]
+    },
+    {
+      "name": "Warlock",
+      "source": "XPHB",
+      "ability": "cha",
+      "caster": "pact",
+      "prepared": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        10,
+        11,
+        11,
+        12,
+        12,
+        13,
+        13,
+        14,
+        14,
+        15,
+        15
+      ],
+      "hd": 8,
+      "saves": [
+        "wis",
+        "cha"
+      ],
+      "proficiencies": {
+        "armour": [
+          "light"
+        ],
+        "weapons": [
+          "simple"
+        ],
+        "tools": [],
+        "skills": {
+          "choose": 2,
+          "from": [
+            "arcana",
+            "deception",
+            "history",
+            "intimidation",
+            "investigation",
+            "nature",
+            "religion"
+          ]
+        }
+      },
+      "multiclass": {
+        "armour": [
+          "light"
+        ],
+        "weapons": [],
+        "tools": [],
+        "skills": null
+      },
+      "subclassTitle": "Warlock Subclass",
+      "subclasses": [
+        {
+          "name": "Fiend Patron",
+          "short": "Fiend",
+          "source": "XPHB"
+        }
+      ]
+    },
+    {
+      "name": "Wizard",
+      "source": "XPHB",
+      "ability": "int",
+      "caster": "full",
+      "prepared": [
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        11,
+        12,
+        14,
+        15,
+        16,
+        16,
+        17,
+        18,
+        19,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "hd": 6,
+      "saves": [
+        "int",
+        "wis"
+      ],
+      "proficiencies": {
+        "armour": [],
+        "weapons": [
+          "simple"
+        ],
+        "tools": [],
+        "skills": {
+          "choose": 2,
+          "from": [
+            "arcana",
+            "history",
+            "insight",
+            "investigation",
+            "medicine",
+            "nature",
+            "religion"
+          ]
+        }
+      },
+      "multiclass": {
+        "armour": [],
+        "weapons": [],
+        "tools": [],
+        "skills": null
+      },
+      "subclassTitle": "Wizard Subclass",
+      "subclasses": [
+        {
+          "name": "Evoker",
+          "short": "Evoker",
+          "source": "XPHB"
+        }
+      ]
+    }
+  ]
+}

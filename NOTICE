@@ -1,0 +1,24 @@
+# NOTICE
+
+Kustom TTRPG (kustom-TTRPG)
+Copyright (c) 2026 Newborn AI
+
+This repository holds the code of a character sheet and only the material of the
+System Reference Documents: SRD 5.2 (2024) and SRD 5.1 (2014), both published by
+Wizards of the Coast LLC under the Creative Commons Attribution 4.0 International
+License, available at https://creativecommons.org/licenses/by/4.0/legalcode.
+
+The rules text under `data/` was taken from 5e.tools, a fan site that republishes
+the SRD, and was laid out by this project. Only the entries 5e.tools marks as SRD
+content are here: any subclass, spell, feat, item, monster or table of the books
+that is not in the SRD was left out, and the characters of the table are not
+distributed here. The repository that carries them is private.
+
+The code, the layout and the pages of this project are not part of the System
+Reference Document. They are under the MIT licence that sits in the LICENSE file.
+
+Dungeons & Dragons, D&D and the D20 logo are trademarks of Wizards of the
+Coast LLC. This project is not affiliated with, endorsed by or sponsored by
+Wizards of the Coast.
+
+The font Cinzel is under the SIL Open Font Licence 1.1.

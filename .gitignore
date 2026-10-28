@@ -1,0 +1,25 @@
+build/
+.stg/
+app/assets/
+tools/.5e-cache/
+
+# the signing key stays on the machine that builds: a published key would let
+# anybody sign an update of the app
+keys/*.keystore
+
+.playwright-cli/
+
+# screenshots of a build, kept on the machine that shot them: an artifact
+# of a check, not a source of the app
+shots/
+
+# the build writes these beside the page, and they are copies of what is
+# already here: the page is built from src/, the data from data/, and the
+# version is the moment of the build. The package ships as a GitHub release
+# (tools/build-apk.ps1 -Release) and stays on the machine that builds, where
+# the next build checks its certificate against it.
+dist/index.html
+dist/version.json
+dist/data/
+dist/*.idsig
+dist/custom-sheet.apk

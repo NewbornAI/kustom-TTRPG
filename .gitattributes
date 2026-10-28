@@ -1,0 +1,14 @@
+# One line ending for every text file, whatever machine checks it out or
+# edits it: a Windows tool that writes CRLF no longer turns a ten-line change
+# into a whole-file diff.
+* text=auto eol=lf
+
+# The scripts of Windows keep the ending Windows expects.
+*.ps1 text eol=crlf
+
+*.apk binary
+*.idsig binary
+*.keystore binary
+*.woff2 binary
+*.png binary
+*.webp binary

@@ -1,0 +1,1210 @@
+{
+  "edition": "The armour of the books this app reads and the magic items that alter the sheet, the 2024 handbook first: XPHB, BGG, EFA, EGW, FTD, GGR, SCAG, VGM, XDMG, AI, AU, ERLW, MOT, MTF, RHW, TCE, VRGR, WBtW",
+  "source": "https://5e.tools/items.html",
+  "fetched": "2026-10-27",
+  "armour": [
+    {
+      "name": "Breastplate",
+      "source": "XPHB",
+      "category": "medium",
+      "ac": 14,
+      "dex": "two",
+      "ref": {
+        "book": "XPHB",
+        "page": 219
+      },
+      "blocks": []
+    },
+    {
+      "name": "Chain Mail",
+      "source": "XPHB",
+      "category": "heavy",
+      "ac": 16,
+      "dex": "none",
+      "strength": 13,
+      "stealth": true,
+      "ref": {
+        "book": "XPHB",
+        "page": 219
+      },
+      "blocks": []
+    },
+    {
+      "name": "Chain Shirt",
+      "source": "XPHB",
+      "category": "medium",
+      "ac": 13,
+      "dex": "two",
+      "ref": {
+        "book": "XPHB",
+        "page": 219
+      },
+      "blocks": []
+    },
+    {
+      "name": "Half Plate Armor",
+      "source": "XPHB",
+      "category": "medium",
+      "ac": 15,
+      "dex": "two",
+      "stealth": true,
+      "ref": {
+        "book": "XPHB",
+        "page": 219
+      },
+      "blocks": []
+    },
+    {
+      "name": "Hide Armor",
+      "source": "XPHB",
+      "category": "medium",
+      "ac": 12,
+      "dex": "two",
+      "ref": {
+        "book": "XPHB",
+        "page": 219
+      },
+      "blocks": []
+    },
+    {
+      "name": "Leather Armor",
+      "source": "XPHB",
+      "category": "light",
+      "ac": 11,
+      "dex": "full",
+      "ref": {
+        "book": "XPHB",
+        "page": 219
+      },
+      "blocks": []
+    },
+    {
+      "name": "Padded Armor",
+      "source": "XPHB",
+      "category": "light",
+      "ac": 11,
+      "dex": "full",
+      "stealth": true,
+      "ref": {
+        "book": "XPHB",
+        "page": 219
+      },
+      "blocks": []
+    },
+    {
+      "name": "Plate Armor",
+      "source": "XPHB",
+      "category": "heavy",
+      "ac": 18,
+      "dex": "none",
+      "strength": 15,
+      "stealth": true,
+      "ref": {
+        "book": "XPHB",
+        "page": 219
+      },
+      "blocks": []
+    },
+    {
+      "name": "Ring Mail",
+      "source": "XPHB",
+      "category": "heavy",
+      "ac": 14,
+      "dex": "none",
+      "stealth": true,
+      "ref": {
+        "book": "XPHB",
+        "page": 219
+      },
+      "blocks": []
+    },
+    {
+      "name": "Scale Mail",
+      "source": "XPHB",
+      "category": "medium",
+      "ac": 14,
+      "dex": "two",
+      "stealth": true,
+      "ref": {
+        "book": "XPHB",
+        "page": 219
+      },
+      "blocks": []
+    },
+    {
+      "name": "Shield",
+      "source": "XPHB",
+      "category": "shield",
+      "ac": 2,
+      "dex": "none",
+      "ref": {
+        "book": "XPHB",
+        "page": 219
+      },
+      "blocks": []
+    },
+    {
+      "name": "Splint Armor",
+      "source": "XPHB",
+      "category": "heavy",
+      "ac": 17,
+      "dex": "none",
+      "strength": 15,
+      "stealth": true,
+      "ref": {
+        "book": "XPHB",
+        "page": 219
+      },
+      "blocks": []
+    },
+    {
+      "name": "Studded Leather Armor",
+      "source": "XPHB",
+      "category": "light",
+      "ac": 12,
+      "dex": "full",
+      "ref": {
+        "book": "XPHB",
+        "page": 219
+      },
+      "blocks": []
+    }
+  ],
+  "magic": [
+    {
+      "name": "+1 Wand of the War Mage",
+      "source": "XDMG",
+      "kind": "Wand",
+      "effect": "spellAttack + 1",
+      "ref": {
+        "book": "XDMG",
+        "page": 322
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While holding this wand, you gain a +1 bonus to spell attack rolls. In addition, you ignore Cover when making a spell attack roll."
+        }
+      ]
+    },
+    {
+      "name": "+2 Wand of the War Mage",
+      "source": "XDMG",
+      "kind": "Wand",
+      "effect": "spellAttack + 2",
+      "ref": {
+        "book": "XDMG",
+        "page": 322
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While holding this wand, you gain a +2 bonus to spell attack rolls. In addition, you ignore Cover when making a spell attack roll."
+        }
+      ]
+    },
+    {
+      "name": "+3 Wand of the War Mage",
+      "source": "XDMG",
+      "kind": "Wand",
+      "effect": "spellAttack + 3",
+      "ref": {
+        "book": "XDMG",
+        "page": 322
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While holding this wand, you gain a +3 bonus to spell attack rolls. In addition, you ignore Cover when making a spell attack roll."
+        }
+      ]
+    },
+    {
+      "name": "Bracers of Archery",
+      "source": "XDMG",
+      "kind": "",
+      "damageBonus": 2,
+      "ref": {
+        "book": "XDMG",
+        "page": 240
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While wearing these bracers, you have proficiency with the Longbow and Shortbow, and you gain a +2 bonus to damage rolls made with such weapons."
+        }
+      ]
+    },
+    {
+      "name": "Bracers of Defense",
+      "source": "XDMG",
+      "kind": "",
+      "acBonus": 2,
+      "effect": "AC + 2",
+      "ref": {
+        "book": "XDMG",
+        "page": 241
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While wearing these bracers, you gain a +2 bonus to Armor Class if you are wearing no armor and using no Shield."
+        }
+      ]
+    },
+    {
+      "name": "Cloak of Protection",
+      "source": "XDMG",
+      "kind": "",
+      "acBonus": 1,
+      "effect": "AC + 1; save.all + 1",
+      "ref": {
+        "book": "XDMG",
+        "page": 245
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "You gain a +1 bonus to Armor Class and saving throws while you wear this cloak."
+        }
+      ]
+    },
+    {
+      "name": "Dagger of Venom",
+      "source": "XDMG",
+      "kind": "Melee Weapon",
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "ref": {
+        "book": "XDMG",
+        "page": 248
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "You gain a +1 bonus to attack rolls and damage rolls made with this magic weapon."
+        },
+        {
+          "t": "p",
+          "text": "You can take a Bonus Action to magically coat the blade with poison. The poison remains for 1 minute or until an attack using this weapon hits a creature. That creature must succeed on a DC 15 [[s:Constitution saving throw]] or take [[d:2d10 Poison damage]] and have the [[c:Poisoned]] condition for 1 minute. The weapon can't be used this way again until the next dawn."
+        }
+      ]
+    },
+    {
+      "name": "Dwarven Thrower",
+      "source": "XDMG",
+      "kind": "Melee Weapon",
+      "attackBonus": 3,
+      "damageBonus": 3,
+      "ref": {
+        "book": "XDMG",
+        "page": 256
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "You gain a +3 bonus to attack rolls and damage rolls made with this magic weapon. It has T with a normal range of 20 feet and a long range of 60 feet. When you hit with a ranged attack using this weapon, it deals an extra [[d:1d8 Force damage]], or an extra [[d:2d8 Force damage]] if the target is a Giant. Immediately after hitting or missing, the weapon flies back to your hand."
+        }
+      ]
+    },
+    {
+      "name": "Ioun Stone, Protection",
+      "source": "XDMG",
+      "kind": "",
+      "acBonus": 1,
+      "effect": "AC + 1",
+      "ref": {
+        "book": "XDMG",
+        "page": 273
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "Roughly marble sized, Ioun Stones are named after Ioun, a god of knowledge and prophecy revered on some worlds. Many types of Ioun Stones exist, each type a distinct combination of shape and color."
+        },
+        {
+          "t": "p",
+          "text": "When you take a Magic action to toss an Ioun Stone into the air, the stone orbits your head at a distance of 1d3 feet, conferring its benefit to you while doing so. You can have up to three Ioun Stones orbiting your head at the same time."
+        },
+        {
+          "t": "p",
+          "text": "Each Ioun Stone orbiting your head is considered to be an object you are wearing. The orbiting stone avoids contact with other creatures and objects, adjusting its orbit to avoid collisions and thwarting all attempts by other creatures to attack or snatch it."
+        },
+        {
+          "t": "p",
+          "text": "As a Utilize action, you can seize and stow any number of Ioun Stones orbiting your head. If your Attunement to an Ioun Stone ends while it's orbiting your head, the stone falls as though you had dropped it."
+        },
+        {
+          "t": "p",
+          "text": "You gain a +1 bonus to Armor Class while this dusty-rose prism orbits your head."
+        }
+      ]
+    },
+    {
+      "name": "Mace of Smiting",
+      "source": "XDMG",
+      "kind": "Melee Weapon",
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "ref": {
+        "book": "XDMG",
+        "page": 276
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "You gain a +1 bonus to attack rolls and damage rolls made with this magic weapon. The bonus increases to +3 when you use the weapon to attack a Construct."
+        },
+        {
+          "t": "p",
+          "text": "When you roll a 20 on an attack roll made with this weapon, the target takes an extra 7 Bludgeoning damage, or 14 Bludgeoning damage if it's a Construct. If a Construct has 25 Hit Points or fewer after taking this damage, it is destroyed."
+        }
+      ]
+    },
+    {
+      "name": "Oil of Sharpness",
+      "source": "XDMG",
+      "kind": "Potion",
+      "attackBonus": 3,
+      "damageBonus": 3,
+      "ref": {
+        "book": "XDMG",
+        "page": 282
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "One vial of this oil can coat one Melee weapon or twenty pieces of ammunition, but only ammunition and Melee weapons that are nonmagical and deal Slashing or Piercing damage are affected. Applying the oil takes 1 minute, after which the oil magically seeps into whatever it coats, turning the coated weapon into a +3 Weapon or the coated ammunition into +3 Ammunition."
+        },
+        {
+          "t": "p",
+          "text": "This clear, gelatinous oil sparkles with tiny, ultrathin silver shards."
+        }
+      ]
+    },
+    {
+      "name": "Quarterstaff of the Acrobat",
+      "source": "XDMG",
+      "kind": "Melee Weapon",
+      "acBonus": 5,
+      "attackBonus": 2,
+      "damageBonus": 2,
+      "effect": "AC + 5",
+      "ref": {
+        "book": "XDMG",
+        "page": 291
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "You have a +2 bonus to attack rolls and damage rolls made with this magic weapon."
+        },
+        {
+          "t": "p",
+          "text": "While holding this weapon, you can cause it to emit green Dim Light out to 10 feet, either as a Bonus Action or after you roll Initiative, or you can extinguish the light as a Bonus Action."
+        },
+        {
+          "t": "p",
+          "text": "While holding this weapon, you can take a Bonus Action to alter its form, turning it into a 6-inch rod (for ease of storage) or a 10-foot pole, or reverting it a Quarterstaff; the weapon will elongate only as far as the surrounding space allows."
+        },
+        {
+          "t": "p",
+          "text": "In certain forms, the weapon has the following additional properties."
+        },
+        {
+          "t": "h",
+          "text": "Acrobatic Assist (Quarterstaff and 10-Foot Pole Forms Only)"
+        },
+        {
+          "t": "p",
+          "text": "While holding this weapon, you have Advantage on Dexterity (Acrobatics) checks."
+        },
+        {
+          "t": "h",
+          "text": "Attack Deflection (Quarterstaff Form Only)"
+        },
+        {
+          "t": "p",
+          "text": "When you are hit by an attack while holding the weapon, you can take a Reaction to twirl the weapon around you, gaining a +5 bonus to your Armor Class against the triggering attack, potentially causing the attack to miss you. You can't use this property again until you finish a Short Rest or Long Rest."
+        },
+        {
+          "t": "h",
+          "text": "Ranged Weapon (Quarterstaff Form Only)"
+        },
+        {
+          "t": "p",
+          "text": "This weapon has T with a normal range of 30 feet and a long range of 120 feet. Immediately after you make a ranged attack with the weapon, it flies back to your hand."
+        }
+      ]
+    },
+    {
+      "name": "Ring of Protection",
+      "source": "XDMG",
+      "kind": "Ring",
+      "acBonus": 1,
+      "effect": "AC + 1; save.all + 1",
+      "ref": {
+        "book": "XDMG",
+        "page": 294
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "You gain a +1 bonus to Armor Class and saving throws while wearing this ring."
+        }
+      ]
+    },
+    {
+      "name": "Robe of Stars",
+      "source": "XDMG",
+      "kind": "",
+      "effect": "save.all + 1",
+      "ref": {
+        "book": "XDMG",
+        "page": 297
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "This black or dark-blue robe is embroidered with small white or silver stars. You gain a +1 bonus to saving throws while you wear it."
+        },
+        {
+          "t": "p",
+          "text": "Six stars, located on the robe's upper-front portion, are particularly large. While wearing this robe, you can take a Magic action to remove one of the stars and expend it to cast the level 5 version of Magic Missile. Daily at dusk, 1d6 removed stars reappear on the robe."
+        },
+        {
+          "t": "p",
+          "text": "While you wear the robe, you can take a Magic action to enter the Astral Plane along with everything you are wearing and carrying. You remain there until you take a Magic action to return to the plane you were on. You reappear in the last space you occupied or, if that space is occupied, the nearest unoccupied space."
+        }
+      ]
+    },
+    {
+      "name": "Robe of the Archmagi",
+      "source": "XDMG",
+      "kind": "",
+      "effect": "spellAttack + 2; spellDC + 2",
+      "ref": {
+        "book": "XDMG",
+        "page": 298
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "This elegant garment is made from exquisite cloth and adorned with runes."
+        },
+        {
+          "t": "p",
+          "text": "You gain these benefits while wearing the robe."
+        },
+        {
+          "t": "h",
+          "text": "Armor"
+        },
+        {
+          "t": "p",
+          "text": "If you aren't wearing armor, your base Armor Class is 15 plus your Dexterity modifier."
+        },
+        {
+          "t": "h",
+          "text": "Magic Resistance"
+        },
+        {
+          "t": "p",
+          "text": "You have Advantage on saving throws against spells and other magical effects."
+        },
+        {
+          "t": "h",
+          "text": "War Mage"
+        },
+        {
+          "t": "p",
+          "text": "Your spell save DC and spell attack bonus each increase by 2."
+        }
+      ]
+    },
+    {
+      "name": "Rod of Alertness",
+      "source": "XDMG",
+      "kind": "Rod",
+      "acBonus": 1,
+      "effect": "AC + 1; save.all + 1",
+      "ref": {
+        "book": "XDMG",
+        "page": 299
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "This rod has the following properties."
+        },
+        {
+          "t": "h",
+          "text": "Alertness"
+        },
+        {
+          "t": "p",
+          "text": "While holding the rod, you have Advantage on Wisdom (Perception) checks and on Initiative rolls."
+        },
+        {
+          "t": "h",
+          "text": "Spells"
+        },
+        {
+          "t": "p",
+          "text": "While holding the rod, you can cast the following spells from it:"
+        },
+        {
+          "t": "list",
+          "items": [
+            "Detect Evil and Good",
+            "Detect Magic",
+            "Detect Poison and Disease",
+            "See Invisibility"
+          ]
+        },
+        {
+          "t": "h",
+          "text": "Protective Aura"
+        },
+        {
+          "t": "p",
+          "text": "As a Magic action, you can plant the haft end of the rod in the ground, whereupon the rod's head sheds Bright Light in a 60-foot radius and Dim Light for an additional 60 feet. While in that Bright Light, you and your allies gain a +1 bonus to Armor Class and saving throws and can sense the location of any [[c:Invisible]] creature that is also in the Bright Light."
+        },
+        {
+          "t": "p",
+          "text": "The rod's head stops glowing and the effect ends after 10 minutes or when a creature takes a Magic action to pull the rod from the ground. Once used, this property can't be used again until the next dawn."
+        }
+      ]
+    },
+    {
+      "name": "Rod of Lordly Might",
+      "source": "XDMG",
+      "kind": "Rod",
+      "attackBonus": 3,
+      "damageBonus": 3,
+      "ref": {
+        "book": "XDMG",
+        "page": 300
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "This rod has a flanged head, and it functions as a magic Mace that grants a +3 bonus to attack rolls and damage rolls made with it. The rod has properties associated with six different buttons that are set in a row along the haft. It has three other properties as well, detailed below."
+        },
+        {
+          "t": "h",
+          "text": "Buttons"
+        },
+        {
+          "t": "p",
+          "text": "You can press one of the following buttons as a Bonus Action; a button's effect lasts until you push a different button or until you push the same button again, which causes the rod to revert to its normal form:"
+        },
+        {
+          "t": "list",
+          "items": [
+            "A fiery blade sprouts from the end opposite the rod's flanged head. The flames shed Bright Light in a 40-foot radius and Dim Light for an additional 40 feet, and the blade functions as a magic Longsword or Shortsword (your choice) that deals an extra [[d:2d6 Fire damage]] on a hit.",
+            "The rod's flanged head folds down and two crescent-shaped blades spring out, transforming the rod into a magic Battleaxe that grants a +3 bonus to attack rolls and damage rolls made with it.",
+            "The rod's flanged head folds down, a spear point springs from the rod's tip, and the rod's handle lengthens into a 6-foot haft, transforming the rod into a magic Spear that grants a +3 bonus to attack rolls and damage rolls made with it.",
+            "The rod transforms into a climbing pole up to 50 feet long (you specify the length), though the rod's buttons remain within your reach. In surfaces as hard as granite, a spike at the bottom and three hooks at the top anchor the pole. Horizontal bars 3 inches long fold out from the sides, 1 foot apart, forming a ladder. The pole can bear up to 4,000 pounds. More weight or lack of solid anchoring causes the rod to revert to its normal form.",
+            "The rod transforms into a handheld battering ram and grants its user a +10 bonus to Strength (Athletics) checks made to break through doors, barricades, and other barriers.",
+            "The rod assumes or remains in its normal form and indicates magnetic north. (Nothing happens if this function of the rod is used in a location that has no magnetic north.) The rod also gives you knowledge of your approximate depth beneath the ground or your height above it."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "Drain Life"
+        },
+        {
+          "t": "p",
+          "text": "When you hit a creature with a melee attack using the rod, you can force the target to make a DC 17 [[s:Constitution saving throw]]. On a failed save, the target takes an extra [[d:4d6 Necrotic damage]], and you regain a number of Hit Points equal to half that Necrotic damage. Once used, this property can't be used again until the next dawn."
+        },
+        {
+          "t": "h",
+          "text": "Paralyze"
+        },
+        {
+          "t": "p",
+          "text": "When you hit a creature with a melee attack using the rod, you can force the target to make a DC 17 [[s:Constitution saving throw]]. On a failed save, the target has the [[c:Paralyzed]] condition for 1 minute. The target repeats the save at the end of each of its turns, ending the effect on a success. Once used, this property can't be used again until the next dawn."
+        },
+        {
+          "t": "h",
+          "text": "Terrify"
+        },
+        {
+          "t": "p",
+          "text": "While holding the rod, you can take a Magic action to force each creature you can see within 30 feet of yourself to make a DC 17 [[s:Wisdom saving throw]]. On a failed save, a target has the [[c:Frightened]] condition for 1 minute. A [[c:Frightened]] target repeats the save at the end of each of its turns, ending the effect on itself on a success. Once used, this property can't be used again until the next dawn."
+        }
+      ]
+    },
+    {
+      "name": "Scarab of Protection",
+      "source": "XDMG",
+      "kind": "",
+      "acBonus": 1,
+      "effect": "AC + 1",
+      "ref": {
+        "book": "XDMG",
+        "page": 302
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "This beetle-shaped medallion provides three benefits while it is on your person."
+        },
+        {
+          "t": "h",
+          "text": "Defense"
+        },
+        {
+          "t": "p",
+          "text": "You gain a +1 bonus to Armor Class."
+        },
+        {
+          "t": "h",
+          "text": "Preservation"
+        },
+        {
+          "t": "p",
+          "text": "The scarab has 12 charges. If you fail a saving throw against a Necromancy spell or a harmful effect originating from an Undead, you can take a Reaction to expend 1 charge and turn the failed save into a successful one. The scarab crumbles into powder and is destroyed when its last charge is expended."
+        },
+        {
+          "t": "h",
+          "text": "Spell Resistance"
+        },
+        {
+          "t": "p",
+          "text": "You have Advantage on saving throws against spells."
+        }
+      ]
+    },
+    {
+      "name": "Scimitar of Speed",
+      "source": "XDMG",
+      "kind": "Melee Weapon",
+      "attackBonus": 2,
+      "damageBonus": 2,
+      "ref": {
+        "book": "XDMG",
+        "page": 302
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "You gain a +2 bonus to attack rolls and damage rolls made with this magic weapon. In addition, you can make one attack with it as a Bonus Action on each of your turns."
+        }
+      ]
+    },
+    {
+      "name": "Staff of Power",
+      "source": "XDMG",
+      "kind": "Melee Weapon",
+      "acBonus": 2,
+      "attackBonus": 2,
+      "damageBonus": 2,
+      "effect": "AC + 2; save.all + 2; spellAttack + 2",
+      "ref": {
+        "book": "XDMG",
+        "page": 308
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "This staff has 20 charges and can be wielded as a magic Quarterstaff that grants a +2 bonus to attack rolls and damage rolls made with it. While holding it, you gain a +2 bonus to Armor Class, saving throws, and spell attack rolls."
+        },
+        {
+          "t": "h",
+          "text": "Spells"
+        },
+        {
+          "t": "p",
+          "text": "While holding the staff, you can cast one of the spells on the following table from it, using your spell save DC. The table indicates how many charges you must expend to cast the spell."
+        },
+        {
+          "t": "table",
+          "caption": "",
+          "head": [
+            "Spell",
+            "Charge Cost"
+          ],
+          "rows": [
+            [
+              "Cone of Cold",
+              "5"
+            ],
+            [
+              "Fireball (level 5 version)",
+              "5"
+            ],
+            [
+              "Globe of Invulnerability",
+              "6"
+            ],
+            [
+              "Hold Monster",
+              "5"
+            ],
+            [
+              "Levitate",
+              "2"
+            ],
+            [
+              "Lightning Bolt (level 5 version)",
+              "5"
+            ],
+            [
+              "Magic Missile",
+              "1"
+            ],
+            [
+              "Ray of Enfeeblement",
+              "1"
+            ],
+            [
+              "Wall of Force",
+              "5"
+            ]
+          ]
+        },
+        {
+          "t": "h",
+          "text": "Regaining Charges"
+        },
+        {
+          "t": "p",
+          "text": "The staff regains 2d8 + 4 expended charges daily at dawn. If you expend the last charge, roll 1d20. On a 1, the staff retains its +2 bonus to attack rolls and damage rolls but loses all other properties. On a 20, the staff regains 1d8 + 2 charges."
+        },
+        {
+          "t": "h",
+          "text": "Retributive Strike"
+        },
+        {
+          "t": "p",
+          "text": "You can take a Magic action to break the staff over your knee or against a solid surface. The staff is destroyed and releases its magic in an explosion that fills a 30-foot Emanation [Area of Effect] originating from itself. You have a 50 chance to instantly travel to a random plane of existence, avoiding the explosion. If you fail to avoid the effect, you take Force damage equal to 16 times the number of charges in the staff. Each other creature in the area makes a DC 17 [[s:Dexterity saving throw]]. On a failed save, a creature takes Force damage equal to 4 times the number of charges in the staff. On a successful save, a creature takes half as much damage."
+        }
+      ]
+    },
+    {
+      "name": "Staff of Striking",
+      "source": "XDMG",
+      "kind": "Melee Weapon",
+      "attackBonus": 3,
+      "damageBonus": 3,
+      "ref": {
+        "book": "XDMG",
+        "page": 309
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "This staff can be wielded as a magic Quarterstaff that grants a +3 bonus to attack rolls and damage rolls made with it."
+        },
+        {
+          "t": "p",
+          "text": "The staff has 10 charges. When you hit with a melee attack using it, you can expend up to 3 charges. For each charge you expend, the target takes an extra [[d:1d6 Force damage]]."
+        },
+        {
+          "t": "h",
+          "text": "Regaining Charges"
+        },
+        {
+          "t": "p",
+          "text": "The staff regains 1d6 + 4 expended charges daily at dawn. If you expend the last charge, roll 1d20. On a 1, the staff becomes a nonmagical Quarterstaff."
+        }
+      ]
+    },
+    {
+      "name": "Staff of the Magi",
+      "source": "XDMG",
+      "kind": "Melee Weapon",
+      "attackBonus": 2,
+      "damageBonus": 2,
+      "effect": "spellAttack + 2",
+      "ref": {
+        "book": "XDMG",
+        "page": 310
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "This staff has 50 charges and can be wielded as a magic Quarterstaff that grants a +2 bonus to attack rolls and damage rolls made with it. While you hold it, you gain a +2 bonus to spell attack rolls."
+        },
+        {
+          "t": "h",
+          "text": "Spell Absorption"
+        },
+        {
+          "t": "p",
+          "text": "While holding the staff, you have Advantage on saving throws against spells. In addition, you can take a Reaction when another creature casts a spell that targets only you. If you do, the staff absorbs the magic of the spell, canceling its effect and gaining a number of charges equal to the absorbed spell's level. However, if doing so brings the staff's total number of charges above 50, the staff explodes as if you activated its Retributive Strike (see below)."
+        },
+        {
+          "t": "h",
+          "text": "Spells"
+        },
+        {
+          "t": "p",
+          "text": "While holding the staff, you can cast one of the spells on the following table from it, using your spell save DC. The table indicates how many charges you must expend to cast the spell."
+        },
+        {
+          "t": "table",
+          "caption": "",
+          "head": [
+            "Spell",
+            "Charge Cost"
+          ],
+          "rows": [
+            [
+              "Arcane Lock",
+              "0"
+            ],
+            [
+              "Conjure Elemental",
+              "7"
+            ],
+            [
+              "Detect Magic",
+              "0"
+            ],
+            [
+              "Dispel Magic",
+              "3"
+            ],
+            [
+              "Enlarge/Reduce",
+              "0"
+            ],
+            [
+              "Fireball (level 7 version)",
+              "7"
+            ],
+            [
+              "Flaming Sphere",
+              "2"
+            ],
+            [
+              "Ice Storm",
+              "4"
+            ],
+            [
+              "Invisibility",
+              "2"
+            ],
+            [
+              "Knock",
+              "2"
+            ],
+            [
+              "Light",
+              "0"
+            ],
+            [
+              "Lightning Bolt (level 7 version)",
+              "7"
+            ],
+            [
+              "Mage Hand",
+              "0"
+            ],
+            [
+              "Passwall",
+              "5"
+            ],
+            [
+              "Plane Shift",
+              "7"
+            ],
+            [
+              "Protection from Evil and Good",
+              "0"
+            ],
+            [
+              "Telekinesis",
+              "5"
+            ],
+            [
+              "Wall of Fire",
+              "4"
+            ],
+            [
+              "Web",
+              "2"
+            ]
+          ]
+        },
+        {
+          "t": "h",
+          "text": "Regaining Charges"
+        },
+        {
+          "t": "p",
+          "text": "The staff regains 4d6 + 2 expended charges daily at dawn. If you expend the last charge, roll 1d20. On a 20, the staff regains 1d12 + 1 charges."
+        },
+        {
+          "t": "h",
+          "text": "Retributive Strike"
+        },
+        {
+          "t": "p",
+          "text": "You can take a Magic action to break the staff over your knee or against a solid surface. The staff is destroyed and releases its magic in an explosion that fills a 30-foot Emanation [Area of Effect] originating from itself. You have a 50 chance to instantly travel to a random plane of existence, avoiding the explosion. If you fail to avoid the effect, you take Force damage equal to 16 times the number of charges in the staff. Each other creature in the area makes a DC 17 [[s:Dexterity saving throw]]. On a failed save, a creature takes Force damage equal to 6 times the number of charges in the staff. On a successful save, a creature takes half as much damage."
+        }
+      ]
+    },
+    {
+      "name": "Staff of the Woodlands",
+      "source": "XDMG",
+      "kind": "Melee Weapon",
+      "attackBonus": 2,
+      "damageBonus": 2,
+      "effect": "spellAttack + 2",
+      "ref": {
+        "book": "XDMG",
+        "page": 311
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "This staff has 6 charges and can be wielded as a magic Quarterstaff that grants a +2 bonus to attack rolls and damage rolls made with it. While holding it, you have a +2 bonus to spell attack rolls."
+        },
+        {
+          "t": "h",
+          "text": "Spells"
+        },
+        {
+          "t": "p",
+          "text": "While holding the staff, you can cast one of the spells on the following table from it, using your spell save DC. The table indicates how many charges you must expend to cast the spell."
+        },
+        {
+          "t": "table",
+          "caption": "",
+          "head": [
+            "Spell",
+            "Charge Cost"
+          ],
+          "rows": [
+            [
+              "Animal Friendship",
+              "1"
+            ],
+            [
+              "Awaken",
+              "5"
+            ],
+            [
+              "Barkskin",
+              "2"
+            ],
+            [
+              "Locate Animals or Plants",
+              "2"
+            ],
+            [
+              "Pass without Trace",
+              "2"
+            ],
+            [
+              "Speak with Animals",
+              "1"
+            ],
+            [
+              "Speak with Plants",
+              "3"
+            ],
+            [
+              "Wall of Thorns",
+              "6"
+            ]
+          ]
+        },
+        {
+          "t": "h",
+          "text": "Tree Form"
+        },
+        {
+          "t": "p",
+          "text": "You can take a Magic action to plant one end of the staff in earth in an unoccupied space and expend 1 charge to transform the staff into a healthy tree. The tree is 60 feet tall and has a 5-foot-diameter trunk, and its branches at the top spread out in a 20-foot radius. The tree appears ordinary but radiates a faint aura of Transmutation magic that can be discerned with the Detect Magic spell. While touching the tree and using a Magic action, you return the staff to its normal form. Any creature in the tree falls when the tree reverts to a staff."
+        },
+        {
+          "t": "h",
+          "text": "Regaining Charges"
+        },
+        {
+          "t": "p",
+          "text": "The staff regains 1d6 expended charges daily at dawn. If you expend the last charge, roll 1d20. On a 1, the staff loses its properties and becomes a nonmagical Quarterstaff."
+        }
+      ]
+    },
+    {
+      "name": "Staff of Thunder and Lightning",
+      "source": "XDMG",
+      "kind": "Melee Weapon",
+      "attackBonus": 2,
+      "damageBonus": 2,
+      "ref": {
+        "book": "XDMG",
+        "page": 311
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "This staff can be wielded as a magic Quarterstaff that grants a +2 bonus to attack rolls and damage rolls made with it. It also has the following additional properties. Once one of these properties is used, it can't be used again until the next dawn."
+        },
+        {
+          "t": "h",
+          "text": "Lightning"
+        },
+        {
+          "t": "p",
+          "text": "When you hit with a melee attack using the staff, you can cause the target to take an extra [[d:2d6 Lightning damage]] (no action required)."
+        },
+        {
+          "t": "h",
+          "text": "Thunder"
+        },
+        {
+          "t": "p",
+          "text": "When you hit with a melee attack using the staff, you can cause the staff to emit a crack of thunder audible out to 300 feet (no action required). The target you hit must succeed on a DC 17 [[s:Constitution saving throw]] or have the [[c:Stunned]] condition until the end of your next turn."
+        },
+        {
+          "t": "h",
+          "text": "Thunder and Lightning"
+        },
+        {
+          "t": "p",
+          "text": "Immediately after you hit with a melee attack using the staff, you can take a Bonus Action to use the Lightning and Thunder properties (see above) at the same time. Doing so doesn't expend the daily use of those properties, only the use of this one."
+        },
+        {
+          "t": "h",
+          "text": "Lightning Strike"
+        },
+        {
+          "t": "p",
+          "text": "You can take a Magic action to cause a bolt of lightning to leap from the staff's tip in a Line [Area of Effect] that is 5 feet wide and 120 feet long. Each creature in that Line [Area of Effect] makes a DC 17 [[s:Dexterity saving throw]], taking [[d:9d6 Lightning damage]] on a failed save or half as much damage on a successful one."
+        },
+        {
+          "t": "h",
+          "text": "Thunderclap"
+        },
+        {
+          "t": "p",
+          "text": "You can take a Magic action to cause the staff to produce a thunderclap audible out to 600 feet. Every creature within a 60-foot Emanation [Area of Effect] originating from you makes a DC 17 [[s:Constitution saving throw]]. On a failed save, a creature takes [[d:2d6 Thunder damage]] and has the [[c:Deafened]] condition for 1 minute. On a successful save, a creature takes half as much damage only."
+        }
+      ]
+    },
+    {
+      "name": "Stone of Good Luck",
+      "source": "XDMG",
+      "kind": "",
+      "effect": "save.all + 1",
+      "ref": {
+        "book": "XDMG",
+        "page": 312
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "While this polished agate is on your person, you gain a +1 bonus to ability checks and saving throws."
+        }
+      ]
+    },
+    {
+      "name": "Sun Blade",
+      "source": "XDMG",
+      "kind": "Melee Weapon",
+      "attackBonus": 2,
+      "damageBonus": 2,
+      "ref": {
+        "book": "XDMG",
+        "page": 312
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "This item appears to be a sword hilt."
+        },
+        {
+          "t": "h",
+          "text": "Blade of Radiance"
+        },
+        {
+          "t": "p",
+          "text": "While grasping the hilt, you can take a Bonus Action to cause a blade of pure radiance to spring into existence or make the blade disappear. While the blade exists, this magic weapon functions as a Longsword with F. If you are proficient with Longswords or Shortswords, you are proficient with the Sun Blade."
+        },
+        {
+          "t": "p",
+          "text": "You gain a +2 bonus to attack rolls and damage rolls made with this weapon, which deals Radiant damage instead of Slashing damage. When you hit an Undead with it, that target takes an extra [[d:1d8 Radiant damage]]."
+        },
+        {
+          "t": "h",
+          "text": "Sunlight"
+        },
+        {
+          "t": "p",
+          "text": "The sword's luminous blade emits Bright Light in a 15-foot radius and Dim Light for an additional 15 feet. The light is sunlight. While the blade persists, you can take a Magic action to expand or reduce its radius of Bright Light and Dim Light by 5 feet each, to a maximum of 30 feet each or a minimum of 10 feet each."
+        }
+      ]
+    },
+    {
+      "name": "Talisman of Pure Good",
+      "source": "XDMG",
+      "kind": "",
+      "effect": "spellAttack + 2",
+      "ref": {
+        "book": "XDMG",
+        "page": 314
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "This talisman is a mighty symbol of goodness. A Fiend or an Undead that touches the talisman takes [[d:8d6 Radiant damage]] and takes the damage again each time it ends its turn holding or carrying the talisman."
+        },
+        {
+          "t": "h",
+          "text": "Holy Symbol"
+        },
+        {
+          "t": "p",
+          "text": "You can use the talisman as a Holy Symbol. You gain a +2 bonus to spell attack rolls while you wear or hold it."
+        },
+        {
+          "t": "h",
+          "text": "Pure Rebuke"
+        },
+        {
+          "t": "p",
+          "text": "The talisman has 7 charges. While wearing or holding the talisman, you can take a Magic action to expend 1 charge and target one creature you can see on the ground within 120 feet of yourself. A flaming fissure opens under the target, and the target makes a DC 20 [[s:Dexterity saving throw]]. If the target is a Fiend or an Undead, it has Disadvantage on the save. On a failed save, the target falls into the fissure and is destroyed, leaving no remains. On a successful save, the target isn't cast into the fissure but takes [[d:4d6 Psychic damage]] from the ordeal. In either case, the fissure then closes, leaving no trace of its existence. When you expend the last charge, the talisman disperses into motes of golden light and is destroyed."
+        }
+      ]
+    },
+    {
+      "name": "Talisman of Ultimate Evil",
+      "source": "XDMG",
+      "kind": "",
+      "effect": "spellAttack + 2",
+      "ref": {
+        "book": "XDMG",
+        "page": 315
+      },
+      "blocks": [
+        {
+          "t": "p",
+          "text": "This item symbolizes unrepentant evil. A creature that isn't a Fiend or an Undead that touches the talisman takes [[d:8d6 Necrotic damage]] and takes the damage again each time it ends its turn holding or carrying the talisman."
+        },
+        {
+          "t": "h",
+          "text": "Holy Symbol"
+        },
+        {
+          "t": "p",
+          "text": "You can use the talisman as a Holy Symbol. You gain a +2 bonus to spell attack rolls while you wear or hold it."
+        },
+        {
+          "t": "h",
+          "text": "Ultimate End"
+        },
+        {
+          "t": "p",
+          "text": "The talisman has 6 charges. While wearing or holding the talisman, you can take a Magic action to expend 1 charge and target one creature you can see on the ground within 120 feet of yourself. A flaming fissure opens under the target, and the target makes a DC 20 [[s:Dexterity saving throw]]. If the target is a Celestial, it has Disadvantage on the save. On a failed save, the target falls into the fissure and is destroyed, leaving no remains. On a successful save, the target isn't cast into the fissure but takes [[d:4d6 Psychic damage]] from the ordeal. In either case, the fissure then closes, leaving no trace of its existence. When you expend the last charge, the talisman dissolves into foul-smelling slime and is destroyed."
+        }
+      ]
+    }
+  ]
+}

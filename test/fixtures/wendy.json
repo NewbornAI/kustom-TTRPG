@@ -1,0 +1,1439 @@
+{
+  "kind": "custom-sheet-character",
+  "version": 1,
+  "name": "Wendy",
+  "record": {
+    "char": {
+      "name": "Wendy",
+      "level": 11,
+      "classes": [
+        {
+          "name": "Sorcerer",
+          "level": 8,
+          "subclass": "Wild Magic Sorcery"
+        },
+        {
+          "name": "Warlock",
+          "level": 3,
+          "subclass": "The Hexblade"
+        }
+      ],
+      "abilities": {
+        "str": 8,
+        "dex": 14,
+        "con": 16,
+        "int": 10,
+        "wis": 12,
+        "cha": 20
+      },
+      "saves": {
+        "str": 0,
+        "dex": 0,
+        "con": 1,
+        "int": 0,
+        "wis": 0,
+        "cha": 1
+      },
+      "skills": {
+        "acrobatics": 0,
+        "animalHandling": 0,
+        "arcana": 1,
+        "athletics": 0,
+        "deception": 0,
+        "history": 0,
+        "insight": 0,
+        "intimidation": 1,
+        "investigation": 1,
+        "medicine": 0,
+        "nature": 0,
+        "perception": 1,
+        "performance": 0,
+        "persuasion": 0,
+        "religion": 1,
+        "sleightOfHand": 0,
+        "stealth": 0,
+        "survival": 0
+      },
+      "features": [
+        {
+          "key": "innateSorcery",
+          "name": "Innate sorcery",
+          "source": "Sorcerer",
+          "active": true,
+          "recovery": "long",
+          "bind": null,
+          "max": 2,
+          "left": 2,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "metamagic",
+          "name": "Metamagic",
+          "source": "Sorcerer",
+          "active": true,
+          "recovery": "long",
+          "bind": null,
+          "max": 8,
+          "left": 8,
+          "cost": "",
+          "short": null,
+          "hidden": true
+        },
+        {
+          "key": "tidesOfChaos",
+          "name": "Tides of chaos",
+          "source": "Wild Magic",
+          "active": true,
+          "recovery": "long",
+          "bind": null,
+          "max": 1,
+          "left": 1,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "sorcerousRest",
+          "name": "Sorcerous rest",
+          "source": "Sorcerer",
+          "active": true,
+          "recovery": "long",
+          "bind": null,
+          "max": 1,
+          "left": 1,
+          "cost": "",
+          "short": null,
+          "hidden": true
+        },
+        {
+          "key": "bendLuck",
+          "name": "Bend luck",
+          "source": "Wild Magic",
+          "active": true,
+          "recovery": "special",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "sp",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "magicalCunning",
+          "name": "Magical Cunning",
+          "source": "Warlock",
+          "active": true,
+          "recovery": "long",
+          "bind": null,
+          "max": 1,
+          "left": 1,
+          "cost": "",
+          "short": null,
+          "hidden": true
+        },
+        {
+          "key": "hexCurse",
+          "name": "Hexblade curse",
+          "source": "Hexblade",
+          "active": true,
+          "recovery": "short",
+          "bind": null,
+          "max": 1,
+          "left": 1,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "elvenLineageI",
+          "name": "Elven Lineage I",
+          "source": "High Elf",
+          "active": true,
+          "recovery": "long",
+          "bind": null,
+          "max": 1,
+          "left": 1,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "elvenLineageII",
+          "name": "Elven Lineage II",
+          "source": "High Elf",
+          "active": true,
+          "recovery": "long",
+          "bind": null,
+          "max": 1,
+          "left": 1,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "sorceryIncarnate",
+          "name": "Sorc incarnate",
+          "source": "Sorcerer",
+          "active": false,
+          "recovery": "passive",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "devilsSight",
+          "name": "Devil's sight",
+          "source": "Warlock",
+          "active": false,
+          "recovery": "passive",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "repellingBlast",
+          "name": "Repelling blast",
+          "source": "Warlock",
+          "active": false,
+          "recovery": "passive",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "agonisingBlast",
+          "name": "Agonising blast",
+          "source": "Warlock",
+          "active": false,
+          "recovery": "passive",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "wildSurge",
+          "name": "Wild surge",
+          "source": "Wild Magic",
+          "active": false,
+          "recovery": "passive",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "hexWarrior",
+          "name": "Hex Warrior",
+          "source": "Hexblade",
+          "active": false,
+          "recovery": "passive",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "trance",
+          "name": "Trance",
+          "source": "Elf",
+          "active": false,
+          "recovery": "passive",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "feyAncestry",
+          "name": "Fey Ancestry",
+          "source": "Elf",
+          "active": false,
+          "recovery": "passive",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "elvenAccuracy",
+          "name": "Elven Accuracy",
+          "source": "Feat",
+          "active": false,
+          "recovery": "passive",
+          "bind": null,
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": false
+        },
+        {
+          "key": "warlockSlots",
+          "name": "Warlock spell slots",
+          "source": "Warlock",
+          "active": true,
+          "recovery": "short",
+          "bind": "warlock",
+          "max": 0,
+          "left": 0,
+          "cost": "",
+          "short": null,
+          "hidden": true
+        }
+      ],
+      "init": 2,
+      "ac": 19,
+      "hp": {
+        "current": 82,
+        "max": 82
+      },
+      "dice": [
+        {
+          "type": 6,
+          "spent": false
+        },
+        {
+          "type": 6,
+          "spent": false
+        },
+        {
+          "type": 6,
+          "spent": false
+        },
+        {
+          "type": 6,
+          "spent": false
+        },
+        {
+          "type": 6,
+          "spent": false
+        },
+        {
+          "type": 6,
+          "spent": false
+        },
+        {
+          "type": 6,
+          "spent": false
+        },
+        {
+          "type": 6,
+          "spent": false
+        },
+        {
+          "type": 8,
+          "spent": false
+        },
+        {
+          "type": 8,
+          "spent": false
+        },
+        {
+          "type": 8,
+          "spent": false
+        }
+      ],
+      "history": [
+        {
+          "hp": 0,
+          "hpmax": 0,
+          "dice": [
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 8,
+              "spent": false
+            },
+            {
+              "type": 8,
+              "spent": false
+            },
+            {
+              "type": 8,
+              "spent": false
+            }
+          ],
+          "features": [
+            {
+              "key": "innateSorcery",
+              "name": "Innate sorcery",
+              "source": "Sorcerer",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 2,
+              "left": 2,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "metamagic",
+              "name": "Metamagic",
+              "source": "Sorcerer",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 8,
+              "left": 8,
+              "cost": "",
+              "short": null,
+              "hidden": true
+            },
+            {
+              "key": "tidesOfChaos",
+              "name": "Tides of chaos",
+              "source": "Wild Magic",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 1,
+              "left": 1,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "sorcerousRest",
+              "name": "Sorcerous rest",
+              "source": "Sorcerer",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 1,
+              "left": 1,
+              "cost": "",
+              "short": null,
+              "hidden": true
+            },
+            {
+              "key": "bendLuck",
+              "name": "Bend luck",
+              "source": "Wild Magic",
+              "active": true,
+              "recovery": "special",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "sp",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "magicalCunning",
+              "name": "Magical Cunning",
+              "source": "Warlock",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 1,
+              "left": 1,
+              "cost": "",
+              "short": null,
+              "hidden": true
+            },
+            {
+              "key": "hexCurse",
+              "name": "Hexblade curse",
+              "source": "Hexblade",
+              "active": true,
+              "recovery": "short",
+              "bind": null,
+              "max": 1,
+              "left": 1,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "elvenLineageI",
+              "name": "Elven Lineage I",
+              "source": "High Elf",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 1,
+              "left": 1,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "elvenLineageII",
+              "name": "Elven Lineage II",
+              "source": "High Elf",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 1,
+              "left": 1,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "sorceryIncarnate",
+              "name": "Sorc incarnate",
+              "source": "Sorcerer",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "devilsSight",
+              "name": "Devil's sight",
+              "source": "Warlock",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "repellingBlast",
+              "name": "Repelling blast",
+              "source": "Warlock",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "agonisingBlast",
+              "name": "Agonising blast",
+              "source": "Warlock",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "wildSurge",
+              "name": "Wild surge",
+              "source": "Wild Magic",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "hexWarrior",
+              "name": "Hex Warrior",
+              "source": "Hexblade",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "trance",
+              "name": "Trance",
+              "source": "Elf",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "feyAncestry",
+              "name": "Fey Ancestry",
+              "source": "Elf",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "elvenAccuracy",
+              "name": "Elven Accuracy",
+              "source": "Feat",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "warlockSlots",
+              "name": "Warlock spell slots",
+              "source": "Warlock",
+              "active": true,
+              "recovery": "short",
+              "bind": "warlock",
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": true
+            }
+          ],
+          "left": {
+            "1": 4,
+            "2": 3,
+            "3": 3,
+            "4": 2,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0
+          },
+          "warlockLeft": 2,
+          "sp": 8,
+          "cunning": false,
+          "sorcRest": false
+        },
+        {
+          "hp": 6,
+          "hpmax": 61,
+          "dice": [
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 8,
+              "spent": false
+            },
+            {
+              "type": 8,
+              "spent": false
+            },
+            {
+              "type": 8,
+              "spent": false
+            }
+          ],
+          "features": [
+            {
+              "key": "innateSorcery",
+              "name": "Innate sorcery",
+              "source": "Sorcerer",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 2,
+              "left": 2,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "metamagic",
+              "name": "Metamagic",
+              "source": "Sorcerer",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 8,
+              "left": 8,
+              "cost": "",
+              "short": null,
+              "hidden": true
+            },
+            {
+              "key": "tidesOfChaos",
+              "name": "Tides of chaos",
+              "source": "Wild Magic",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 1,
+              "left": 1,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "sorcerousRest",
+              "name": "Sorcerous rest",
+              "source": "Sorcerer",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 1,
+              "left": 1,
+              "cost": "",
+              "short": null,
+              "hidden": true
+            },
+            {
+              "key": "bendLuck",
+              "name": "Bend luck",
+              "source": "Wild Magic",
+              "active": true,
+              "recovery": "special",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "sp",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "magicalCunning",
+              "name": "Magical Cunning",
+              "source": "Warlock",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 1,
+              "left": 1,
+              "cost": "",
+              "short": null,
+              "hidden": true
+            },
+            {
+              "key": "hexCurse",
+              "name": "Hexblade curse",
+              "source": "Hexblade",
+              "active": true,
+              "recovery": "short",
+              "bind": null,
+              "max": 1,
+              "left": 1,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "elvenLineageI",
+              "name": "Elven Lineage I",
+              "source": "High Elf",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 1,
+              "left": 1,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "elvenLineageII",
+              "name": "Elven Lineage II",
+              "source": "High Elf",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 1,
+              "left": 1,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "sorceryIncarnate",
+              "name": "Sorc incarnate",
+              "source": "Sorcerer",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "devilsSight",
+              "name": "Devil's sight",
+              "source": "Warlock",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "repellingBlast",
+              "name": "Repelling blast",
+              "source": "Warlock",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "agonisingBlast",
+              "name": "Agonising blast",
+              "source": "Warlock",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "wildSurge",
+              "name": "Wild surge",
+              "source": "Wild Magic",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "hexWarrior",
+              "name": "Hex Warrior",
+              "source": "Hexblade",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "trance",
+              "name": "Trance",
+              "source": "Elf",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "feyAncestry",
+              "name": "Fey Ancestry",
+              "source": "Elf",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "elvenAccuracy",
+              "name": "Elven Accuracy",
+              "source": "Feat",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "warlockSlots",
+              "name": "Warlock spell slots",
+              "source": "Warlock",
+              "active": true,
+              "recovery": "short",
+              "bind": "warlock",
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": true
+            }
+          ],
+          "left": {
+            "1": 4,
+            "2": 3,
+            "3": 3,
+            "4": 2,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0
+          },
+          "warlockLeft": 2,
+          "sp": 8,
+          "cunning": false,
+          "sorcRest": false
+        },
+        {
+          "hp": 6,
+          "hpmax": 82,
+          "dice": [
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 6,
+              "spent": false
+            },
+            {
+              "type": 8,
+              "spent": false
+            },
+            {
+              "type": 8,
+              "spent": false
+            },
+            {
+              "type": 8,
+              "spent": false
+            }
+          ],
+          "features": [
+            {
+              "key": "innateSorcery",
+              "name": "Innate sorcery",
+              "source": "Sorcerer",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 2,
+              "left": 2,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "metamagic",
+              "name": "Metamagic",
+              "source": "Sorcerer",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 8,
+              "left": 8,
+              "cost": "",
+              "short": null,
+              "hidden": true
+            },
+            {
+              "key": "tidesOfChaos",
+              "name": "Tides of chaos",
+              "source": "Wild Magic",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 1,
+              "left": 1,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "sorcerousRest",
+              "name": "Sorcerous rest",
+              "source": "Sorcerer",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 1,
+              "left": 1,
+              "cost": "",
+              "short": null,
+              "hidden": true
+            },
+            {
+              "key": "bendLuck",
+              "name": "Bend luck",
+              "source": "Wild Magic",
+              "active": true,
+              "recovery": "special",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "sp",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "magicalCunning",
+              "name": "Magical Cunning",
+              "source": "Warlock",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 1,
+              "left": 1,
+              "cost": "",
+              "short": null,
+              "hidden": true
+            },
+            {
+              "key": "hexCurse",
+              "name": "Hexblade curse",
+              "source": "Hexblade",
+              "active": true,
+              "recovery": "short",
+              "bind": null,
+              "max": 1,
+              "left": 1,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "elvenLineageI",
+              "name": "Elven Lineage I",
+              "source": "High Elf",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 1,
+              "left": 1,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "elvenLineageII",
+              "name": "Elven Lineage II",
+              "source": "High Elf",
+              "active": true,
+              "recovery": "long",
+              "bind": null,
+              "max": 1,
+              "left": 1,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "sorceryIncarnate",
+              "name": "Sorc incarnate",
+              "source": "Sorcerer",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "devilsSight",
+              "name": "Devil's sight",
+              "source": "Warlock",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "repellingBlast",
+              "name": "Repelling blast",
+              "source": "Warlock",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "agonisingBlast",
+              "name": "Agonising blast",
+              "source": "Warlock",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "wildSurge",
+              "name": "Wild surge",
+              "source": "Wild Magic",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "hexWarrior",
+              "name": "Hex Warrior",
+              "source": "Hexblade",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "trance",
+              "name": "Trance",
+              "source": "Elf",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "feyAncestry",
+              "name": "Fey Ancestry",
+              "source": "Elf",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "elvenAccuracy",
+              "name": "Elven Accuracy",
+              "source": "Feat",
+              "active": false,
+              "recovery": "passive",
+              "bind": null,
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": false
+            },
+            {
+              "key": "warlockSlots",
+              "name": "Warlock spell slots",
+              "source": "Warlock",
+              "active": true,
+              "recovery": "short",
+              "bind": "warlock",
+              "max": 0,
+              "left": 0,
+              "cost": "",
+              "short": null,
+              "hidden": true
+            }
+          ],
+          "left": {
+            "1": 4,
+            "2": 3,
+            "3": 3,
+            "4": 2,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0
+          },
+          "warlockLeft": 2,
+          "sp": 8,
+          "cunning": false,
+          "sorcRest": false
+        }
+      ],
+      "profs": [
+        {
+          "id": "lightArmour",
+          "label": "Light armour"
+        },
+        {
+          "id": "simpleWeapons",
+          "label": "Simple weapons"
+        }
+      ],
+      "initTouched": true
+    },
+    "spells": {
+      "dc": 17,
+      "dcTouched": false,
+      "sp": 8,
+      "spMax": 8,
+      "cunning": false,
+      "sorcRest": false,
+      "sorcererLevel": 8,
+      "max": {
+        "1": 4,
+        "2": 3,
+        "3": 3,
+        "4": 2,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "left": {
+        "1": 4,
+        "2": 3,
+        "3": 3,
+        "4": 2,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "warlockMax": 2,
+      "warlockLeft": 2,
+      "warlockLevel": 2,
+      "slotsTouched": false,
+      "selected": 1,
+      "lists": {
+        "0": [
+          "Produce Flame",
+          "Shocking Grasp",
+          "Blade Ward",
+          "Eldritch Blast",
+          "Mage Hand",
+          "Message",
+          "Prestidigitation",
+          "Minor Illusion",
+          "Mending",
+          "Thunderclap"
+        ],
+        "1": [
+          "Chaos Bolt",
+          "Create or Destroy Water",
+          "Unseen Servant",
+          "Shield",
+          "Wrathful Smite",
+          "Detect Magic",
+          "Hex",
+          "Armor of Agathys",
+          "Hellish Rebuke",
+          "Tasha's Hideous Laughter",
+          "Absorb Elements",
+          "Jump",
+          "Silvery Barbs"
+        ],
+        "2": [
+          "Heat Metal",
+          "Rope Trick",
+          "Blur",
+          "Branding Smite",
+          "Misty Step",
+          "Blindness/Deafness",
+          "Battle Familiar",
+          "Mirror Image",
+          "Darkness",
+          "Scorching Ray",
+          "Hold Person"
+        ],
+        "3": [
+          "Call Lightning",
+          "Elemental Weapon",
+          "Glyph of Warding",
+          "Fireball",
+          "Water Breathing",
+          "Catnap"
+        ],
+        "4": [
+          "Conjure Minor Elementals",
+          "Divination",
+          "Otiluke's Resilient Sphere"
+        ],
+        "5": [
+          "Animate Objects",
+          "Conjure Elemental",
+          "Hold Monster",
+          "Dominate Person"
+        ],
+        "6": [],
+        "7": [],
+        "8": [],
+        "9": []
+      },
+      "sources": {},
+      "pick": "",
+      "classes": {},
+      "levelFilter": true,
+      "surge": null
+    },
+    "volley": {
+      "power": "eb",
+      "advantage": false,
+      "hex": false,
+      "curse": false,
+      "elem": false,
+      "elemPlus": false,
+      "quicken": false,
+      "ac": null
+    },
+    "pages": [
+      "volley",
+      "spells",
+      "features"
+    ],
+    "theme": "violet",
+    "icon": "sword"
+  },
+  "pages": []
+}

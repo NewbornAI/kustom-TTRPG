@@ -1,0 +1,2600 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08070f">
+<meta name="description" content="A character sheet and a dice roller for a table of one.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="custom-sheet">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>custom-sheet</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23a8172c'/%3E%3Cg transform='scale(0.2962962962962963) translate(54 54) scale(1.2) translate(-54 -54)'%3E%3Cpath d='M78.04,70.97 L42.69,35.62 L35.62,42.69 L70.97,78.04 Z M28.65,39.15 a10.5,10.5 0 1 0 21,0 a10.5,10.5 0 1 0 -21,0 Z M68.09,73.09 a5,5 0 1 0 10,0 a5,5 0 1 0 -10,0 Z' fill='%23ffffff'/%3E%3Cpath d='M76.63,31.37 L51.88,63.19 L44.81,56.12 Z M52.87,67.86 L56.55,64.18 L43.82,51.45 L40.14,55.13 Z M39.72,72.24 L51.38,60.58 L47.42,56.62 L35.76,68.28 Z M30.91,73.09 a4,4 0 1 0 8,0 a4,4 0 1 0 -8,0 Z' fill='%23a8172c' stroke='%23a8172c' stroke-width='5' stroke-linejoin='round'/%3E%3Cpath d='M76.63,31.37 L51.88,63.19 L44.81,56.12 Z M52.87,67.86 L56.55,64.18 L43.82,51.45 L40.14,55.13 Z M39.72,72.24 L51.38,60.58 L47.42,56.62 L35.76,68.28 Z M30.91,73.09 a4,4 0 1 0 8,0 a4,4 0 1 0 -8,0 Z' fill='%23ffffff'/%3E%3Cpath d='M43.11,38.02 L31.09,26 L26,31.09 L38.02,43.11 Z M36.96,40.56 a3.6,3.6 0 1 0 7.2,0 a3.6,3.6 0 1 0 -7.2,0 Z' fill='%23a8172c'/%3E%3C/g%3E%3C/svg%3E">
+<style>
+@font-face{
+  font-family:'Cinzel';
+  src:url('cinzel.woff2') format('woff2');
+  font-weight:400 900;
+  font-style:normal;
+  font-display:swap;
+}
+
+:root{
+  --void:#08070f;
+  --edge:#2a2440;
+  --ink:#efedfa;
+  --muted:#8c87a8;
+  --arcane:#9b7bff;
+  --arcane-rgb:155,123,255;
+  --gold:#ffc44d;
+  --gold-rgb:255,196,77;
+  --force:#6e9bff;
+  --fire:#ff8446;
+  --lightning:#ffd447;
+  --necrotic:#7ad86f;
+  --display:'Cinzel',Georgia,'Times New Roman',serif;
+  --sans:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  /* The meanings every page paints with: a miss, the two kinds of advantage,
+     the two ways hit points move, the temporary ones and the quickened spell.
+     A theme keeps them, because they say a rule and not a look. */
+  --miss-rgb:208,138,156;
+  --adv-rgb:154,209,255;
+  --dis-rgb:255,111,140;
+  --heal-rgb:122,216,111;
+  --temp-rgb:110,155,255;
+  --quick-rgb:92,214,220;
+  /* The room between things, the corners, and the height a thumb needs. */
+  --gap-1:4px;
+  --gap-2:6px;
+  --gap-3:8px;
+  --gutter:12px;
+  --r-chip:7px;
+  --r-control:9px;
+  --r-box:12px;
+  --r-main:16px;
+  --tap:40px;
+  --tap-small:34px;
+}
+
+/* A character carries its own colours. Everything the app paints comes from the few variables above, so a theme is one block like this. */
+body[data-theme="blueRed"]{
+  --void:#070a14;
+  --edge:#22314f;
+  --ink:#eaf1ff;
+  --muted:#8494b8;
+  --arcane:#4c8dff;
+  --arcane-rgb:76,141,255;
+  --gold:#ff4b5c;
+  --gold-rgb:255,75,92;
+}
+
+body[data-theme="emerald"]{
+  --void:#060f0b;
+  --edge:#1f3b2c;
+  --ink:#eaf6ef;
+  --muted:#82a894;
+  --arcane:#34d399;
+  --arcane-rgb:52,211,153;
+  --gold:#ffd166;
+  --gold-rgb:255,209,102;
+}
+
+body[data-theme="ember"]{
+  --void:#100807;
+  --edge:#43241f;
+  --ink:#fdeee9;
+  --muted:#b08a7f;
+  --arcane:#ff7a45;
+  --arcane-rgb:255,122,69;
+  --gold:#ffd23f;
+  --gold-rgb:255,210,63;
+}
+
+body[data-theme="frost"]{
+  --void:#060a12;
+  --edge:#24344f;
+  --ink:#eaf4ff;
+  --muted:#8aa0bd;
+  --arcane:#7fd8ff;
+  --arcane-rgb:127,216,255;
+  --gold:#c7a4ff;
+  --gold-rgb:199,164,255;
+}
+
+body[data-theme="crimson"]{
+  --void:#0d0509;
+  --edge:#3e1b28;
+  --ink:#fdebf1;
+  --muted:#b2859a;
+  --arcane:#ff4d6d;
+  --arcane-rgb:255,77,109;
+  --gold:#ffc44d;
+  --gold-rgb:255,196,77;
+}
+
+body[data-theme="verdigris"]{
+  --void:#05100f;
+  --edge:#1d3b3a;
+  --ink:#e8f5f2;
+  --muted:#84a8a4;
+  --arcane:#2dd4bf;
+  --arcane-rgb:45,212,191;
+  --gold:#f0b27a;
+  --gold-rgb:240,178,122;
+}
+
+body[data-theme="steel"]{
+  --void:#0a0b0e;
+  --edge:#2a303c;
+  --ink:#eceff5;
+  --muted:#8f97a6;
+  --arcane:#b8c6e0;
+  --arcane-rgb:184,198,224;
+  --gold:#ff9f43;
+  --gold-rgb:255,159,67;
+}
+
+body[data-theme="heavyMetal"]{
+  --void:#050506;
+  --edge:#332f38;
+  --ink:#f4f1ec;
+  --muted:#9b939c;
+  --arcane:#d3d7de;
+  --arcane-rgb:211,215,222;
+  --gold:#ff4757;
+  --gold-rgb:255,71,87;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+html,body{height:100%;margin:0}
+
+body{
+  background:var(--void);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:14px;
+  line-height:1.35;
+  -webkit-text-size-adjust:100%;
+  -webkit-tap-highlight-color:transparent;
+  overscroll-behavior:none;
+  overflow:hidden;
+}
+
+/* A hold never selects: the app is buttons and numbers, and a press held on
+   one is a carry or nothing. The words a player may want to copy, a field
+   and the text of a description, keep their selection. */
+.app{
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+  height:100vh;
+  height:100dvh;
+  max-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding:9px 10px 10px;
+  padding:calc(env(safe-area-inset-top) + 9px) 10px calc(env(safe-area-inset-bottom) + 10px);
+  background:
+    radial-gradient(130% 55% at 50% -8%, rgba(var(--arcane-rgb),.20), transparent 62%),
+    radial-gradient(100% 45% at 50% 112%, rgba(110,155,255,.12), transparent 60%),
+    var(--void);
+}
+
+/* ---- header ---- */
+.app input,.app textarea,.app [contenteditable="true"],.sheet-text{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+
+.head{display:flex;align-items:center;gap:9px;min-height:var(--tap);flex:0 0 auto}
+
+.sigil{width:22px;height:22px;color:var(--arcane);flex:0 0 auto;opacity:.9}
+
+.title{
+  margin:0;
+  flex:1 1 auto;
+  min-width:0;
+  font-family:var(--display);
+  font-weight:700;
+  font-size:24px;
+  font-size:clamp(19px,5.6vw,26px);
+  line-height:1.05;
+  letter-spacing:.01em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* ---- the kinds of damage ---- */
+.force{color:var(--force)}
+
+.fire{color:var(--fire)}
+
+.lightning{color:var(--lightning)}
+
+.necrotic{color:var(--necrotic)}
+
+/* The buttons of the head, one size and one weight and a gap a thumb cannot mistake: the characters, the action of the page, the rewind, then the settings. A thumb's width each. */
+.headtools{flex:0 0 auto;display:flex;align-items:center;gap:var(--gap-2)}
+
+.headslot{flex:0 0 auto;display:flex;align-items:center;gap:var(--gap-2)}
+
+.headslot:empty{display:none}
+
+.gear,.wrench{
+  flex:0 0 auto;
+  width:var(--tap);
+  height:var(--tap);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  border:1px solid var(--edge);
+  border-radius:var(--r-control);
+  background:rgba(255,255,255,.03);
+  color:var(--muted);
+  cursor:pointer;
+}
+
+.gear svg,.wrench svg{width:18px;height:18px}
+
+.gear[aria-pressed="true"],.wrench[aria-pressed="true"]{border-color:rgba(var(--arcane-rgb),.6);color:var(--arcane);background:rgba(var(--arcane-rgb),.12)}
+
+.wrench[hidden]{display:none}
+
+.gear[hidden]{display:none}
+
+/* ---- the settings ---- */
+.srow{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:8px 9px;
+  border:1px solid var(--edge);
+  border-radius:8px;
+  background:rgba(255,255,255,.03);
+}
+
+.srow .t{flex:0 0 auto;font-size:12.5px;color:var(--ink)}
+
+.srow .d{flex:1 1 auto;min-width:0;font-size:10.5px;color:var(--muted);line-height:1.35}
+
+.stog{
+  flex:0 0 auto;
+  border:1px solid var(--edge);
+  border-radius:999px;
+  background:rgba(255,255,255,.03);
+  color:var(--muted);
+  font-family:var(--sans);
+  font-size:10.5px;
+  padding:5px 11px;
+  min-height:28px;
+  cursor:pointer;
+}
+
+.stog.on{border-color:rgba(122,216,111,.5);background:rgba(122,216,111,.12);color:#8fe084}
+
+.stog:disabled{opacity:.45;cursor:default}
+
+/* ---- the bar: every page by an icon and a word, at the bottom where the
+   thumb is. One row holds five; two rows hold every page. ---- */
+.bar{
+  flex:0 0 auto;
+  display:grid;
+  grid-template-columns:repeat(var(--cols,5),minmax(0,1fr));
+  gap:2px;
+  margin:0 -10px calc(-1 * (env(safe-area-inset-bottom) + 10px));
+  padding:4px 6px calc(env(safe-area-inset-bottom) + 6px);
+  border-top:1px solid var(--edge);
+  background:var(--void);
+}
+
+.bar:empty{display:none}
+
+.baritem,.mtile{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  padding:0;
+  border:0;
+  border-radius:var(--r-box);
+  background:none;
+  color:var(--muted);
+  font-family:var(--sans);
+  font-size:10.5px;
+  letter-spacing:.03em;
+  cursor:pointer;
+  transition:color .12s ease,background-color .12s ease;
+}
+
+.baritem{height:54px}
+
+.bar.two{gap:0 2px;padding-top:2px;padding-bottom:calc(env(safe-area-inset-bottom) + 4px)}
+
+/* Two rows take less of the page: each row lower, the icon and the word
+   smaller and closer. */
+.bar.two .baritem{height:38px;gap:2px;font-size:9.5px}
+
+.bar.two .baritem svg{width:17px;height:17px}
+
+.baritem svg,.mtile svg{width:20px;height:20px;flex:0 0 auto}
+
+.baritem span,.mtile span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.baritem[aria-current="page"],.mtile.here{color:var(--arcane);background:rgba(var(--arcane-rgb),.14)}
+
+.baritem:focus-visible,.mtile:focus-visible{outline:2px solid var(--arcane);outline-offset:-2px}
+
+.baritem.dragging,.mtile.dragging{opacity:.75;color:var(--arcane)}
+
+/* A stepper a thumb uses: two wide steps and the value between them. */
+.bigstep{display:flex;align-items:stretch;gap:var(--gap-3)}
+
+/* The steps of the origin in the creator: the scores in rows, the choices in
+   chips. */
+.ohead{margin:10px 0 6px;font-size:12.5px;color:var(--muted)}
+.ohead b{color:var(--ink);font-family:var(--display);font-size:16px}
+.owarn{color:rgb(var(--miss-rgb))}
+.onote{margin:8px 0 0;font-size:11.5px;color:var(--muted)}
+.orows{display:flex;flex-direction:column;gap:4px}
+.orow{display:flex;align-items:center;gap:8px;min-height:44px}
+.orow .ok{flex:1 1 auto;font-size:14px;color:var(--ink)}
+.orow .ostep{flex:0 0 44px;height:40px;border:1px solid var(--edge);border-radius:var(--r-control);background:rgba(255,255,255,.04);color:var(--ink);font-size:20px;cursor:pointer;touch-action:manipulation}
+.orow .ov{flex:0 0 2.2em;text-align:center;font-family:var(--display);font-size:20px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.orow .oc{flex:0 0 2em;text-align:right;font-size:11px;color:var(--muted)}
+.ochips{display:flex;flex-wrap:wrap;gap:6px}
+.ochip{min-height:36px;padding:0 12px;border:1px solid var(--edge);border-radius:var(--r-chip);background:rgba(255,255,255,.03);color:var(--muted);font-family:var(--sans);font-size:12.5px;cursor:pointer}
+.ochip.on{border-color:rgba(var(--arcane-rgb),.6);background:rgba(var(--arcane-rgb),.15);color:var(--ink)}
+
+.bigstep button{flex:0 0 64px;height:64px;border:1px solid var(--edge);border-radius:var(--r-box);background:rgba(255,255,255,.04);color:var(--ink);font-size:26px;cursor:pointer;touch-action:manipulation}
+
+.bigval{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--edge);border-radius:var(--r-box);font-family:var(--display);font-size:30px;font-weight:700;line-height:1}
+
+.bigk{font-family:var(--sans);font-size:9.5px;font-weight:400;letter-spacing:.16em;color:var(--muted);margin-bottom:4px}
+
+/* The classes to start from, two to a row. */
+.mtiles.ctiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+.mtile.ctile2{height:58px;gap:2px}
+
+.ctn{font-size:13.5px;color:var(--ink)}
+
+.ctm{font-size:10.5px;color:var(--muted)}
+
+.mtiles.intiles{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:var(--gap-3)}
+
+/* The characters: a card each, the picture or the icon on the character's
+   own colours, then the icon and the name over the classes. */
+.ccards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--gap-3)}
+
+.ccard{position:relative;min-width:0;border:1px solid var(--edge);border-radius:var(--r-box);background:rgba(255,255,255,.03);overflow:hidden}
+
+.ccard.here{border-color:var(--cc,var(--arcane));box-shadow:0 0 0 1px var(--cc,var(--arcane))}
+
+.ccpick{display:flex;flex-direction:column;width:100%;padding:0 0 8px;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+
+.ccpic{display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:4/3;background:radial-gradient(120% 90% at 50% 0%,color-mix(in srgb,var(--cc,#9b7bff) 30%,transparent),var(--cg,#08070f));overflow:hidden}
+
+/* A portrait is a head before it is a body: the picture sits near its top,
+   so the head stays whole in the tile. */
+.ccpic img{width:100%;height:100%;object-fit:cover;object-position:50% 10%;display:block}
+
+.ccbig{width:46%;color:var(--cc,var(--arcane))}
+
+.ccbig svg{width:100%;height:auto;display:block}
+
+.ccname{display:flex;align-items:center;gap:6px;padding:7px 9px 0;min-width:0}
+
+.ccico{width:16px;height:16px;flex:0 0 auto;color:var(--cc,var(--arcane))}
+
+.ccico svg{width:16px;height:16px;display:block}
+
+.ccn{min-width:0;font-family:var(--display);font-size:15px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.ccline{padding:2px 9px 0;font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.ccdel{position:absolute;top:6px;right:6px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;padding:0;border:0;border-radius:16px;background:rgba(0,0,0,.45);color:#fff;font-size:17px;line-height:1;cursor:pointer}
+
+.ccard.ccadd{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:150px;border-style:dashed;color:var(--muted);font-family:var(--sans);font-size:12px;cursor:pointer}
+
+.ccplus{font-size:30px;line-height:1;color:var(--arcane)}
+
+/* A picture opened from the banner: the whole screen, a tap closes it. */
+.viewer{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);background:#050409;transition:opacity .18s ease-out}
+
+.viewer[hidden]{display:none}
+
+@starting-style{.viewer:not([hidden]){opacity:0}}
+
+.viewer img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+
+/* A choice of pictures: the arrows in the bottom corners, the count and the
+   pick under the picture, and a swipe between them. */
+.vnav{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 18px);width:56px;height:56px;display:flex;align-items:center;justify-content:center;padding:0;border:1px solid rgba(255,255,255,.28);border-radius:28px;background:rgba(0,0,0,.5);color:#fff;font-size:30px;line-height:1;cursor:pointer}
+.vnav.prev{left:18px}
+.vnav.next{right:18px}
+.vnav[hidden]{display:none}
+.vfoot{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 16px);display:flex;align-items:center;gap:10px}
+.vfoot[hidden]{display:none}
+.vcount{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.72);font-variant-numeric:tabular-nums}
+.vpick{height:var(--tap);padding:0 18px;border:1px solid rgba(var(--arcane-rgb),.7);border-radius:var(--r-control);background:rgba(var(--arcane-rgb),.9);color:#fff;font-family:var(--sans);font-size:13.5px;font-weight:600;cursor:pointer}
+
+.title.haspic{cursor:zoom-in}
+
+/* The More sheet: every page as a tile, the ones in the bar marked, then the
+   characters and the settings. */
+.mtiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gap-2)}
+
+.mtile{height:76px;border:1px solid var(--edge);background:rgba(255,255,255,.03);font-size:11.5px}
+
+.mtile.inbar{border-color:rgba(var(--arcane-rgb),.35)}
+
+.mfoot{margin-top:var(--gap-3);padding-top:var(--gap-3);border-top:1px solid var(--edge)}
+
+/* ---- views ---- */
+/* The pages are stacked in the views and one is shown at a time: a page change
+   is a page change, with nothing sliding. The sheet is a child of the views, so
+   it covers the page it was opened from. */
+/* The vertical pan is the browser's, the horizontal one is ours: without this
+   a touch drag is taken for a scroll and the pointer is cancelled before the
+   swipe can read it. */
+.views{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;position:relative;touch-action:pan-y}
+
+/* Everything inside a page lets the sideways move through, a button
+   included, so a swipe that starts on a control is still a swipe. The rule
+   weighs nothing, so a part that needs its own touch says so and wins. */
+:where(.views *){touch-action:pan-y}
+
+.view{display:none;flex:1 1 auto;min-height:0;flex-direction:column;gap:8px;position:relative}
+
+/* A page that broke says why where it would have been. */
+.page-error{
+  border:1px solid rgba(var(--gold-rgb),.6);
+  border-radius:10px;
+  padding:10px 12px;
+  color:var(--ink);
+  background:rgba(var(--gold-rgb),.08);
+  font-size:13px;
+  white-space:pre-wrap;
+}
+
+.view.on{display:flex}
+/* A panel a package or the agent put inside a page of the app. */
+.plugpanel{flex:0 0 auto;margin:6px 0}
+
+/* ---- the blocks more than one page paints: the small button, the field of
+   a card, and the empty note ---- */
+.mini{
+  width:22px;height:22px;
+  border-radius:6px;
+  border:1px solid var(--edge);
+  background:rgba(255,255,255,.03);
+  color:var(--muted);
+  font-size:14px;line-height:1;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  padding:0;
+  flex:0 0 auto;
+}
+
+.mini:active{background:rgba(var(--arcane-rgb),.2);color:var(--ink)}
+
+.f{display:grid;grid-template-columns:3.8em minmax(0,1fr);column-gap:4px;align-items:baseline;font-size:9.5px;line-height:1.4}
+
+.f .k{color:#635e7e}
+
+.f .v{color:var(--muted);overflow-wrap:anywhere}
+
+.f .v.yes{color:#b9b3d6}
+
+.empty{font-size:11px;color:#615c7d;padding:8px 2px;line-height:1.5}
+
+/* ---- the cast block: the button at the bottom of a page that casts, in the
+   volley's look. Two pages paint it, so its look is the shell's. ---- */
+.castbar{flex:0 0 auto;display:flex;gap:8px}
+
+.castbtn{position:relative;flex:1 1 0;min-width:0;height:44px;border:1px solid rgba(255,255,255,.2);border-radius:var(--r-control);background:linear-gradient(180deg,color-mix(in srgb,var(--arcane) 80%,#fff) 0%,color-mix(in srgb,var(--arcane) 62%,#000) 100%);color:#fff;font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:.12em;padding-left:.12em;text-shadow:0 1px 6px rgba(0,0,0,.45);box-shadow:0 6px 16px rgba(var(--arcane-rgb),.28),inset 0 1px 0 rgba(255,255,255,.28);cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;overflow:hidden;display:flex;align-items:center;justify-content:center}
+
+.castbtn-quick[hidden]{display:none}
+
+/* The second cast is the same colour, outlined, so the two read as a pair
+   in the character's own colour and the first stays the one to press. */
+.castbtn-quick{font-size:17px;letter-spacing:.06em;background:rgba(var(--arcane-rgb),.12);border-color:rgba(var(--arcane-rgb),.6);color:var(--arcane);text-shadow:none;box-shadow:none}
+
+.castbtn:focus-visible{outline:2px solid #fff;outline-offset:3px}
+
+.castbtn:active{transform:translateY(1px);box-shadow:0 3px 10px rgba(var(--arcane-rgb),.3),inset 0 1px 0 rgba(255,255,255,.22)}
+
+.castbtn:disabled{opacity:.45;cursor:default}
+
+@media (prefers-reduced-motion:reduce){.castbtn{transition:none}}
+
+@media (min-height:760px){.castbtn{height:52px}}
+
+/* ---- the level slider: the level to cast a spell or smite at, and the
+   preview of what that level does. The spell page's look, shared. ---- */
+.lvlrow{display:flex;flex-direction:column;gap:6px;margin:0 0 9px}
+
+.lvlrow.off{opacity:.45}
+
+.lvlhead{display:flex;align-items:center;gap:7px}
+
+.lvlhead .lvlk{flex:0 0 auto;font-size:9px;letter-spacing:.16em;color:var(--muted)}
+
+.lvlhead .lvln{flex:0 0 auto;font-family:var(--display);font-weight:700;font-size:14px;line-height:1;color:var(--ink);min-width:1.1em;text-align:center}
+
+.lvlrange{-webkit-appearance:none;appearance:none;flex:1 1 auto;min-width:0;height:24px;margin:0;background:transparent}
+
+.lvlrange:focus-visible{outline:2px solid var(--arcane);outline-offset:3px;border-radius:6px}
+
+.lvlrange::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:linear-gradient(90deg,rgba(255,255,255,.10) 0 var(--a,0%),var(--arcane) var(--a,0%) var(--b,100%),rgba(255,255,255,.10) var(--b,100%) 100%)}
+
+.lvlrange::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;margin-top:-8px;border-radius:50%;border:1px solid rgba(255,255,255,.42);background:radial-gradient(circle at 34% 28%,#dccaff,#8a68f5 58%,#5a3fd2);box-shadow:0 2px 8px rgba(0,0,0,.5)}
+
+.lvlrange::-moz-range-track{height:4px;border-radius:2px;background:rgba(255,255,255,.10)}
+
+.lvlrange::-moz-range-progress{height:4px;border-radius:2px;background:var(--arcane)}
+
+.lvlrange::-moz-range-thumb{width:18px;height:18px;border-radius:50%;border:1px solid rgba(255,255,255,.42);background:#8a68f5}
+
+.lvlrow.off .lvlrange::-webkit-slider-runnable-track{background:rgba(255,255,255,.08)}
+
+.lvlrow.off .lvlrange::-webkit-slider-thumb{background:#4a4560;border-color:#3b3750;box-shadow:none}
+
+.lvlprev{min-height:16px;font-size:11.5px;color:var(--muted)}
+
+/* ---- the attack box: one swing of an attack, the die, the roll and the
+   damage. The summon stat block's look, shared. ---- */
+.sk{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#6f6a8d;display:inline-flex;align-items:center;gap:3px}
+
+.sblock{border:1px solid var(--edge);border-radius:5px;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012));padding:6px 8px 7px;display:flex;flex-direction:column;gap:3px}
+
+.sblock.crit{border-color:rgba(var(--gold-rgb),.6);box-shadow:0 0 0 1px rgba(var(--gold-rgb),.16),0 8px 18px rgba(var(--gold-rgb),.12)}
+.sblock.miss{border-color:rgba(208,138,156,.66);box-shadow:0 0 0 1px rgba(208,138,156,.12)}
+
+.shead{display:flex;align-items:baseline;gap:8px}
+
+.sname{flex:1 1 auto;min-width:0;font-size:13px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.sreach{flex:0 0 auto;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#6f6a8d;white-space:nowrap}
+
+.satkgrid{display:grid;grid-template-columns:auto 40px auto minmax(0,1fr);column-gap:8px;row-gap:2px;align-items:center}
+
+.scell-atk{grid-column:1;grid-row:1;display:flex;align-items:baseline;gap:5px;white-space:nowrap}
+
+.scell-dmg{grid-column:1;grid-row:2;display:flex;align-items:baseline;gap:5px;white-space:nowrap}
+
+.scell-die{grid-column:2;grid-row:1/3;display:flex;align-items:center;justify-content:center}
+
+.scell-hit{grid-column:3;grid-row:1/3;display:flex;align-items:center;gap:3px;justify-content:flex-start}
+
+.scell-dmgres{grid-column:4;grid-row:1;display:flex;align-items:center;gap:4px;justify-content:flex-end}
+
+.scell-dmgtot{grid-column:4;grid-row:2;display:flex;align-items:baseline;gap:5px;justify-content:flex-end;white-space:nowrap}
+
+.sdie{width:38px;height:38px;background:none;border:none;padding:0;cursor:pointer;color:var(--arcane);display:flex;align-items:center;justify-content:center}
+
+.sdie svg{width:100%;height:100%;display:block}
+
+.sdie:active{color:var(--gold)}
+
+.sdie-plain{cursor:default}
+
+.sdmini{width:14px;height:14px;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;color:var(--muted)}
+
+.sdmini svg{width:13px;height:13px;display:block}
+
+.snum2{font-family:var(--display);font-size:13.5px;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.sgres{display:inline-flex;align-items:center;gap:3px;min-width:38px}
+
+.sformula{font-family:var(--sans);font-size:12.5px;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.smod{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.sghost{color:#6f6a8d}
+
+.sother{font-size:10.5px;color:#6f6a8d;font-variant-numeric:tabular-nums}
+
+.stype{font-style:normal;font-size:9.5px;letter-spacing:.04em}
+
+/* ---- the stacked attack box: one column of a page that lays its attacks
+   out in a row, the hit in a die, the beam, the damage. The volley's look,
+   shared, so a page that stands one up does not write it again. ---- */
+/* the hit: the final roll rides in a die, the arithmetic rides under it */
+.vhit{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%}
+
+.vdie{width:34px;height:34px;color:var(--arcane)}
+
+.vdie svg{width:100%;height:100%;display:block}
+
+.vsum{display:flex;align-items:center;gap:3px;justify-content:center;font-size:11px;line-height:1;color:var(--muted);font-variant-numeric:tabular-nums}
+
+.vmini{width:13px;height:13px;flex:0 0 auto;color:var(--muted)}
+
+.vmini svg{width:13px;height:13px;display:block}
+
+.vroll{color:var(--ink);font-weight:600}
+
+.vroll.vghost{color:#6f6a8d;font-weight:400}
+
+.vother{color:#6f6a8d;font-size:10px}
+
+.vmod{color:var(--muted)}
+
+/* the beam of light between the hit and the damage */
+.vbeam{flex:1 1 auto;display:flex;justify-content:center;min-height:8px}
+
+.vbeam::before{content:'';width:3px;border-radius:2px;background:linear-gradient(180deg,rgba(var(--beam,var(--arcane-rgb)),.5),rgba(var(--beam,var(--arcane-rgb)),.14));box-shadow:0 0 10px rgba(var(--beam,var(--arcane-rgb)),.35)}
+
+/* the damage: the total, the kinds under it, the dice that made it */
+.vdmg{width:100%;display:flex;flex-direction:column;align-items:center;gap:3px;padding-top:5px;border-top:1px solid var(--edge)}
+
+.vdt{font-family:var(--display);font-weight:700;font-size:22px;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
+
+.vdt.vghost{color:#6f6a8d}
+
+.vkinds{display:flex;gap:5px;flex-wrap:wrap;justify-content:center}
+
+.vkinds em{font-style:normal;font-size:9.5px;letter-spacing:.03em}
+
+.vdice{display:flex;align-items:center;gap:2px;flex-wrap:wrap;justify-content:center;font-size:11px;line-height:1.1;font-variant-numeric:tabular-nums}
+
+.vg{display:flex;align-items:center;gap:2px;min-width:0}
+
+.vg svg{width:12px;height:12px;display:block;flex:0 0 auto}
+
+.vgn{font-weight:600;font-size:10.5px}
+
+.vgn.vghost{color:#6f6a8d;font-weight:400}
+
+.vplus{color:#615c7d;font-size:10px}
+
+.vtail{display:flex;align-items:center;gap:2px;min-width:0}
+
+.vflat{font-weight:600}
+
+/* ---- the card: one roll of a turn on the attack sheet. The to-hit total
+   rides inside the big d20, the natural d20 beside it with the dropped one
+   struck, the damage dice as the outline of the die then the numbers in the
+   colour of their type, and the damage total large with its types small
+   under it. The outline says hit, miss or critical. ---- */
+.acard{border:1px solid rgba(var(--arcane-rgb),.38);border-radius:var(--r-box);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.012))}
+
+.acard.crit{border-color:rgba(var(--gold-rgb),.7);box-shadow:0 0 0 1px rgba(var(--gold-rgb),.16),0 8px 18px rgba(var(--gold-rgb),.12)}
+
+.acard.miss{border-color:rgba(var(--miss-rgb),.66);opacity:.55}
+
+.acflip{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px 8px 8px;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;touch-action:manipulation}
+
+.acd20{position:relative;flex:0 0 auto;width:58px;height:58px;display:flex;align-items:center;justify-content:center;color:var(--arcane)}
+
+.acd20 svg{position:absolute;inset:0;width:100%;height:100%}
+
+.acd20 svg polygon{stroke-width:1.2}
+
+.acard.crit .acd20{color:var(--gold)}
+
+.acard.nat1 .acd20{color:rgb(var(--miss-rgb))}
+
+.achit{position:relative;font-family:var(--display);font-size:22px;font-weight:800;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
+
+.acard.crit .achit{color:var(--gold)}
+
+.acard.miss .achit{color:var(--muted);text-decoration:line-through;text-decoration-thickness:2px}
+
+.acmid{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:6px}
+
+.acnat{display:flex;align-items:center;gap:4px}
+
+.acmini{width:13px;height:13px;flex:0 0 auto;color:var(--muted)}
+
+.acmini svg{width:13px;height:13px;display:block}
+
+.acnatk{font-family:var(--display);font-size:15px;font-weight:600;line-height:1;color:#c9c4e4}
+
+.acard.crit .acnatk{color:var(--gold)}
+
+.acard.nat1 .acnatk{color:rgb(var(--miss-rgb))}
+
+.acnato{font-family:var(--display);font-size:13px;line-height:1;color:#5c5778}
+
+.acdice{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
+
+.acpart{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+
+.acpart .rgrps{flex-wrap:nowrap}
+
+.acpart .snum2{font-family:var(--display);font-size:15px;font-weight:600;letter-spacing:.04em}
+
+.acrider{width:14px;height:14px;flex:0 0 auto}
+
+.acdmg{flex:0 0 auto;max-width:108px;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+
+.actot{font-family:var(--display);font-size:36px;font-weight:800;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
+
+.acard.crit .actot{color:var(--gold)}
+
+.acard.miss .actot{color:#5c5778}
+
+.actypes{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:0 6px}
+
+.actypes em{font-style:normal;font-size:10.5px;letter-spacing:.02em;white-space:nowrap}
+
+/* A roll lands: the card rises, the d20 and each die turn into place, a
+   few hundredths apart and never more than a quarter of a second in all,
+   and a total that changed pops. Opacity alone for less motion. */
+@keyframes acIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+@keyframes acLand{from{opacity:0;transform:rotate(-140deg) scale(.4)}65%{opacity:1;transform:rotate(8deg) scale(1.08)}to{opacity:1;transform:none}}
+
+@keyframes acPop{from{transform:scale(1.22)}to{transform:none}}
+
+@keyframes acFade{from{opacity:0}to{opacity:1}}
+
+.acard.fresh{animation:acIn .18s ease-out both}
+
+.acard.fresh .acd20 svg,.acard.fresh .acpart .sdmini{transform-origin:center;animation:acLand .26s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--k,0ms)}
+
+.acard.fresh .actot,.acard.popped .actot{display:inline-block;animation:acPop .16s ease-out}
+
+@media (prefers-reduced-motion:reduce){
+  .acard.fresh{animation:acFade .15s linear both}
+  .acard.fresh .acd20 svg,.acard.fresh .acpart .sdmini,.acard.fresh .actot,.acard.popped .actot{animation:none}
+}
+
+/* ---- the custom buttons: one shape for the chips and the toggles of the
+   app. A rectangle that centres its word and takes an even share of its row,
+   and two rows split as evenly as the count allows when one cannot hold them.
+   The row measures itself and writes --cols; a page keeps only the colour of
+   its own buttons. ---- */
+.chiprow{display:flex;flex-wrap:wrap;gap:6px;row-gap:6px}
+
+.chiprow.measure>button,.chiprow.measure>.plugbar>*,.chiprow.measure>.chippair{flex:0 0 auto}
+
+/* A panel in a row of chips: its box steps aside, so each of its children is
+   a chip of the row, the way the page's own are. */
+.plugbar{display:contents}
+
+.chiprow>.plugbar>*,.chiprow>.chippair{flex:1 1 calc((100% - (var(--cols,4) - 1) * 6px) / var(--cols,4));min-width:0}
+
+.chiprow>button,.chiprow>.plugbar>button{
+  flex:1 1 calc((100% - (var(--cols,4) - 1) * 6px) / var(--cols,4));
+  min-width:0;
+  min-height:34px;
+  padding:5px 8px;
+  border:1px solid var(--edge);
+  border-radius:6px;
+  background:rgba(255,255,255,.03);
+  color:var(--muted);
+  font-family:var(--sans);
+  font-size:11px;
+  letter-spacing:.02em;
+  text-align:center;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  cursor:pointer;
+}
+
+.chiprow>button:focus-visible,.chiprow>.plugbar>button:focus-visible{outline:2px solid var(--arcane);outline-offset:2px}
+
+.chiprow>button[aria-pressed="true"],.chiprow>.plugbar>button[aria-pressed="true"]{border-color:rgba(var(--crgb,var(--arcane-rgb)),.55);background:rgba(var(--crgb,var(--arcane-rgb)),.12);color:rgb(var(--crgb,var(--arcane-rgb)))}
+
+.chiprow>button[hidden],.chiprow>.plugbar>[hidden]{display:none}
+
+.chiprow>button.small{font-size:10px;letter-spacing:.06em}
+
+/* The fixed grid a page asks for: the columns never change, so a chip that
+   turns on or off never moves another. A chip is the row's look, an icon may
+   ride before its word, and a pill may sit on its right. */
+.chipgrid{display:grid;grid-template-columns:repeat(var(--cols,3),minmax(0,1fr));gap:var(--gap-2)}
+
+.chipgrid>.vchip,.chipgrid>.plugbar>.vchip,.chippair{
+  min-width:0;
+  min-height:38px;
+  border:1px solid var(--edge);
+  border-radius:var(--r-chip);
+  background:rgba(255,255,255,.03);
+  color:var(--muted);
+}
+
+.chipgrid .vchip{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:4px 6px;
+  font-family:var(--sans);
+  font-size:12px;
+  letter-spacing:.02em;
+  white-space:nowrap;
+  overflow:hidden;
+  cursor:pointer;
+  transition:background-color .12s ease,border-color .12s ease,color .12s ease;
+}
+
+.vchipi{width:16px;height:16px;flex:0 0 auto}
+
+.chipgrid>.vchip[aria-pressed="true"],.chipgrid>.plugbar>.vchip[aria-pressed="true"],.chippair:has(> .vchip[aria-pressed="true"]:not(.chippill)){border-color:rgba(var(--crgb,var(--arcane-rgb)),.55);background:rgba(var(--crgb,var(--arcane-rgb)),.12);color:rgb(var(--crgb,var(--arcane-rgb)))}
+
+.chipgrid>.vchip:disabled,.chiprow>.plugbar>button:disabled,.chiprow>button:disabled{border-style:dashed;color:#4d4866;background:none;cursor:default}
+
+.chipgrid>.vchip:focus-visible,.chippair .vchip:focus-visible{outline:2px solid var(--arcane);outline-offset:2px}
+
+.chippair{display:flex;align-items:stretch;overflow:hidden;padding:0}
+
+.chippair[hidden]{display:none}
+
+.chippair .vchip{flex:1 1 auto;min-width:0;border:0;background:none;color:inherit}
+
+.chippair .chippill{flex:0 0 38px;padding:0;border-left:1px solid rgba(var(--crgb,var(--arcane-rgb)),.35);background:rgba(var(--crgb,var(--arcane-rgb)),.16);font-weight:700}
+
+.chippair .chippill[hidden]{display:none}
+
+@media (prefers-reduced-motion:reduce){.chipgrid .vchip{transition:none}}
+
+/* The segment: one choice out of a few in one frame, the picked one lit. */
+.seg{display:flex;gap:2px;padding:2px;min-width:0;border:1px solid var(--edge);border-radius:var(--r-control)}
+
+.seg button{flex:1 1 0;min-width:0;min-height:var(--tap-small);display:flex;align-items:center;justify-content:center;gap:5px;padding:0 6px;border:0;border-radius:var(--r-chip);background:none;color:var(--muted);font-family:var(--sans);font-size:12px;cursor:pointer;touch-action:manipulation}
+
+.seg button span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.seg button svg{width:16px;height:16px;flex:0 0 auto}
+
+.seg button[aria-checked="true"]{background:rgba(var(--arcane-rgb),.2);color:var(--ink)}
+
+.seg button:focus-visible{outline:2px solid var(--arcane);outline-offset:-2px}
+/* ---- sheet: the surface a page opens inside itself ---- */
+.sheet{
+  position:absolute;
+  inset:0;
+  /* The same ground as the page behind it, anchored to the window so the
+     two line up: a description is the page, not a flat sheet laid over it. */
+  background:
+    radial-gradient(130% 55% at 50% -8%, rgba(var(--arcane-rgb),.20), transparent 62%) fixed,
+    radial-gradient(100% 45% at 50% 112%, rgba(110,155,255,.12), transparent 60%) fixed,
+    var(--void);
+  z-index:30;
+  display:flex;
+  flex-direction:column;
+}
+
+.sheet[hidden]{display:none}
+
+/* The sheet rises into place when it opens. A layer that docks at the bottom
+   (a keypad, the More pages) is a panel over a dimmed page instead, and the
+   tap on the dim closes it. */
+.sheet{transition:opacity .2s ease-out,transform .2s cubic-bezier(.2,.8,.2,1)}
+
+@starting-style{.sheet:not([hidden]){opacity:0;transform:translateY(18px)}}
+
+.sheet.dock{background:rgba(4,3,10,.62);justify-content:flex-end;transform:none}
+
+@starting-style{.sheet.dock:not([hidden]){opacity:0;transform:none}}
+
+.sheet.dock .sheet-in{
+  flex:0 1 auto;
+  max-height:92%;
+  border:1px solid var(--edge);
+  border-bottom:0;
+  border-radius:var(--r-main) var(--r-main) 0 0;
+  background:radial-gradient(130% 80% at 50% -20%, rgba(var(--arcane-rgb),.16), transparent 62%),var(--void);
+  box-shadow:0 -12px 30px rgba(0,0,0,.5);
+  padding-bottom:calc(env(safe-area-inset-bottom) + 14px);
+  transition:transform .2s cubic-bezier(.2,.8,.2,1);
+}
+
+@starting-style{.sheet.dock:not([hidden]) .sheet-in{transform:translateY(100%)}}
+
+@media (prefers-reduced-motion:reduce){
+  .sheet,.sheet.dock .sheet-in{transition:opacity .15s linear}
+  @starting-style{.sheet:not([hidden]),.sheet.dock:not([hidden]) .sheet-in{transform:none}}
+}
+
+.sheet-in{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  padding:14px 14px calc(env(safe-area-inset-bottom) + 24px);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  position:relative;
+}
+
+/* A part of the sheet a layer leaves empty takes no room, so a short layer
+   (a keypad, the pages) sits close under its title. */
+.sheet-meta:empty,.sheet-text:empty,.sheet-actions:empty,.gsbar:not(:has(> :not([hidden]))){display:none}
+
+.sheet h2{font-family:var(--display);font-size:20px;font-weight:700;margin:0;padding-right:34px}
+
+.sheethead{display:flex;align-items:baseline;gap:12px;padding-right:38px}
+
+.sheethead h2{flex:1 1 auto;min-width:0;padding-right:0;overflow:hidden;text-overflow:ellipsis}
+
+.sheet-tag{flex:0 0 auto;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+
+.sheet-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:14px;row-gap:5px;margin-top:2px}
+
+.sheet-meta.one{grid-template-columns:minmax(0,1fr)}
+
+.sheet-meta.one span{font-size:9.5px;font-style:italic;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.sheet-meta .f{font-size:12px;grid-template-columns:4.4em minmax(0,1fr)}
+
+.sheet-meta .f.wide{grid-column:1 / -1}
+
+.sheet-meta .src{color:var(--muted);border:1px solid var(--edge);border-radius:3px;padding:0 4px;white-space:nowrap;justify-self:start}
+
+.sheet-meta .src.sorc{color:#ff8fb0;border-color:rgba(255,111,168,.45);background:rgba(255,111,168,.10)}
+
+.sheet-meta .src.warlock{color:#9dbcff;border-color:rgba(110,155,255,.45);background:rgba(110,155,255,.10)}
+
+.sheet-meta .src.izzet{color:#dde4ff;border-color:rgba(140,160,255,.45);background:linear-gradient(90deg,rgba(110,155,255,.20) 0 50%,rgba(255,111,168,.20) 50% 100%)}
+
+.sheet-meta .src.elf{color:#8fe084;border-color:rgba(122,216,111,.45);background:rgba(122,216,111,.10)}
+
+.sheet-meta .src.bard{color:#c9a7ff;border-color:rgba(178,132,255,.45);background:rgba(178,132,255,.10)}
+
+.sheet-text{font-size:13px;line-height:1.6;color:#d9d5ec}
+
+.sheet-text .tdmg{color:#ff6b6b}
+
+.sheet-text .tsav{color:#6e9bff}
+
+.sheet-text .tcond{border-bottom:1px dotted rgba(var(--gold-rgb),.6);cursor:pointer}
+
+.sheet-text .tcond:active{color:var(--gold)}
+
+.sheet-text p{margin:0 0 9px}
+
+.sheet-text h3{font-family:var(--display);font-size:14px;font-weight:700;color:var(--arcane);margin:14px 0 5px}
+
+.sheet-text ul{margin:0 0 9px;padding-left:18px}
+
+.sheet-text li{margin-bottom:4px}
+
+.sheet-text table{width:100%;border-collapse:collapse;font-size:11.5px;margin:0 0 10px}
+
+.sheet-text th,.sheet-text td{border:1px solid var(--edge);padding:5px 7px;text-align:left;vertical-align:top}
+
+.sheet-text th{color:var(--muted);font-weight:600}
+
+.tcap{font-size:10.5px;color:var(--muted);margin-bottom:3px}
+
+.sheet-text .srcline{margin:2px 0 0;font-size:10.5px;color:var(--muted)}
+
+.sheet-text .srcline .srclink{color:var(--muted);text-decoration:underline;text-underline-offset:2px}
+
+.sheet-text .srcline .srclink:active{color:var(--arcane)}
+
+.sheet-list{display:flex;flex-direction:column;gap:4px}
+
+.sheet-list .cshead{margin:4px 2px 0}
+
+.sheet-list[hidden]{display:none}
+
+.sheet-list .row{display:flex;flex-direction:column;align-items:stretch;gap:4px;border:1px solid var(--edge);border-radius:5px;padding:6px 8px;background:rgba(255,255,255,.02)}
+
+.sheet-list .row .g1{display:flex;align-items:center;gap:8px;min-width:0}
+
+.sheet-list .row .gn{flex:1 1 auto;min-width:0;font-size:12.5px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.sheet-list .row .gn.tappable{cursor:pointer}
+
+.sheet-list .row .gn.tappable:active{color:var(--arcane)}
+
+.sheet-list .row .gadd{width:24px;height:24px;border-radius:6px;border:1px solid var(--edge);background:rgba(255,255,255,.03);color:var(--arcane);font-size:15px;line-height:1;cursor:pointer;flex:0 0 auto;padding:0}
+
+.sheet-list .row .g2{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+
+.sheet-list .row .gcls{border:1px solid var(--edge);border-radius:3px;background:none;color:#6f6a8d;font-family:var(--sans);font-size:8.5px;letter-spacing:.06em;line-height:1;padding:3px 4px;cursor:pointer}
+
+.sheet-list .row .gcls.on{border-color:rgba(122,216,111,.5);background:rgba(122,216,111,.13);color:#8fe084}
+
+.sheet-list .row .gs{font-size:9.5px;color:var(--muted);margin-left:auto;white-space:nowrap}
+
+.sheet-actions{display:flex;gap:8px}
+
+/* The actions of a layer are what the layer is for, so they take the width
+   and a thumb's height. */
+.sheet-actions button{
+  flex:1 1 0;
+  min-height:var(--tap);
+  border:1px solid rgba(var(--arcane-rgb),.5);
+  border-radius:var(--r-control);
+  background:rgba(var(--arcane-rgb),.14);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:13px;
+  padding:0 12px;
+  cursor:pointer;
+}
+
+.sheet-actions button.danger{color:rgb(var(--miss-rgb));border-color:rgba(var(--miss-rgb),.5);background:rgba(var(--miss-rgb),.1)}
+
+.sheet-x{
+  position:absolute;
+  top:8px;right:10px;
+  width:28px;height:28px;
+  border:0;background:none;
+  color:var(--muted);
+  font-size:20px;line-height:1;
+  cursor:pointer;
+}
+
+.gsbar{display:flex;align-items:center;gap:6px}
+
+.gsbar .sheet-search{flex:1 1 auto;min-width:0}
+
+.gtog{
+  flex:0 0 auto;
+  border:1px solid var(--edge);
+  border-radius:7px;
+  background:rgba(255,255,255,.03);
+  color:var(--muted);
+  font-family:var(--sans);
+  font-size:10.5px;
+  letter-spacing:.02em;
+  padding:7px 9px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.gtog[aria-pressed="false"]{border-color:rgba(122,216,111,.45);background:rgba(122,216,111,.10);color:#8fe084}
+
+.sheet-search{
+  min-height:var(--tap);
+  border:1px solid var(--edge);
+  border-radius:var(--r-control);
+  background:rgba(255,255,255,.03);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:15px;
+  padding:7px 11px;
+  outline:none;
+}
+
+.sheet-search:focus{border-color:rgba(var(--arcane-rgb),.6)}
+
+.condtip{
+  position:absolute;
+  left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom) + 12px);
+  z-index:6;
+  padding:10px 12px;
+  border:1px solid var(--edge);
+  border-radius:8px;
+  background:rgba(18,16,30,.97);
+  box-shadow:0 10px 30px rgba(0,0,0,.6);
+}
+
+.condtip[hidden]{display:none}
+
+.condtip .cthead{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+
+.condtip .ctname{font-family:var(--display);font-size:14px;color:var(--gold)}
+
+.condtip .ctx{margin-left:auto;border:0;background:none;color:var(--muted);font-size:18px;line-height:1;cursor:pointer;padding:0}
+
+/* The words of the condition, and a ceiling so a long one scrolls instead
+   of covering the description it was opened from. */
+.condtip .ctbody{max-height:38vh;overflow-y:auto}
+
+/* ---- character sheet ---- */
+.charbody{
+  touch-action:pan-y;
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  scrollbar-width:none;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.charbody::-webkit-scrollbar{width:0}
+
+/* ---- the characters ---- */
+.crow{display:flex;align-items:center;gap:8px;min-height:var(--tap);padding:8px 10px;border:1px solid var(--edge);border-radius:8px;background:rgba(255,255,255,.03);cursor:pointer}
+
+.crow .cn{flex:1 1 auto;min-width:0;font-size:13px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.crow button.cn{background:none;border:0;padding:0;font-family:inherit;text-align:left;cursor:pointer}
+
+.crow .cl{flex:0 0 auto;font-size:10px;color:var(--muted);letter-spacing:.04em}
+
+.crow .cm{flex:0 0 auto;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--arcane)}
+
+.crow .cx{flex:0 0 auto;font-size:15px;color:var(--muted)}
+
+.crow .cdel{
+  flex:0 0 auto;
+  width:24px;height:24px;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--edge);
+  border-radius:6px;
+  background:none;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1;
+  cursor:pointer;
+}
+
+.crow:focus-visible{outline:2px solid var(--arcane);outline-offset:2px}
+
+.ghrow{margin-top:8px}
+
+.ghico{flex:0 0 auto;display:flex;align-items:center;color:var(--muted)}
+
+.ghico svg{width:17px;height:17px;display:block}
+
+.ghchev{flex:0 0 auto;width:7px;height:7px;margin:0 3px 0 2px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:rotate(-45deg);transition:transform .16s}
+
+.ghrow.open .ghchev{transform:rotate(45deg)}
+
+.ghlist{display:flex;flex-direction:column;gap:4px;margin-left:12px;padding-left:10px;border-left:1px solid var(--edge)}
+
+.ghnote{font-size:11px;color:#615c7d;padding:4px 2px}
+
+.crow.cadd{border-style:dashed;color:var(--muted)}
+
+.crow.cadd .cn{flex:1 1 auto;font-family:var(--sans);font-size:12px;color:var(--muted)}
+
+.cinput{
+  width:100%;
+  min-width:0;
+  padding:0;
+  border:0;
+  background:none;
+  color:var(--ink);
+  font-family:var(--display);
+  font-size:19px;
+  font-weight:700;
+  line-height:1.15;
+  font-variant-numeric:tabular-nums;
+  outline:none;
+  appearance:textfield;
+  -moz-appearance:textfield;
+}
+
+.cinput::-webkit-outer-spin-button,
+
+.cinput::-webkit-inner-spin-button{appearance:none;-webkit-appearance:none;margin:0}
+
+.cinput::placeholder{color:#4f4a6b}
+
+.cinput:focus{color:var(--arcane)}
+
+.mini svg{width:13px;height:13px;display:block}
+
+.mini:disabled{opacity:.35;cursor:default}
+
+.cshead{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:9.5px;
+  letter-spacing:.16em;
+  color:#6f6a8d;
+}
+
+.cshead .rule{flex:1 1 auto;height:1px;background:var(--edge)}
+
+.cshead .mini{margin-left:auto}
+
+.cshead .mini[hidden]{display:none}
+
+
+.srow .sico{flex:0 0 auto;display:flex;align-items:center;margin-right:8px;color:var(--arcane)}
+
+.srow .sico svg{width:17px;height:17px;display:block}
+
+.spent{
+  position:fixed;
+  left:50%;
+  bottom:calc(max(env(safe-area-inset-bottom) + 14px, var(--bar-h, 0px) + 8px));
+  transform:translateX(-50%) translateY(6px);
+  z-index:45;
+  padding:7px 14px;
+  border:1px solid rgba(var(--gold-rgb),.5);
+  border-radius:999px;
+  background:rgba(28,22,8,.95);
+  color:var(--gold);
+  font-size:11px;
+  letter-spacing:.03em;
+  white-space:nowrap;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .22s, transform .22s;
+}
+
+.spent.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* The mark of a tap: the control that triggered something is outlined for a
+   moment, so the eye lands where the change happened. */
+.tapped{outline:1px solid rgba(var(--arcane-rgb),.6);outline-offset:2px}
+
+/* The icon of a rest, beside a word or a count. */
+.resticon{width:14px;height:14px;flex:0 0 auto;vertical-align:-2px}
+
+/* ---- the roll block: one control a page places, and the drawing of a roll ---- */
+.rgrps{display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.rflat{font-family:var(--display);font-weight:600;font-size:13.5px;line-height:1;color:var(--muted)}
+.rtot{font-family:var(--display);font-weight:700;font-size:15px;color:var(--ink)}
+
+/* The control: the label of what it rolls on the left, the dice it threw and
+   their total on the right. A tap throws the set again. */
+.rctl{display:flex;align-items:center;gap:6px;flex-wrap:wrap;width:100%;min-height:40px;padding:5px 10px;border:1px solid var(--edge);border-radius:8px;background:rgba(255,255,255,.03);color:var(--muted);font-family:var(--sans);font-size:11px;line-height:1.2;text-align:left;cursor:pointer;touch-action:manipulation}
+.rctl:active{border-color:rgba(var(--arcane-rgb),.6);background:rgba(var(--arcane-rgb),.08)}
+.rctl .sgres{min-width:0}
+.rlab{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.rout{display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap;margin-left:auto}
+.fcards{display:flex;flex-direction:column;gap:6px;flex:0 0 auto}
+
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="head">
+    <svg class="sigil" id="sigil" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <circle cx="12" cy="12" r="9.2" fill="none" stroke="currentColor" stroke-width=".9" opacity=".55"/>
+      <path d="M12 2.2V6M12 18v3.8M2.2 12H6M18 12h3.8" stroke="currentColor" stroke-width=".9" opacity=".35"/>
+      <path d="M12 6.4L17.6 12 12 17.6 6.4 12z" fill="none" stroke="currentColor" stroke-width="1.2"/>
+      <circle cx="12" cy="12" r="1.7" fill="currentColor"/>
+    </svg>
+    <h1 class="title" id="pageTitle">Character</h1>
+    <div class="headtools">
+      <button class="gear" id="charBtn" type="button" aria-label="The characters">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <circle cx="9.2" cy="8" r="3.2"/><path d="M3 19.4c0-3.2 2.8-5.4 6.2-5.4s6.2 2.2 6.2 5.4"/>
+          <path d="M15.6 4.9a3 3 0 0 1 0 5.6M17 14.4c2.4.5 4 2.3 4 5"/>
+        </svg>
+      </button>
+      <div class="headslot" id="headSlot"></div>
+      <button class="gear" id="rewind" type="button" aria-label="Rewind the last change" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4.4v5.2h5.2"/>
+        </svg>
+      </button>
+      <button class="gear" id="gear" type="button" aria-pressed="false" aria-label="The pages of the app">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false">
+          <path d="M3 7h7.7M15.3 7h5.7M3 12h3.7M11.3 12h9.7M3 17h11.7M19.3 17h1.7"/>
+          <circle cx="13" cy="7" r="2.3"/><circle cx="9" cy="12" r="2.3"/><circle cx="17" cy="17" r="2.3"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="views" id="views">
+    <div class="sheet" id="sheet" hidden>
+      <div class="sheet-in">
+        <button class="sheet-x" id="sheetClose" type="button" aria-label="Close">&times;</button>
+        <div class="sheethead">
+          <h2 id="sheetTitle"></h2>
+          <span class="sheet-tag" id="sheetTag" hidden></span>
+        </div>
+        <div class="sheet-meta" id="sheetMeta"></div>
+        <div class="gsbar">
+          <button class="gtog" id="grimoireLevel" type="button" aria-pressed="true" hidden>Level 1</button>
+          <input class="sheet-search" id="sheetSearch" type="search" placeholder="Search the grimoire" hidden>
+        </div>
+        <div class="sheet-text" id="sheetText"></div>
+        <div class="sheet-list" id="sheetList" hidden></div>
+        <div class="sheet-actions" id="sheetActions"></div>
+      </div>
+      <div class="condtip" id="condTip" hidden>
+        <div class="cthead"><span class="ctname" id="condName"></span><button class="ctx" id="condClose" type="button" aria-label="Close">&times;</button></div>
+        <div class="ctbody sheet-text" id="condText"></div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bar" id="bar" aria-label="Pages"></nav>
+
+  <div class="viewer" id="viewer" role="dialog" aria-label="The picture of the character" hidden>
+    <img id="viewerImg" alt="">
+    <button class="vnav prev" id="viewerPrev" type="button" aria-label="The picture before" hidden>&#8249;</button>
+    <button class="vnav next" id="viewerNext" type="button" aria-label="The picture after" hidden>&#8250;</button>
+    <div class="vfoot" id="viewerFoot" hidden><span class="vcount" id="viewerCount"></span><button class="vpick" id="viewerPick" type="button">Pick this one</button></div>
+  </div>
+
+</div>
+
+<div class="spent" id="spentToast" role="status" aria-live="polite"></div>
+
+<script id="surge-data" type="application/json">{"name":"Wild Magic Surge","rows":[]}</script>
+
+<script id="conditions-data" type="application/json">{"conditions":[]}</script>
+
+<script id="version-data" type="application/json">{"version":""}</script>
+
+<script id="seed-data" type="application/json">{"features":[],"spells":[]}</script>
+
+<script id="rules">
+/* Pure rules engine. No DOM, no globals beyond this one. */
+(function (root) {
+  'use strict';
+
+  var ATTACK_MOD = 9;
+  var NATURAL_CRIT = 20;
+  var CURSE_CRIT = 19;
+  var CURSE_BONUS = 4;
+  var ADVANTAGE_DICE = 3;
+
+  /* Quicken casts the spell a second time, so a second row of three
+     eldritch blasts comes with it. */
+  var QUICKEN_ATTACKS = 3;
+
+  var POWERS = [
+    { id: 'eb',  name: 'Eldritch blast',  short: 'EB',  attacks: 3, dice: [{ n: 1, s: 10, type: 'force' }], flat: 5 },
+    { id: 'sr2', name: 'Scorching ray 2', short: 'SR2', attacks: 3, dice: [{ n: 2, s: 6, type: 'fire' }],   flat: 0 },
+    { id: 'sr3', name: 'Scorching ray 3', short: 'SR3', attacks: 4, dice: [{ n: 2, s: 6, type: 'fire' }],   flat: 0 },
+    { id: 'sr4', name: 'Scorching ray 4', short: 'SR4', attacks: 5, dice: [{ n: 2, s: 6, type: 'fire' }],   flat: 0 },
+    { id: 'sr5', name: 'Scorching ray 5', short: 'SR5', attacks: 6, dice: [{ n: 2, s: 6, type: 'fire' }],   flat: 0 }
+  ];
+
+  /* The spell levels the app shows, cantrip first, and the level where the
+     warlock slots sit. */
+  var LEVELS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  var WARLOCK_LEVEL = 2;
+
+  /* Extra damage each toggle adds, on top of the spell's own dice.
+     A critical doubles the dice of every group, of any type. */
+  var EXTRAS = {
+    hex:      { dice: [{ n: 1, s: 6, type: 'necrotic' }] },
+    elem:     { dice: [{ n: 2, s: 8, type: 'lightning' }] },
+    elemPlus: { dice: [{ n: 3, s: 8, type: 'lightning' }] }
+  };
+
+  function die(rng, sides) { return 1 + Math.floor(rng() * sides); }
+
+  function dice(rng, n, sides) {
+    var out = [], i;
+    for (i = 0; i < n; i++) out.push(die(rng, sides));
+    return out;
+  }
+
+  function sum(list) {
+    var total = 0, i;
+    for (i = 0; i < list.length; i++) total += list[i];
+    return total;
+  }
+
+  /* The attack bonus and the flat bonus belong to the caster, so the
+     state can carry them. Without them the spell keeps its own. */
+  function attackMod(state) {
+    if (state && state.attackMod !== undefined && state.attackMod !== null) {
+      var m = Number(state.attackMod);
+      if (isFinite(m)) return m;
+    }
+    return ATTACK_MOD;
+  }
+
+  function flatMod(state, power) {
+    var p = power || POWERS[0];
+    if (!p.flat) return 0;
+    if (state && state.flatMod !== undefined && state.flatMod !== null) {
+      var m = Number(state.flatMod);
+      if (isFinite(m)) return m;
+    }
+    return p.flat;
+  }
+
+  function powerOf(id) {
+    for (var i = 0; i < POWERS.length; i++) if (POWERS[i].id === id) return POWERS[i];
+    return POWERS[0];
+  }
+
+  /* The type the spell's own damage carries. A flat bonus added to the roll
+     is damage of that type. */
+  function primaryType(power) {
+    var p = power || POWERS[0];
+    return (p.dice && p.dice[0]) ? p.dice[0].type : 'force';
+  }
+
+  /* True when the volley is quickened: the spell is cast a second time, so
+     a second row of three eldritch blasts. */
+  function quickened(state) {
+    state = state || {};
+    return !!state.quicken && powerOf(state.power).id === 'eb';
+  }
+
+  /* How many beams the board shows. */
+  function beamCount(state) {
+    var p = powerOf(state.power);
+    return p.attacks + (quickened(state) ? QUICKEN_ATTACKS : 0);
+  }
+
+  /* Rolls one volley: every attack, its damage, and the totals. The
+     quickened cast is a tap of its own, so a volley may be rolled in two
+     parts: the attacks of the spell, or the three of the quickened cast. A
+     part that is not named rolls the whole cast, which is what a board with
+     quicken off does. */
+  function rollVolley(state, rng, part) {
+    rng = rng || Math.random;
+    state = state || {};
+
+    var power = powerOf(state.power);
+    var critFloor = state.curse ? CURSE_CRIT : NATURAL_CRIT;
+    var flat = flatMod(state, power) + (state.curse ? CURSE_BONUS : 0);
+    var atk = attackMod(state);
+    var hasAc = state.ac !== null && state.ac !== undefined && state.ac !== '';
+    var quick = quickened(state);
+    var beams = [], i;
+
+    /* The damage the spell deals, with the extra dice the toggles add. */
+    var sources = power.dice.slice();
+    if (state.hex) sources = sources.concat(EXTRAS.hex.dice);
+    if (state.elem) sources = sources.concat(state.elemPlus ? EXTRAS.elemPlus.dice : EXTRAS.elem.dice);
+
+    if (part === 'quick') {
+      for (i = 0; i < QUICKEN_ATTACKS; i++) {
+        beams.push(rollBeam(rng, state, sources, flat, atk, critFloor, hasAc, power.attacks + i, true));
+      }
+      return { power: power, beams: beams, flat: flat, flatType: primaryType(power), quick: true, part: 'quick' };
+    }
+
+    for (i = 0; i < power.attacks; i++) {
+      beams.push(rollBeam(rng, state, sources, flat, atk, critFloor, hasAc, i, false));
+    }
+    if (part === 'first') {
+      return { power: power, beams: beams, flat: flat, flatType: primaryType(power), quick: false, part: 'first' };
+    }
+    if (quick) {
+      for (i = 0; i < QUICKEN_ATTACKS; i++) {
+        beams.push(rollBeam(rng, state, sources, flat, atk, critFloor, hasAc, power.attacks + i, true));
+      }
+    }
+    return {
+      power: power,
+      beams: beams,
+      flat: flat,
+      flatType: primaryType(power),
+      quick: quick
+    };
+  }
+
+  /* One beam: the attack roll, and the damage that follows it. */
+  function rollBeam(rng, state, sources, flat, atk, critFloor, hasAc, index, quick) {
+    var rolls = state.advantage ? dice(rng, ADVANTAGE_DICE, 20) : dice(rng, 1, 20);
+    var kept = Math.max.apply(null, rolls);
+    var total = kept + atk;
+    /* A crit button turns every further roll into a critical, whatever the
+       die says: the player uses it on a target that cannot dodge. */
+    var crit = !!state.autocrit || kept >= critFloor;
+    var mult = crit ? 2 : 1;
+    var groups = [], j, k;
+
+    for (j = 0; j < sources.length; j++) {
+      var count = sources[j].n * mult;
+      groups.push({
+        label: count + 'd' + sources[j].s,
+        type: sources[j].type,
+        rolls: dice(rng, count, sources[j].s)
+      });
+    }
+
+    var rolled = 0;
+    for (k = 0; k < groups.length; k++) rolled += sum(groups[k].rolls);
+
+    return {
+      index: index,
+      quick: !!quick,
+      rolls: rolls,
+      kept: kept,
+      total: total,
+      crit: crit,
+      hit: hasAc ? total >= Number(state.ac) : null,
+      groups: groups,
+      flat: flat,
+      damage: rolled + flat
+    };
+  }
+
+  /* Damage summed by type over the beams that count. The flat bonus is
+     damage of the spell's own type, so it sits in that type's pile. A beam
+     that missed counts for nothing, and `flip` is the player overruling the
+     roll of one beam by its index: the same swap the box draws, so the cell
+     and the total never disagree. */
+  function tally(volley, ac, flip) {
+    var byType = {}, order = [], total = 0, flatTotal = 0, hits = 0, crits = 0, i, j, g;
+    var flatType = volley.flatType || primaryType(volley.power);
+    for (i = 0; i < volley.beams.length; i++) {
+      var beam = volley.beams[i];
+      var counted = beam.hit !== false;
+      if (flip && flip[i]) counted = !counted;
+      if (!counted) continue;
+      hits++;
+      if (beam.crit) crits++;
+      total += beam.damage;
+      flatTotal += beam.flat;
+      for (j = 0; j < beam.groups.length; j++) {
+        g = beam.groups[j];
+        if (!(g.type in byType)) { byType[g.type] = 0; order.push(g.type); }
+        byType[g.type] += sum(g.rolls);
+      }
+      if (beam.flat) {
+        if (!(flatType in byType)) { byType[flatType] = 0; order.push(flatType); }
+        byType[flatType] += beam.flat;
+      }
+    }
+    return {
+      total: total,
+      byType: byType,
+      order: order,
+      hits: hits,
+      crits: crits,
+      flat: flatTotal,
+      flatType: flatType,
+      ac: ac
+    };
+  }
+
+  /* The dice a surge effect asks for, so the app can roll them as well. */
+  function diceIn(text) {
+    var out = [], m, re = /(\d*)d(\d+)/gi;
+    while ((m = re.exec(text)) !== null) {
+      out.push({ count: m[1] ? Number(m[1]) : 1, sides: Number(m[2]), label: (m[1] || '1') + 'd' + m[2] });
+    }
+    return out;
+  }
+
+  /* Rolls the surge table: a d100, the row it lands on, and that row's dice. */
+  function rollSurge(rows, rng) {
+    rng = rng || Math.random;
+    rows = rows || [];
+    if (!rows.length) throw new Error('the surge table is empty');
+    var roll = 1 + Math.floor(rng() * 100);
+    var row = null, i;
+    for (i = 0; i < rows.length; i++) {
+      if (roll >= rows[i].from && roll <= rows[i].to) { row = rows[i]; break; }
+    }
+    if (!row) throw new Error('no surge row for ' + roll);
+    var specs = diceIn(row.text), rolled = [], j, values;
+    for (j = 0; j < specs.length; j++) {
+      values = dice(rng, specs[j].count, specs[j].sides);
+      rolled.push({ label: specs[j].label, values: values, total: sum(values) });
+    }
+    return { roll: roll, from: row.from, to: row.to, text: row.text, dice: rolled };
+  }
+
+  /* The flat part of a damage, the number that rides on the dice. */
+  function flatIn(text) {
+    var rest = String(text || '').replace(/(\d*)d(\d+)/gi, '');
+    var flat = 0, m, re = /([+-]?\s*\d+)/g;
+    while ((m = re.exec(rest)) !== null) flat += Number(m[1].replace(/\s+/g, ''));
+    return flat;
+  }
+
+  /* A set of dice as the sheet writes one: 2d6+1, 1d20, 3d8. The dice and
+     the flat ride together, so a tray or a card can read one shape. */
+  function setIn(text) {
+    var dice = diceIn(text).map(function (d) { return { sides: d.sides, count: d.count }; });
+    return { dice: dice, flat: flatIn(text) };
+  }
+
+  /* Rolls a set: every die that fell, the total of each kind, and the total
+     of the whole set with its flat. A die asked for with no count is left
+     out, and the die that falls is the die of every other roll of the app. */
+  function rollSet(set, rng) {
+    rng = rng || Math.random;
+    var groups = [], total = 0;
+    ((set && set.dice) || []).forEach(function (d) {
+      var sides = Math.max(2, Number(d.sides) || 6);
+      var count = Math.floor(Number(d.count) || 0);
+      if (count < 1) return;
+      var fell = [], i, open = 0;
+      for (i = 0; i < count; i++) fell.push(die(rng, sides));
+      for (i = 0; i < fell.length; i++) open += fell[i];
+      groups.push({ sides: sides, count: count, rolls: fell, total: open });
+      total += open;
+    });
+    var flat = Number((set && set.flat) || 0);
+    return { groups: groups, flat: flat, total: total + flat };
+  }
+
+  /* The dice a divine smite adds to the attack it rides on: 2d8 for a
+     first-level slot, and one d8 more for every level above it, as the
+     book's own spell writes it. A critical hit doubles them, and the rule
+     lives here as a pure function so the suite holds it. */
+  function smiteSet(level, crit) {
+    var lv = Math.max(1, Math.floor(Number(level) || 1));
+    return { dice: [{ sides: 8, count: (lv + 1) * (crit ? 2 : 1) }], flat: 0 };
+  }
+
+  /* One attack of a creature: the d20, the total, and the damage that
+     follows. A natural twenty is a critical and doubles the dice, the way
+     the volley does. The armour class of the target is not the business of
+     the roll: the player does not know it, so the roll only says what it
+     rolled. With advantage the die is rolled twice and the better one is
+     kept, the way the volley keeps the best of three. */
+  function rollAttack(bonus, damageText, adv, rng) {
+    rng = rng || Math.random;
+    var rolls = [die(rng, 20)];
+    if (adv) rolls.push(die(rng, 20));
+    var roll = rolls[0], i;
+    for (i = 1; i < rolls.length; i++) if (rolls[i] > roll) roll = rolls[i];
+    var total = roll + (Number(bonus) || 0);
+    var crit = roll >= 20;
+    var mult = crit ? 2 : 1;
+    var specs = diceIn(damageText || '');
+    var groups = [], j, k, rolled = 0;
+    for (j = 0; j < specs.length; j++) {
+      var count = specs[j].count * mult;
+      groups.push({ label: count + 'd' + specs[j].sides, rolls: dice(rng, count, specs[j].sides) });
+    }
+    for (k = 0; k < groups.length; k++) rolled += sum(groups[k].rolls);
+    var flat = flatIn(damageText || '');
+    return {
+      roll: roll,
+      rolls: rolls,
+      total: total,
+      crit: crit,
+      groups: groups,
+      flat: flat,
+      damage: rolled + flat
+    };
+  }
+
+  /* ---- the attack sheet: a turn of attack rolls ---- */
+
+  /* A set of dice thrown twice over: the dice a critical would double are
+     thrown with the roll, so a verdict changed afterwards re-reads the dice
+     and never throws them again. */
+  function throwSet(set, rng) {
+    rng = rng || Math.random;
+    var sides = Math.max(2, Number(set && set.sides) || 0);
+    var count = Math.floor(Number(set && set.count) || 0);
+    if (!set || count < 1) return null;
+    return { sides: sides, count: count, rolls: dice(rng, count * 2, sides) };
+  }
+
+  /* One roll of the attack sheet, thrown whole: both d20s, so advantage or
+     disadvantage named after the roll re-reads it, and every set of damage
+     dice the roll can carry, the once-a-turn rider included, so a rider
+     moved to this hit later lands with dice that already fell. The spec is
+     the page's: the bonus to hit, the flat, the type, and the sets. */
+  function throwAttack(spec, mode, rng) {
+    rng = rng || Math.random;
+    var o = spec || {};
+    return {
+      part: o.part === 'bonus' ? 'bonus' : 'action',
+      mode: mode === 'adv' || mode === 'dis' ? mode : 'norm',
+      way: String(o.way || ''),
+      weapon: String(o.weapon || ''),
+      bonus: Number(o.bonus) || 0,
+      mod: Number(o.mod) || 0,
+      type: String(o.type || ''),
+      melee: !!o.melee,
+      sneakable: !!o.sneakable,
+      vex: !!o.vex,
+      a: die(rng, 20),
+      b: die(rng, 20),
+      base: throwSet(o.base, rng),
+      upgrade: throwSet(o.upgrade, rng),
+      sneak: throwSet(o.sneak, rng),
+      flip: false,
+      vexed: false
+    };
+  }
+
+  /* The d20 a roll keeps: the better of the two with advantage, the worse
+     with disadvantage, the first otherwise. */
+  function keptD20(r) {
+    if (r.mode === 'adv') return Math.max(r.a, r.b);
+    if (r.mode === 'dis') return Math.min(r.a, r.b);
+    return r.a;
+  }
+
+  /* One roll read from its dice: the d20 it kept and the one it dropped,
+     the total to hit, whether it hits (a natural one misses, and a tap says
+     otherwise), a critical on a natural twenty that hits, and the parts of
+     its damage, each with its type, doubled on a critical. True Strike's
+     extra dice are radiant; the rider of the turn and the smite land only
+     where the turn says. A miss deals nothing. */
+  function attackRead(r, riders) {
+    var o = riders || {};
+    var kept = keptD20(r);
+    var other = r.mode === 'norm' ? null : (kept === r.a ? r.b : r.a);
+    var hit = kept !== 1;
+    if (r.flip) hit = !hit;
+    var crit = hit && kept === 20;
+    var m = crit ? 2 : 1;
+    var parts = [], byType = {}, order = [], total = 0;
+    function add(type, n) {
+      if (!(type in byType)) { byType[type] = 0; order.push(type); }
+      byType[type] += n;
+      total += n;
+    }
+    function take(key, set, type) {
+      if (!set || !set.count) return;
+      var rolls = set.rolls.slice(0, set.count * m);
+      parts.push({ key: key, sides: set.sides, rolls: rolls, type: type });
+      add(type, sum(rolls));
+    }
+    take('base', r.base, r.type);
+    take('upgrade', r.upgrade, 'radiant');
+    if (o.sneak) take('sneak', r.sneak, r.type);
+    if (o.smite) take('smite', o.smite, 'radiant');
+    if (r.mod) add(r.type, r.mod);
+    return {
+      kept: kept,
+      other: other,
+      toHit: kept + r.bonus,
+      hit: hit,
+      crit: crit,
+      parts: parts,
+      flat: r.mod,
+      byType: hit ? byType : {},
+      order: hit ? order : [],
+      damage: hit ? Math.max(0, total) : 0
+    };
+  }
+
+  /* The turn read whole: the once-a-turn rider lands on the first hit that
+     can carry it, and moves on when that hit is tapped to a miss; the smite
+     rides the roll it was cast on; the last melee hit of the Action is where
+     a smite would go; the total adds the hits. */
+  function turnRead(state) {
+    var st = state || {};
+    var rolls = st.rolls || [];
+    var sneakAt = -1, smiteAt = -1, i;
+    for (i = 0; i < rolls.length; i++) {
+      var bare = attackRead(rolls[i], {});
+      if (st.sneak && sneakAt < 0 && bare.hit && rolls[i].sneakable && rolls[i].sneak) sneakAt = i;
+      if (rolls[i].part === 'action' && rolls[i].melee && bare.hit) smiteAt = i;
+    }
+    var smite = st.smite || null;
+    var reads = rolls.map(function (r, j) {
+      return attackRead(r, { sneak: j === sneakAt, smite: smite && smite.at === j ? smite : null });
+    });
+    var total = 0, hits = 0;
+    reads.forEach(function (x) { if (x.hit) { total += x.damage; hits += 1; } });
+    return { reads: reads, sneakAt: sneakAt, smiteAt: smiteAt, total: total, hits: hits };
+  }
+
+  /* Turns one spell slot into sorcery points: one point for each level of the slot.
+     The warlock slots go first, they are the scarcer ones.
+     Returns the new counts, or null when the slot cannot be turned. */
+  function convertSlot(spell, lv, warlockLevel) {
+    spell = spell || {};
+    lv = Number(lv);
+    var pact = Number(warlockLevel) || WARLOCK_LEVEL;
+    var sp = Number(spell.sp) || 0;
+    var spMax = Number(spell.spMax) || 0;
+    var left = (spell.left || {})[lv] || 0;
+    var warlockLeft = Number(spell.warlockLeft) || 0;
+    if (!(lv >= 1) || sp >= spMax) return null;
+    var useWarlock = lv === pact && warlockLeft > 0;
+    if (!useWarlock && left <= 0) return null;
+    return {
+      left: useWarlock ? left : left - 1,
+      warlockLeft: useWarlock ? warlockLeft - 1 : warlockLeft,
+      usedWarlock: useWarlock,
+      sp: Math.min(spMax, sp + lv),
+      gained: Math.min(spMax, sp + lv) - sp
+    };
+  }
+
+  root.Rules = {
+    ATTACK_MOD: ATTACK_MOD,
+    POWERS: POWERS,
+    EXTRAS: EXTRAS,
+    LEVELS: LEVELS,
+    WARLOCK_LEVEL: WARLOCK_LEVEL,
+    powerOf: powerOf,
+    primaryType: primaryType,
+    attackMod: attackMod,
+    flatMod: flatMod,
+    quickened: quickened,
+    beamCount: beamCount,
+    QUICKEN_ATTACKS: QUICKEN_ATTACKS,
+    rollVolley: rollVolley,
+    tally: tally,
+    diceIn: diceIn,
+    flatIn: flatIn,
+    setIn: setIn,
+    rollSet: rollSet,
+    smiteSet: smiteSet,
+    rollAttack: rollAttack,
+    throwSet: throwSet,
+    throwAttack: throwAttack,
+    keptD20: keptD20,
+    attackRead: attackRead,
+    turnRead: turnRead,
+    rollSurge: rollSurge,
+    convertSlot: convertSlot
+  };
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+</script>
+
+<script id="sheet-rules">
+/* The character sheet rules. No DOM, no globals beyond this one. */
+(function (root) {
+  'use strict';
+
+  var ABILITIES = [
+    { key: 'str', name: 'STR', long: 'Strength' },
+    { key: 'dex', name: 'DEX', long: 'Dexterity' },
+    { key: 'con', name: 'CON', long: 'Constitution' },
+    { key: 'int', name: 'INT', long: 'Intelligence' },
+    { key: 'wis', name: 'WIS', long: 'Wisdom' },
+    { key: 'cha', name: 'CHA', long: 'Charisma' }
+  ];
+
+  var SKILLS = [
+    { key: 'acrobatics', name: 'Acrobatics', ab: 'dex' },
+    { key: 'animalHandling', name: 'Animal handling', ab: 'wis' },
+    { key: 'arcana', name: 'Arcana', ab: 'int' },
+    { key: 'athletics', name: 'Athletics', ab: 'str' },
+    { key: 'deception', name: 'Deception', ab: 'cha' },
+    { key: 'history', name: 'History', ab: 'int' },
+    { key: 'insight', name: 'Insight', ab: 'wis' },
+    { key: 'intimidation', name: 'Intimidation', ab: 'cha' },
+    { key: 'investigation', name: 'Investigation', ab: 'int' },
+    { key: 'medicine', name: 'Medicine', ab: 'wis' },
+    { key: 'nature', name: 'Nature', ab: 'int' },
+    { key: 'perception', name: 'Perception', ab: 'wis' },
+    { key: 'performance', name: 'Performance', ab: 'cha' },
+    { key: 'persuasion', name: 'Persuasion', ab: 'cha' },
+    { key: 'religion', name: 'Religion', ab: 'int' },
+    { key: 'sleightOfHand', name: 'Sleight of hand', ab: 'dex' },
+    { key: 'stealth', name: 'Stealth', ab: 'dex' },
+    { key: 'survival', name: 'Survival', ab: 'wis' }
+  ];
+
+  var SKILL_BY_KEY = {};
+  SKILLS.forEach(function (s) { SKILL_BY_KEY[s.key] = s; });
+
+  /* The modifier an ability score gives. */
+  function abilityMod(score) {
+    var s = Number(score);
+    if (!isFinite(s)) return 0;
+    return Math.floor((s - 10) / 2);
+  }
+
+  /* The proficiency bonus a character level gives. */
+  function profBonus(level) {
+    var l = Number(level);
+    if (!isFinite(l) || l < 1) l = 1;
+    return 2 + Math.floor((l - 1) / 4);
+  }
+
+  function sign(n) {
+    var v = Number(n) || 0;
+    return v >= 0 ? '+' + v : String(v);
+  }
+
+  /* A saving throw: its ability, plus the proficiency the character has in it.
+     Expertise takes the proficiency twice. */
+  function saveMod(c, key, rec) {
+    var m = abilityMod(c.abilities[key]);
+    m += (Number((c.saves || {})[key]) || 0) * profBonus(c.level);
+    /* the effects of the gear and the features, when the record is given */
+    return rec ? withEffects(rec, m, ['save.' + key, 'save.all']) : m;
+  }
+
+  /* A skill: its ability, plus the proficiency the character has in it.
+     Expertise takes the proficiency twice. */
+  function skillMod(c, key, rec) {
+    var skill = SKILL_BY_KEY[key];
+    if (!skill) return 0;
+    var m = abilityMod(c.abilities[skill.ab]);
+    m += (Number((c.skills || {})[key]) || 0) * profBonus(c.level);
+    return rec ? withEffects(rec, m, ['skill.' + key]) : m;
+  }
+
+  /* The proficiency of a row cycles: none, then proficient, then expertise. */
+  function nextProf(value) {
+    return ((Number(value) || 0) + 1) % 3;
+  }
+
+  function profLabel(value) {
+    var v = Number(value) || 0;
+    return v === 1 ? 'proficient' : (v === 2 ? 'expertise' : 'not proficient');
+  }
+
+  /* The initiative of the character. It follows the dexterity until the
+     player sets one of its own. */
+  function initMod(c, rec) {
+    var base = (c && c.initTouched) ? Number(c.init) || 0 : abilityMod(c && c.abilities ? c.abilities.dex : 10);
+    /* Alert and the rest add on top, when the record is given. */
+    return rec ? withEffects(rec, base, ['init']) : base;
+  }
+
+  /* ---- the classes of a character ---- */
+
+  /* The spell slots of a caster level, the multiclass table of the rules. A
+     full caster counts its level, a half caster half of it, a third caster a
+     third, and the warlock nothing, because its pact slots are its own. */
+  var MULTICLASS_SLOTS = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [2, 0, 0, 0, 0, 0, 0, 0, 0],
+    [3, 0, 0, 0, 0, 0, 0, 0, 0],
+    [4, 2, 0, 0, 0, 0, 0, 0, 0],
+    [4, 3, 0, 0, 0, 0, 0, 0, 0],
+    [4, 3, 2, 0, 0, 0, 0, 0, 0],
+    [4, 3, 3, 0, 0, 0, 0, 0, 0],
+    [4, 3, 3, 1, 0, 0, 0, 0, 0],
+    [4, 3, 3, 2, 0, 0, 0, 0, 0],
+    [4, 3, 3, 3, 1, 0, 0, 0, 0],
+    [4, 3, 3, 3, 2, 0, 0, 0, 0],
+    [4, 3, 3, 3, 2, 1, 0, 0, 0],
+    [4, 3, 3, 3, 2, 1, 0, 0, 0],
+    [4, 3, 3, 3, 2, 1, 1, 0, 0],
+    [4, 3, 3, 3, 2, 1, 1, 0, 0],
+    [4, 3, 3, 3, 2, 1, 1, 1, 0],
+    [4, 3, 3, 3, 2, 1, 1, 1, 0],
+    [4, 3, 3, 3, 2, 1, 1, 1, 1],
+    [4, 3, 3, 3, 3, 1, 1, 1, 1],
+    [4, 3, 3, 3, 3, 2, 1, 1, 1],
+    [4, 3, 3, 3, 3, 2, 2, 1, 1]
+  ];
+
+  /* The pact magic of the warlock: how many slots it holds, and of which
+     level, for each warlock level. */
+  var PACT_SLOTS = [
+    [0, 1],
+    [1, 1], [2, 1], [2, 2], [2, 2], [2, 3], [2, 3], [2, 4], [2, 4], [2, 5], [2, 5],
+    [3, 5], [3, 5], [3, 5], [3, 5], [3, 5], [3, 5], [4, 5], [4, 5], [4, 5], [4, 5]
+  ];
+
+  /* The dice a cantrip's upgrade names at a character level, read from the
+     book's own words: the paragraph under its Cantrip Upgrade heading names
+     the levels and the dice, "levels 5 ([[d:1d6]]), 11 ([[d:2d6]])". The
+     highest level reached counts, and a cantrip with no such paragraph, or a
+     level below the first, names nothing. What the dice mean, extra or the
+     whole damage, is the paragraph's and the caller's to read. */
+  function cantripUpgrade(spell, level) {
+    var blocks = (spell && spell.blocks) || [];
+    var at = -1, i;
+    for (i = 0; i < blocks.length; i++) {
+      if (blocks[i].t === 'h' && /cantrip upgrade/i.test(blocks[i].text || '')) { at = i; break; }
+    }
+    if (at < 0 || !blocks[at + 1]) return '';
+    var text = String(blocks[at + 1].text || ''), m, re = /(\d+)\s*\(\[\[d:(\d+d\d+)\]\]\)/g, best = '';
+    while ((m = re.exec(text)) !== null) {
+      if ((Number(level) || 0) >= Number(m[1])) best = m[2];
+    }
+    return best;
+  }
+
+  /* The levels of the classes of a character, added up. */
+  function classLevels(classes) {
+    var n = 0;
+    (classes || []).forEach(function (k) { n += Math.max(0, Number(k.level) || 0); });
+    return n;
+  }
+
+  /* The level the multiclass slot table reads. */
+  function casterLevel(classes) {
+    var n = 0;
+    (classes || []).forEach(function (k) {
+      var lv = Math.max(0, Number(k.level) || 0);
+      var weight = k.caster === 'full' ? 1 : ((k.caster === 'half' || k.caster === 'artificer') ? 0.5 : (k.caster === 'third' ? 1 / 3 : 0));
+      n += lv * weight;
+    });
+    return Math.floor(n);
+  }
+
+  function slotsFor(level) {
+    var row = MULTICLASS_SLOTS[Math.max(0, Math.min(20, Number(level) || 0))] || MULTICLASS_SLOTS[0];
+    var out = {}, i;
+    for (i = 1; i <= 9; i++) out[i] = row[i - 1] || 0;
+    return out;
+  }
+
+  function pactFor(level) {
+    var row = PACT_SLOTS[Math.max(0, Math.min(20, Number(level) || 0))] || PACT_SLOTS[0];
+    return { max: row[0], level: row[1] };
+  }
+
+  function warlockLevel(classes) {
+    var found = (classes || []).filter(function (k) { return k.name === 'Warlock'; })[0];
+    return found ? Math.max(0, Number(found.level) || 0) : 0;
+  }
+
+  /* The spell attack and the save DC lean on the ability a class casts
+     with, charisma when the character has no class to say otherwise. */
+  function spellAttack(c, ability) {
+    return abilityMod(c.abilities[ability || 'cha']) + profBonus(c.level);
+  }
+
+  function spellDC(c, ability) {
+    return 8 + profBonus(c.level) + abilityMod(c.abilities[ability || 'cha']);
+  }
+
+  /* Hit points move inside the range the character has. */
+  function hpApply(current, max, delta) {
+    var cur = Number(current) || 0;
+    var m = Number(max) || 0;
+    var next = cur + (Number(delta) || 0);
+    if (next < 0) next = 0;
+    if (m > 0 && next > m) next = m;
+    return next;
+  }
+
+  /* A move of the hit points from the keypad: the amount typed, then what
+     it is. Damage takes the temporary hit points first and the rest from the
+     hit points, never below zero; a heal stops at the maximum and leaves the
+     temporary ones; a set is the hit points themselves; and a new temporary
+     amount replaces the old one, as the book has it, rather than adding. */
+  function hpMove(hp, kind, amount) {
+    var cur = Number(hp && hp.current) || 0;
+    var max = Number(hp && hp.max) || 0;
+    var temp = Math.max(0, Number(hp && hp.temp) || 0);
+    var n = Math.max(0, Math.floor(Number(amount) || 0));
+    if (kind === 'damage') {
+      var fromTemp = Math.min(temp, n);
+      return { current: hpApply(cur, max, -(n - fromTemp)), temp: temp - fromTemp };
+    }
+    if (kind === 'heal') return { current: hpApply(cur, max, n), temp: temp };
+    if (kind === 'set') return { current: hpApply(n, max, 0), temp: temp };
+    if (kind === 'temp') return { current: cur, temp: n };
+    return { current: cur, temp: temp };
+  }
+
+  /* What a tapped hit point box does with what was typed. The box opens
+     empty, the value the player saw in the background, so a bare number is
+     the whole of it and sets the hit points. A signed one is a move from
+     where they are, counted from the value the box suggested rather than
+     from a half-typed one. Anything else leaves them alone. */
+  function hpEntry(text, current, max) {
+    var raw = String(text === undefined || text === null ? '' : text).trim();
+    if (!/^[+-]?[0-9]+$/.test(raw)) return null;
+    var n = Number(raw);
+    if (!isFinite(n)) return null;
+    if (raw.charAt(0) === '+' || raw.charAt(0) === '-') return hpApply(current, max, n);
+    return hpApply(n, max, 0);
+  }
+
+  /* The shape of the die, the way the dice icons draw them: a d6 is a
+     square, a d8 a diamond, a d10 a kite, a d12 a pentagon and a d20 a
+     hexagon. The label says where the number sits inside the shape. */
+  var DIE_SHAPES = {
+    4: '12,3 21,19 3,19',
+    6: '5,5 19,5 19,19 5,19',
+    8: '12,4 18,12 12,20 6,12',
+    10: '6,5 18,5 19,10 12,21 5,10',
+    12: '4,6 20,6 17,15 12,21 7,15',
+    20: '12,2.8 19.97,7.4 19.97,16.6 12,21.2 4.03,16.6 4.03,7.4'
+  };
+
+  /* ---- effects: what a worn item or a feature changes on the sheet ----
+
+     An effect is one line or more, split by ; or a new line, each of them
+     TARGET OP FORMULA:
+
+       init + prof               Alert: the proficiency on the initiative
+       hpMax + 2 * level         Tough: two hit points a level
+       speed + 10                Mobile
+       AC + 1                    a ring of protection, worn
+       baseAC = 13 + @dex.mod    mage armour: the base of the armour class
+       save.all + 1              every saving throw
+       save.con + prof           a saving throw
+       skill.stealth + dex.mod   a skill
+
+     The targets are AC, baseAC, init, speed, hpMax, save.<ability> or
+     save.all, and skill.<skill>. The operations are = (sets it; the last
+     one wins), + and -. A formula is numbers and + - * /, parentheses,
+     min(a, b) and max(a, b), and the words prof (the proficiency bonus),
+     level (the character level), <class>.level (a class's own level, e.g.
+     rogue.level), <ability>.mod or @<ability>.mod (a modifier) and
+     <ability> or @<ability> (a score). A result that is not whole is
+     rounded down. The parser lives with the rules, so a formula is read like
+     a rule, and a broken one is a finding rather than a crash. */
+  var EFFECT_ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
+  var EFFECT_DEPTH = 0;
+  /* What the rules cannot know alone, the shell hands in: the ability a
+     character casts with. */
+  var HOOKS = { primary: null };
+
+  function effectValue(text, ch, rec) {
+    var src = String(text === undefined || text === null ? '' : text);
+    var c = ch || {};
+    var at = 0;
+    function space() { while (at < src.length && /\s/.test(src.charAt(at))) at++; }
+    function number() {
+      space();
+      var start = at;
+      while (at < src.length && /[0-9.]/.test(src.charAt(at))) at++;
+      if (at === start) throw new Error('a number or a word was expected at "' + src.slice(at, at + 8) + '"');
+      return Number(src.slice(start, at));
+    }
+    function score(key) { return Number((c.abilities || {})[key]) || 10; }
+    /* A word: prof, level, a class's level, an ability's modifier or score. */
+    function word() {
+      var start = at;
+      if (src.charAt(at) === '@') at++;
+      while (at < src.length && /[A-Za-z0-9_.]/.test(src.charAt(at))) at++;
+      var w = src.slice(start, at).replace(/^@/, '').toLowerCase();
+      if (w === 'prof') return profBonus(c.level);
+      if (w === 'level') return Number(c.level) || 1;
+      var parts = w.split('.');
+      if (EFFECT_ABILITIES.indexOf(parts[0]) >= 0) {
+        if (parts.length === 1 || parts[1] === 'score') return score(parts[0]);
+        if (parts[1] === 'mod' && parts.length === 2) return abilityMod(score(parts[0]));
+      }
+      if (parts.length === 2 && parts[1] === 'level') {
+        var k = (c.classes || []).filter(function (x) { return String(x.name).toLowerCase() === parts[0]; })[0];
+        return k ? Number(k.level) || 0 : 0;
+      }
+      /* Any attribute of the sheet, read with its effects: init, AC,
+         save.dex, skill.stealth, hp, hpMax, sp, slot.3 and the rest. */
+      var attr = attributeOf(src.slice(start, at).replace(/^@/, ''));
+      if (attr && rec) return attr.get(rec);
+      throw new Error('"' + w + '" is not a word of the formulas: prof, level, <class>.level, <ability>, <ability>.mod, or an attribute (lookup kind rule "attributes")');
+    }
+    function primary() {
+      space();
+      var ch0 = src.charAt(at);
+      if (ch0 === '(') {
+        at++;
+        var inner = sum();
+        space();
+        if (src.charAt(at) !== ')') throw new Error('a ) was expected');
+        at++;
+        return inner;
+      }
+      if (ch0 === '-') { at++; return -primary(); }
+      var head = src.slice(at, at + 4).toLowerCase();
+      if (head === 'min(' || head === 'max(') {
+        var pick = head.slice(0, 3);
+        at += 4;
+        var a = sum();
+        space();
+        if (src.charAt(at) !== ',') throw new Error('a , was expected');
+        at++;
+        var b = sum();
+        space();
+        if (src.charAt(at) !== ')') throw new Error('a ) was expected');
+        at++;
+        return pick === 'min' ? Math.min(a, b) : Math.max(a, b);
+      }
+      if (/[A-Za-z@]/.test(ch0)) return word();
+      return number();
+    }
+    function product() {
+      var value = primary();
+      for (;;) {
+        space();
+        var op = src.charAt(at);
+        if (op !== '*' && op !== '/') return value;
+        at++;
+        var right = primary();
+        value = op === '*' ? value * right : (right === 0 ? 0 : value / right);
+      }
+    }
+    function sum() {
+      var value = product();
+      for (;;) {
+        space();
+        var op = src.charAt(at);
+        if (op !== '+' && op !== '-') return value;
+        at++;
+        var right = product();
+        value = op === '+' ? value + right : value - right;
+      }
+    }
+    var out = sum();
+    space();
+    if (at !== src.length) throw new Error('the formula reads to the end, and stopped at "' + src.slice(at, at + 8) + '"');
+    return out;
+  }
+
+  /* The targets an effect may change. */
+  function effectTarget(t) {
+    var x = String(t || '');
+    var known = attributeOf(x);
+    if (known && known.effect) return known.name;
+    if (/^(AC|baseAC|init|speed|hpMax)$/.test(x)) return x;
+    var lower = x.toLowerCase();
+    if (lower === 'ac') return 'AC';
+    if (lower === 'baseac') return 'baseAC';
+    if (lower === 'initiative' || lower === 'init') return 'init';
+    if (lower === 'speed') return 'speed';
+    if (lower === 'hpmax' || lower === 'hp.max' || lower === 'maxhp') return 'hpMax';
+    var m = lower.match(/^save\.(str|dex|con|int|wis|cha|all)$/);
+    if (m) return 'save.' + m[1];
+    m = x.match(/^skill\.([A-Za-z]+)$/);
+    if (m && (SKILL_BY_KEY[m[1]] || SKILL_BY_KEY[lower.slice(6)])) return 'skill.' + (SKILL_BY_KEY[m[1]] ? m[1] : lower.slice(6));
+    if (m) {
+      var key = SKILLS.filter(function (s) { return s.key.toLowerCase() === m[1].toLowerCase(); })[0];
+      if (key) return 'skill.' + key.key;
+    }
+    return '';
+  }
+
+  /* The statements of one effect text, parsed: each with its target, its
+     operation and its formula, or the reason it is not one. */
+  function effectLines(text) {
+    return String(text === undefined || text === null ? '' : text).split(/[;\n]+/).map(function (line) {
+      var raw = line.trim();
+      if (!raw) return null;
+      var m = raw.match(/^([A-Za-z][A-Za-z0-9.]*)\s*([=+\-])\s*([\s\S]+)$/);
+      if (!m) return { raw: raw, error: 'an effect reads TARGET = | + | - FORMULA' };
+      var target = effectTarget(m[1]);
+      if (!target) return { raw: raw, error: '"' + m[1] + '" is not a target an effect moves: AC, baseAC, init, speed, hpMax, save.<ability>, save.all, skill.<skill>, passive.perception, spellDC, spellAttack, attack, attack.melee, attack.ranged, damage, damage.melee, damage.ranged' };
+      return { raw: raw, target: target, op: m[2], value: m[3] };
+    }).filter(Boolean);
+  }
+
+  /* The items a character carries, and the effect an item has when it is on. */
+  function equipmentOf(rec) {
+    return (rec && rec.equipment && rec.equipment.items) || [];
+  }
+
+  function effectOf(item) {
+    if (!item || !item.equipped) return null;
+    var lines = effectLines(item.effect).filter(function (l) { return !l.error; });
+    return lines.length ? { target: lines[0].target, op: lines[0].op, value: lines[0].value } : null;
+  }
+
+  /* Every effect the character has: the worn items' and the features'. */
+  function effectsOf(rec) {
+    var out = [];
+    equipmentOf(rec).forEach(function (it) {
+      if (!it || !it.equipped) return;
+      effectLines(it.effect).forEach(function (l) { if (!l.error) { l.from = it.name; out.push(l); } });
+    });
+    (((rec && rec.char) || {}).features || []).forEach(function (f) {
+      effectLines(f && f.effect).forEach(function (l) { if (!l.error) { l.from = f.name; out.push(l); } });
+    });
+    return out;
+  }
+
+  /* A value of the sheet with the effects on it: the last = sets it, the
+     + and - add up. Each of the targets passed is read, so a save reads
+     its own and save.all. */
+  function withEffects(rec, base, targets) {
+    var ch = (rec && rec.char) || {};
+    var value = base, add = 0;
+    effectsOf(rec).forEach(function (e) {
+      if (targets.indexOf(e.target) < 0) return;
+      var v = 0;
+      /* An effect that reads what it changes reads it without effects: a
+         formula never loops on itself. */
+      if (EFFECT_DEPTH > 3) return;
+      EFFECT_DEPTH += 1;
+      try { v = effectValue(e.value, ch, rec); } catch (err) { EFFECT_DEPTH -= 1; return; }
+      EFFECT_DEPTH -= 1;
+      if (e.op === '=') value = v;
+      else add += e.op === '+' ? v : -v;
+    });
+    return Math.floor(value + add);
+  }
+
+  /* What a set of effects does, checked: the reasons a line is not read,
+     or nothing. */
+  function effectCheck(text, ch, rec) {
+    var why = [];
+    effectLines(text).forEach(function (l) {
+      if (l.error) { why.push(l.raw + ': ' + l.error); return; }
+      try { effectValue(l.value, ch || {}, rec); } catch (err) { why.push(l.raw + ': ' + err.message); }
+    });
+    return why;
+  }
+
+  /* Whether anything the character has sets or moves its armour class, so
+     the sheet reads it from there. */
+  function hasEffect(rec) {
+    return effectsOf(rec).some(function (e) { return e.target === 'AC' || e.target === 'baseAC'; });
+  }
+
+  /* Whether the armour a character is wearing sets the base of the AC rather
+     than adding to it: the half plate is 15 plus the dexterity it allows. */
+  function hasBaseAC(rec) {
+    return effectsOf(rec).some(function (e) { return e.target === 'baseAC' && e.op === '='; });
+  }
+
+  /* The armour class: the base the player wrote, or the one an effect sets,
+     and the bonuses the rest add. */
+  function acOf(rec) {
+    var ch = (rec && rec.char) || {};
+    var dex = abilityMod(Number((ch.abilities || {}).dex) || 10);
+    var base = (ch.ac === undefined || ch.ac === null || ch.ac === '') ? 10 + dex : Number(ch.ac);
+    base = withEffects(rec, base, ['baseAC']);
+    return Math.max(0, withEffects(rec, base, ['AC']));
+  }
+
+  /* The speed: the species' or the sheet's, with the effects on it. */
+  function speedOf(rec) {
+    var ch = (rec && rec.char) || {};
+    return withEffects(rec, Number(ch.speed) || 30, ['speed']);
+  }
+
+  /* ---- the attributes of a character: one language to read and write ----
+
+     Every value of the sheet has a name. A formula reads any of them; an
+     effect (on a feature or a worn item) moves the ones marked effect; a
+     set writes the ones marked set, once. The list is the documentation:
+     the fairy reads it, so it never guesses a key. */
+  function chOf(rec) { return (rec && rec.char) || {}; }
+  function spOf(rec) { rec.spells = rec.spells || {}; return rec.spells; }
+  function whole(v) { return Math.floor(Number(v) || 0); }
+
+  var ATTRIBUTES = [];
+  function attribute(name, doc, get, set, effect) {
+    ATTRIBUTES.push({ name: name, doc: doc, get: get, set: set || null, effect: !!effect });
+  }
+
+  attribute('level', 'the character level (set it with the class levels)', function (r) { return Number(chOf(r).level) || 1; });
+  attribute('prof', 'the proficiency bonus', function (r) { return profBonus(chOf(r).level); });
+  EFFECT_ABILITIES.forEach(function (a) {
+    attribute(a, 'the ' + a + ' score', function (r) { return Number((chOf(r).abilities || {})[a]) || 10; },
+      function (r, v) { var c = chOf(r); c.abilities = c.abilities || {}; c.abilities[a] = Math.max(1, Math.min(30, whole(v))); });
+    attribute(a + '.mod', 'the ' + a + ' modifier', function (r) { return abilityMod(Number((chOf(r).abilities || {})[a]) || 10); });
+  });
+  attribute('hp', 'the current hit points', function (r) { return Number((chOf(r).hp || {}).current) || 0; },
+    function (r, v) { var c = chOf(r); c.hp = c.hp || {}; c.hp.current = Math.max(0, Math.min(Number(c.hp.max) || 9999, whole(v))); });
+  attribute('hp.temp', 'the temporary hit points', function (r) { return Number((chOf(r).hp || {}).temp) || 0; },
+    function (r, v) { var c = chOf(r); c.hp = c.hp || {}; c.hp.temp = Math.max(0, whole(v)); });
+  attribute('hpMax', 'the maximum of hit points: worked out from the classes unless set by hand (a set turns it to by hand); effects add to it',
+    function (r) { return Number((chOf(r).hp || {}).max) || 0; },
+    function (r, v) { var c = chOf(r); c.hp = c.hp || {}; c.hp.max = Math.max(0, whole(v)); c.hpManual = true; }, true);
+  attribute('AC', 'the armour class, with the gear and the effects', function (r) { return acOf(r); },
+    function (r, v) { chOf(r).ac = whole(v); }, true);
+  attribute('baseAC', 'the base of the armour class an effect can set (armour, mage armour, unarmoured defence)', function (r) { return acOf(r); }, null, true);
+  attribute('init', 'the initiative modifier, with the effects', function (r) { return initMod(chOf(r), r); },
+    function (r, v) { var c = chOf(r); c.initTouched = true; c.init = whole(v); }, true);
+  attribute('speed', 'the walking speed in feet, with the effects', function (r) { return speedOf(r); },
+    function (r, v) { chOf(r).speed = whole(v); }, true);
+  EFFECT_ABILITIES.forEach(function (a) {
+    attribute('save.' + a, 'the ' + a + ' saving throw, with the effects', function (r) { return saveMod(chOf(r), a, r); }, null, true);
+    attribute('save.' + a + '.prof', 'the proficiency in the ' + a + ' saving throw: 0 none, 1 proficient, 2 expertise',
+      function (r) { return Number((chOf(r).saves || {})[a]) || 0; },
+      function (r, v) { var c = chOf(r); c.saves = c.saves || {}; c.saves[a] = Math.max(0, Math.min(2, whole(v))); });
+  });
+  attribute('save.all', 'every saving throw at once, for an effect (save.all + 1)', function () { return 0; }, null, true);
+  SKILLS.forEach(function (k) {
+    attribute('skill.' + k.key, 'the ' + k.name + ' skill (' + k.ab + '), with the effects', function (r) { return skillMod(chOf(r), k.key, r); }, null, true);
+    attribute('skill.' + k.key + '.prof', 'the proficiency in ' + k.name + ': 0 none, 1 proficient, 2 expertise',
+      function (r) { return Number((chOf(r).skills || {})[k.key]) || 0; },
+      function (r, v) { var c = chOf(r); c.skills = c.skills || {}; c.skills[k.key] = Math.max(0, Math.min(2, whole(v))); });
+  });
+  attribute('passive.perception', 'the passive Perception: 10 plus the Perception skill, with the effects',
+    function (r) { return withEffects(r, 10 + skillMod(chOf(r), 'perception', r), ['passive.perception']); }, null, true);
+  attribute('spellDC', 'the spell save DC: worked out with the effects until it is set by hand (a set holds it)', function (r) {
+    var sp = spOf(r);
+    if (sp.dcTouched) return Number(sp.dc) || 0;
+    return withEffects(r, spellDC(chOf(r), HOOKS.primary ? HOOKS.primary(chOf(r)) : 'cha'), ['spellDC']);
+  }, function (r, v) { var sp = spOf(r); sp.dc = whole(v); sp.dcTouched = true; }, true);
+  attribute('spellAttack', 'the spell attack bonus, with the effects (a rod of the pact keeper: spellAttack + 1)',
+    function (r) { return withEffects(r, spellAttack(chOf(r), HOOKS.primary ? HOOKS.primary(chOf(r)) : 'cha'), ['spellAttack']); }, null, true);
+  /* The weapon attacks: what the effects add to the hit and to the damage,
+     of every weapon, or of melee or ranged ones only. Archery is
+     attack.ranged + 2; Dueling is damage.melee + 2. */
+  [['attack', 'the hit of every weapon attack'], ['attack.melee', 'the hit of a melee weapon attack'], ['attack.ranged', 'the hit of a ranged weapon attack'],
+    ['damage', 'the damage of every weapon attack'], ['damage.melee', 'the damage of a melee weapon attack'], ['damage.ranged', 'the damage of a ranged weapon attack']]
+    .forEach(function (x) {
+      attribute(x[0], 'what the effects add to ' + x[1] + ' (0 with none)', function (r) { return withEffects(r, 0, [x[0]]); }, null, true);
+    });
+  attribute('sp', 'the sorcery points left', function (r) { return Number(spOf(r).sp) || 0; },
+    function (r, v) { var sp = spOf(r); sp.sp = Math.max(0, Math.min(Number(sp.spMax) || 99, whole(v))); });
+  attribute('sp.max', 'the sorcery points at most', function (r) { return Number(spOf(r).spMax) || 0; },
+    function (r, v) { spOf(r).spMax = Math.max(0, whole(v)); });
+  for (var lv = 1; lv <= 9; lv++) {
+    (function (l) {
+      attribute('slot.' + l, 'the level ' + l + ' spell slots left', function (r) { return Number((spOf(r).left || {})[l]) || 0; },
+        function (r, v) { var sp = spOf(r); sp.left = sp.left || {}; sp.left[l] = Math.max(0, Math.min(Number((sp.max || {})[l]) || 0, whole(v))); });
+      attribute('slot.' + l + '.max', 'the level ' + l + ' spell slots at most (a set holds the slots by hand)', function (r) { return Number((spOf(r).max || {})[l]) || 0; },
+        function (r, v) { var sp = spOf(r); sp.max = sp.max || {}; sp.max[l] = Math.max(0, whole(v)); sp.slotsTouched = true; });
+    })(lv);
+  }
+
+  /* A feature's uses, by its key on the sheet: uses.<key> and uses.<key>.max. */
+  function usesAttribute(name) {
+    var m = String(name).match(/^uses\.([^.]+)(\.max)?$/);
+    if (!m) return null;
+    var key = m[1], max = !!m[2];
+    function row(r) { return (chOf(r).features || []).filter(function (f) { return f.key === key; })[0]; }
+    return {
+      name: name, doc: max ? 'the uses of the feature ' + key + ' at most' : 'the uses of the feature ' + key + ' left', effect: false,
+      get: function (r) { var f = row(r); return f ? Number(max ? f.max : f.left) || 0 : 0; },
+      set: function (r, v) {
+        var f = row(r);
+        if (!f) throw new Error('no feature with the key ' + key + ' on the sheet');
+        if (max) { f.max = Math.max(0, whole(v)); f.manual = true; if (f.left > f.max) f.left = f.max; }
+        else f.left = Math.max(0, Math.min(Number(f.max) || 0, whole(v)));
+      }
+    };
+  }
+
+  function attributeOf(name) {
+    var n = String(name || '').trim();
+    var found = ATTRIBUTES.filter(function (a) { return a.name === n; })[0] ||
+      ATTRIBUTES.filter(function (a) { return a.name.toLowerCase() === n.toLowerCase(); })[0];
+    return found || usesAttribute(n);
+  }
+
+  /* A formula read against a character. */
+  function sheetGet(rec, formula) {
+    return effectValue(formula, chOf(rec), rec);
+  }
+
+  /* A set, once: "dex = 16", "skill.stealth.prof = 2", "hp = hpMax". The
+     formula is read before anything is written. */
+  function sheetSet(rec, statement) {
+    var m = String(statement || '').match(/^\s*([A-Za-z][A-Za-z0-9_.-]*)\s*(=|\+=|-=)\s*([\s\S]+)$/);
+    if (!m) throw new Error('a set reads ATTRIBUTE = FORMULA (or += or -=)');
+    var attr = attributeOf(m[1]);
+    if (!attr) throw new Error('"' + m[1] + '" is not an attribute (lookup kind rule "attributes")');
+    if (!attr.set) throw new Error(attr.name + ' is read, not set: ' + attr.doc + (attr.effect ? '; an effect on a feature or an item moves it' : ''));
+    var before = attr.get(rec);
+    var v = effectValue(m[3], chOf(rec), rec);
+    if (m[2] === '+=') v = before + v;
+    if (m[2] === '-=') v = before - v;
+    attr.set(rec, v);
+    return { attribute: attr.name, before: before, after: attr.get(rec) };
+  }
+
+  /* The list, for the fairy and the rules lookup. */
+  function attributeList() {
+    return ATTRIBUTES.map(function (a) {
+      return { name: a.name, doc: a.doc, read: true, set: !!a.set, effect: a.effect };
+    }).concat([{ name: 'uses.<feature key>', doc: 'the uses left of a feature of the sheet; uses.<key>.max its most', read: true, set: true, effect: false }]);
+  }
+
+  /* ---- what a higher slot buys a spell ---- */
+
+  /* The first dice a spell's text deals, as n d sides and the words that
+     follow it (the damage kind). */
+  function firstDice(blocks) {
+    var bare = null;
+    for (var i = 0; i < (blocks || []).length; i++) {
+      var b = blocks[i];
+      if (!b || b.t !== 'p' || !b.text) continue;
+      var m = /\[\[d:(\d+)d(\d+)\s*([^\]]*)\]\]/.exec(b.text);
+      if (m) return { n: Number(m[1]), sides: Number(m[2]), type: String(m[3] || '').trim() };
+      /* A healing is written plain where a damage is marked, so the first
+         die of the text is read either way. */
+      if (!bare) {
+        var plain = /(\d+)d(\d+)/.exec(b.text);
+        if (plain && /regains|healing|Hit Points|damage/i.test(b.text)) {
+          bare = { n: Number(plain[1]), sides: Number(plain[2]), type: '' };
+        }
+      }
+    }
+    return bare;
+  }
+
+  /* The words of the higher level: the heading that marks them, the dice a
+     slot adds, and the level they grow above. */
+  function higherPart(blocks) {
+    var at = -1, i;
+    for (i = 0; i < (blocks || []).length; i++) {
+      if (blocks[i] && blocks[i].t === 'h' && /higher-level/i.test(blocks[i].text || '')) { at = i; break; }
+    }
+    if (at < 0) return null;
+    var rest = blocks.slice(at + 1);
+    var words = rest.filter(function (b) { return b.t === 'p' && b.text; })
+      .map(function (b) { return b.text; }).join(' ');
+    var above = /above\s+(\d+)/i.exec(words);
+    /* The book marks the dice of a damage in brackets and writes the dice of
+       a healing plain, so both are read. */
+    var grow = /increases by\s+\[\[d:(\d+)d(\d+)\s*([^\]]*)\]\]/i.exec(words) ||
+      /increases by\s+(\d+)d(\d+)/i.exec(words);
+    return {
+      blocks: rest,
+      above: above ? Number(above[1]) : null,
+      grow: grow ? { n: Number(grow[1]), sides: Number(grow[2]), type: String(grow[3] || '').trim() } : null,
+      targets: /one additional|one more/i.test(words)
+    };
+  }
+
+  /* What a spell looks like from a slot of a chosen level: the dice it deals
+     then, what the slot adds, and the words that grow with it. The text of
+     the book is read, not repeated. */
+  function castPreview(spell, level) {
+    if (!spell) return null;
+    var at = Number(level) || 0;
+    var base = Number(spell.level) || 0;
+    var hi = higherPart(spell.blocks);
+    var first = firstDice(spell.blocks);
+    var above = hi && hi.above !== null ? hi.above : base;
+    var steps = Math.max(0, at - above);
+    var add = hi && hi.grow && steps ? { n: hi.grow.n * steps, sides: hi.grow.sides, type: hi.grow.type } : null;
+    var dice = null;
+    if (first) {
+      dice = { n: first.n, sides: first.sides, type: first.type };
+      /* The dice of a higher slot double the first only when they are the
+         same die, which is how the book writes a growing damage. */
+      if (add && add.sides === first.sides) { dice.n = first.n + add.n; add = null; }
+    } else if (add) {
+      dice = add;
+      add = null;
+    }
+    var more = hi && hi.targets && steps ? steps : 0;
+    var words = at > above && !dice && !more && hi ? hi.blocks : [];
+    if (!dice && !more && !words.length) return null;
+    return { level: at, steps: steps, dice: dice, add: add, targets: more, words: words };
+  }
+
+  var DIE_LABEL = {
+    4: { y: 15, size: 9 },
+    6: { y: 15.4, size: 9 },
+    8: { y: 15, size: 9 },
+    10: { y: 13.4, size: 8 },
+    12: { y: 14.6, size: 8 },
+    20: { y: 15.4, size: 9 }
+  };
+
+  root.SheetRules = {
+    ABILITIES: ABILITIES,
+    SKILLS: SKILLS,
+    abilityMod: abilityMod,
+    profBonus: profBonus,
+    sign: sign,
+    initMod: initMod,
+    classLevels: classLevels,
+    cantripUpgrade: cantripUpgrade,
+    casterLevel: casterLevel,
+    slotsFor: slotsFor,
+    pactFor: pactFor,
+    warlockLevel: warlockLevel,
+    saveMod: saveMod,
+    skillMod: skillMod,
+    nextProf: nextProf,
+    profLabel: profLabel,
+    spellAttack: spellAttack,
+    spellDC: spellDC,
+    hpApply: hpApply,
+    hpEntry: hpEntry,
+    hpMove: hpMove,
+    effectValue: effectValue,
+    attributeOf: attributeOf,
+    attributeList: attributeList,
+    sheetGet: sheetGet,
+    sheetSet: sheetSet,
+    hooks: HOOKS,
+    effectLines: effectLines,
+    effectsOf: effectsOf,
+    withEffects: withEffects,
+    effectCheck: effectCheck,
+    speedOf: speedOf,
+    hasEffect: hasEffect,
+    hasBaseAC: hasBaseAC,
+    acOf: acOf,
+    castPreview: castPreview,
+    DIE_SHAPES: DIE_SHAPES,
+    DIE_LABEL: DIE_LABEL
+  };
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+</script>
+
+<script src="bridge.js"></script>
+<script src="github.js"></script>
+<script src="own.js"></script>
+<script src="origin.js"></script>
+<script src="wire.js"></script>
+<script src="block.js"></script>
+<script src="card.js"></script>
+<script src="counter.js"></script>
+<script src="record.js"></script>
+<script src="edit.js"></script>
+<script src="rest.js"></script>
+<script src="rebuild.js"></script>
+<script src="drag.js"></script>
+<script src="roll.js"></script>
+<script src="feedback.js"></script>
+<script src="cast.js"></script>
+<script src="slider.js"></script>
+<script src="attackbox.js"></script>
+<script src="toggle.js"></script>
+<script src="shelf.js"></script>
+<script src="images.js"></script>
+<script src="klass.js"></script>
+<script src="shell.js"></script>
+<script src="classes/*.js"></script>
+<script src="pages/*.js"></script>
+</script>
+</body>
+</html>
