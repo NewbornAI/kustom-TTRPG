@@ -1753,6 +1753,10 @@ check('a tapped hit die shows what is left even when its count has the focus',
   check('a brief is short: who sits from the sheet without weapons, one concept, and no story or art list for the literal painter',
     [src.indexOf("it.category === 'armour'") >= 0, src.indexOf("'one person only', 'no weapons'") >= 0, src.indexOf('brief.story') < 0, src.indexOf('art_direction') < 0,
       src.indexOf("return drawPicture(portrait(concept, null), '');") >= 0].join('/'), 'true/true/true/true/true');
+  const chr = harness.source('pages/character.js');
+  check('two inspirations sit beside the hit points: heroic on every sheet, bardic where the feature is or the wrench turned it on',
+    [chr.indexOf('id="inspCol"') >= 0, chr.indexOf("key: 'heroic', id: 'inspHeroic'") >= 0, chr.indexOf("f.key === 'bardicInspiration'") >= 0,
+      chr.indexOf('i.bardicShown = !i.bardicShown;') >= 0, chr.indexOf('bardicShown: !!saved.inspiration.bardicShown') >= 0].join('/'), 'true/true/true/true/true');
   check('the background is thirty words, and a longer one is refused unless the player asked',
     [src.indexOf('at most 30 words, two short sentences') >= 0, src.indexOf("if (words > 40 && !(args && args.long))") >= 0, shell.indexOf('write_backstory: at most 30 words') >= 0].join('/'), 'true/true/true');
   check('the Randominator writes the story before it paints', shell.indexOf('Then write its background with write_backstory') >= 0 &&

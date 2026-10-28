@@ -262,6 +262,11 @@
       if (Array.isArray(saved.dropped)) c.dropped = saved.dropped.filter(function (k) { return typeof k === 'string'; });
       /* The maximum of hit points set by hand, which the automatic one leaves be. */
       if (saved.hpManual) c.hpManual = true;
+      /* Inspiration: heroic is the sheet's own, bardic is a die somebody gave
+         the character, shown for the characters that play with it. */
+      if (saved.inspiration && typeof saved.inspiration === 'object') {
+        c.inspiration = { heroic: !!saved.inspiration.heroic, bardic: !!saved.inspiration.bardic, bardicShown: !!saved.inspiration.bardicShown };
+      }
       /* The origin: the species and its choice, the background, how the
          scores were made, and the speed the species gives. */
       if (typeof saved.species === 'string') c.species = saved.species;
@@ -345,6 +350,7 @@
     if (document.activeElement !== E.charInit) E.charInit.value = String(SR.initMod(CH, api.character()));
     if (document.activeElement !== E.charLevel) E.charLevel.value = String(CH.level);
     paintHp();
+    paintInsp();
 
     ABILITIES.forEach(function (a) {
       var input = E.charAbilities.querySelector('[data-ab="' + a.key + '"]');
@@ -714,6 +720,43 @@
     E.charHpUp.disabled = hp.max > 0 && hp.current >= hp.max;
   }
 
+  /* The two inspirations beside the hit points. Heroic Inspiration is on every
+     sheet: two d20 for the next d20 test. Bardic Inspiration is a d10 somebody
+     gave the character, and it shows on the sheets that play with it: the
+     bard's own, which has the feature, and any other where the wrench turned
+     it on. A shown-by-the-wrench chip is dashed while the page is edited. */
+  var ICON_HEROIC = 'M8 3.5l4.8 2.8v5.4L8 14.5l-4.8-2.8V6.3zM16 9.5l4.8 2.8v5.4L16 20.5l-4.8-2.8v-5.4z';
+  var ICON_BARDIC = 'M2.5 12h6M5.5 9v6M16 3l5 7-5 11-5-11zM11 10h10';
+
+  function insp() {
+    if (!CH.inspiration || typeof CH.inspiration !== 'object') CH.inspiration = { heroic: false, bardic: false, bardicShown: false };
+    return CH.inspiration;
+  }
+
+  function bardicByFeature() {
+    return (CH.features || []).some(function (f) { return f && f.key === 'bardicInspiration' && !f.hidden; });
+  }
+
+  function paintInsp() {
+    var i = insp();
+    var editing = api.editing('character');
+    var forced = bardicByFeature();
+    var shown = forced || !!i.bardicShown;
+    var list = [{ key: 'heroic', id: 'inspHeroic', icon: ICON_HEROIC, on: !!i.heroic, rgb: 'var(--gold-rgb)',
+      aria: 'Heroic Inspiration: two d20 for the next d20 test', title: 'Heroic Inspiration' }];
+    if (shown || editing) {
+      list.push({ key: 'bardic', id: 'inspBardic', icon: ICON_BARDIC, on: shown && !!i.bardic, rgb: 'var(--heal-rgb)',
+        cls: shown ? '' : 'ghost',
+        aria: shown ? 'Bardic Inspiration: a d10 to add to a d20 test' : 'Show Bardic Inspiration on this sheet',
+        title: 'Bardic Inspiration' });
+    }
+    var sig = JSON.stringify(list);
+    if (E.inspCol.dataset.sig !== sig) {
+      E.inspCol.dataset.sig = sig;
+      E.inspCol.innerHTML = list.map(C.toggle.chip).join('');
+    }
+  }
+
   function setHp(next) {
     if (next === CH.hp.current) return;
     C.rest.push(api.character());
@@ -892,6 +935,12 @@
       '.cnum{font-family:var(--display);font-size:19px;font-weight:700;line-height:1.15;font-variant-numeric:tabular-nums;color:var(--ink);text-align:center}',
       /* The hit point card: the two steps a thumb wide on either side, the
          hit points, the maximum and the temporary chip over a bar. */
+      '.hprow{flex:0 0 auto;display:flex;align-items:stretch;gap:var(--gap-2)}',
+      '.hprow .hpcard{flex:1 1 auto;min-width:0;gap:6px;padding:10px 8px}',
+      '.inspcol{flex:0 0 56px;display:flex;flex-direction:column;gap:var(--gap-2)}',
+      '.inspcol .vchip{flex:1 1 0;min-height:0;padding:2px;font-size:11px;font-weight:700}',
+      '.inspcol .vchip .vchipi{width:26px;height:26px}',
+      '.inspcol .vchip.ghost{border-style:dashed;opacity:.55}',
       '.hpcard{flex:0 0 auto;display:flex;align-items:stretch;gap:var(--gap-3);padding:10px;border:1px solid var(--edge);border-radius:var(--r-box);background:rgba(255,255,255,.035)}',
       '.hpstep{flex:0 0 48px;min-height:48px;border:1px solid var(--edge);border-radius:10px;background:rgba(255,255,255,.03);color:var(--muted);font-family:var(--sans);font-size:24px;line-height:1;padding:0;cursor:pointer;touch-action:manipulation}',
       '.hpstep.minus{color:rgb(var(--dis-rgb))}',
@@ -1042,6 +1091,7 @@
       '      <input class="cinput" id="charLevel" type="number" inputmode="numeric" min="1" max="20" placeholder="1" aria-label="Character level">',
       '    </label>',
       '  </div>',
+      '  <div class="hprow">',
       '  <section class="hpcard" id="hpCard" aria-label="Hit points">',
       '    <button class="hpstep minus" id="charHpDown" type="button" aria-label="Lose a hit point">&minus;</button>',
       '    <div class="hpmid" id="charHpMid">',
@@ -1056,6 +1106,8 @@
       '    </div>',
       '    <button class="hpstep plus" id="charHpUp" type="button" aria-label="Gain a hit point">+</button>',
       '  </section>',
+      '  <div class="inspcol chipgrid" id="inspCol" style="--cols:1"></div>',
+      '  </div>',
       '  <div class="ctop">',
       '    <label class="ctile" for="charAc">',
       '      <span class="ck">AC</span>',
@@ -1112,6 +1164,7 @@
         charHpTemp: root.querySelector('#charHpTemp'),
         charHpFill: root.querySelector('#charHpFill'),
         charHpTempFill: root.querySelector('#charHpTempFill'),
+        inspCol: root.querySelector('#inspCol'),
         charInit: root.querySelector('#charInit'),
         charLevel: root.querySelector('#charLevel'),
         charLevelBox: root.querySelector('.cnlevel'),
@@ -1260,6 +1313,25 @@
 
       E.charHpUp.addEventListener('click', function () {
         setHp(SR.hpApply(CH.hp.current, CH.hp.max, 1));
+      });
+
+      E.inspCol.addEventListener('click', function (ev) {
+        var chip = ev.target.closest('.vchip');
+        if (!chip) return;
+        var i = insp();
+        if (chip.dataset.key === 'heroic') {
+          i.heroic = !i.heroic;
+          api.toast(i.heroic ? 'Heroic Inspiration: roll two d20 and keep either' : 'Heroic Inspiration spent');
+        } else if (api.editing('character') && !bardicByFeature()) {
+          /* In the wrench the chip is the switch of the sheet: it shows or
+             hides Bardic Inspiration for this character. */
+          i.bardicShown = !i.bardicShown;
+          if (!i.bardicShown) i.bardic = false;
+        } else {
+          i.bardic = !i.bardic;
+          api.toast(i.bardic ? 'Bardic Inspiration: add a d10 to a d20 test' : 'Bardic Inspiration used');
+        }
+        commitChar();
       });
 
       E.charHpDown.addEventListener('click', function () {
