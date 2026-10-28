@@ -418,6 +418,220 @@
     E.address.appendChild(row);
   }
 
+  /* ---- the campaign ----
+
+     One repository per campaign, run by the game master, and every player
+     of the table syncs with it. The game master starts one from two pages of
+     GitHub the app fills in, then shows the invite: a link to send and a QR
+     code to scan. A player joins by pasting the link or scanning the code,
+     and switches between the campaigns they joined here. */
+  function campaign() {
+    if (!E.campaign) return;
+    E.campaign.innerHTML = '';
+    var now = shelf.current();
+    var list = shelf.campaigns();
+    var signed = !now && shelf.hasShelf() ? shelf.repo() : '';
+
+    list.forEach(function (c) {
+      var on = now && now.id === c.id;
+      var row = document.createElement('div');
+      row.className = 'srow camprow';
+      row.innerHTML = '<span class="t">' + C.chrome.esc(c.name) + '</span><span class="d">' + C.chrome.esc(c.repo) + '</span>';
+      if (on && c.key) row.appendChild(button('Invite', 'Invite the players of ' + c.name, function () { openInvite(c); }));
+      var pick = button(on ? 'Here' : 'Play', on ? c.name + ' is the campaign' : 'Play in ' + c.name, function () {
+        if (on) return;
+        shelf.useCampaign(c.id);
+        api.save();
+        api.toast('the shelf is ' + c.name);
+        api.refresh();
+      });
+      if (on) pick.classList.add('on');
+      row.appendChild(pick);
+      row.appendChild(button('Leave', 'Leave ' + c.name + ' on this phone', function () { leave(c); }));
+      E.campaign.appendChild(row);
+    });
+
+    if (signed) {
+      var mine = document.createElement('div');
+      mine.className = 'srow camprow';
+      mine.innerHTML = '<span class="t">Your GitHub shelf</span><span class="d">' + C.chrome.esc(signed) + '</span>';
+      var here = button('Here', 'Your GitHub shelf is the shelf', function () {});
+      here.classList.add('on');
+      mine.appendChild(here);
+      E.campaign.appendChild(mine);
+    }
+
+    if (!list.length && !signed) {
+      var none = document.createElement('div');
+      none.className = 'srow';
+      none.innerHTML = '<span class="d">No campaign yet. The game master starts one, and the players join it with the invite.</span>';
+      E.campaign.appendChild(none);
+    }
+
+    var acts = document.createElement('div');
+    acts.className = 'campacts';
+    acts.appendChild(button('Join a campaign', 'Join a campaign with its invite', openJoin));
+    acts.appendChild(button('Start a campaign', 'Start a campaign as the game master', function () { openStart(); }));
+    E.campaign.appendChild(acts);
+  }
+
+  function button(label, aria, onClick) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'stog';
+    b.textContent = label;
+    b.setAttribute('aria-label', aria);
+    b.addEventListener('click', onClick);
+    return b;
+  }
+
+  function leave(c) {
+    api.sheet.open({
+      id: 'campleave',
+      title: 'Leave ' + c.name + '?',
+      text: '<p>' + C.chrome.esc('This phone forgets the campaign and its key. The characters stay in the repository, and the invite brings it back.') + '</p>',
+      actions: [
+        { label: 'Leave', onClick: function () { shelf.removeCampaign(c.id); api.save(); api.sheet.close(); api.toast('left ' + c.name); api.refresh(); } },
+        { label: 'Stay', kind: 'quiet', onClick: function () { api.sheet.close(); } }
+      ]
+    });
+  }
+
+  /* The invite: the QR code to scan across the table, and the link to send
+     to whoever is not there. The words under it say what the link is: the
+     key of the campaign, for the players of this table only. */
+  function openInvite(c) {
+    var link = C.exchange.inviteLink(c);
+    api.sheet.open({
+      id: 'campinvite',
+      title: 'Invite to ' + c.name,
+      metaClass: 'sheet-meta one',
+      meta: '<div class="campqr">' + C.exchange.qrSvg(link, 'The QR code of the invite to ' + c.name) + '</div>' +
+        '<p class="campwarn">Players scan this from Settings, Join a campaign, or paste the link. Anyone with it can read and change the characters of ' +
+        C.chrome.esc(c.name) + ': send it to the players of this table only.</p>',
+      actions: [
+        { label: 'Send the link', onClick: function () {
+          C.exchange.shareLink(link).then(function (answer) {
+            if (answer === 'copied') api.toast('the invite is in the clipboard');
+            else if (answer === 'ok') api.toast('the invite is ready to send');
+            else api.toast('the invite could not be sent');
+          });
+        } },
+        { label: 'Copy', kind: 'quiet', onClick: function () {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(link).then(function () { api.toast('the invite is in the clipboard'); })
+              .catch(function () { api.toast('the clipboard said no: use Send the link'); });
+          } else api.toast('the clipboard said no: use Send the link');
+        } }
+      ]
+    });
+  }
+
+  /* A player joins: the invite on the clipboard, or the QR code on the game
+     master's screen. Neither asks for a word to be typed. */
+  function openJoin() {
+    function joined(answer) {
+      if (!answer) return;
+      if (!answer.ok) { if (answer.why) api.toast(answer.why); return; }
+      api.sheet.closeAll();
+      api.toast('you joined ' + answer.campaign.name + ': its characters are under the add of the characters');
+      api.refresh();
+    }
+    api.sheet.open({
+      id: 'campjoin',
+      title: 'Join a campaign',
+      metaClass: 'sheet-meta one',
+      meta: '<p class="campwarn">Copy the invite link the game master sent, then Paste. Or scan the code on their screen.</p>',
+      actions: [
+        { label: 'Paste the invite', onClick: function () {
+          C.exchange.clipText().then(function (text) {
+            if (!C.exchange.readInvite(text)) {
+              api.toast('the clipboard holds no invite: copy the link first');
+              C.exchange.openPasteLink();
+              return null;
+            }
+            api.toast('joining');
+            return C.exchange.joinInvite(text);
+          }).then(joined);
+        } },
+        { label: 'Scan the QR', kind: 'quiet', onClick: function () {
+          C.exchange.scanQr().then(function (got) {
+            if (!got.ok) { if (got.why) api.toast(got.why); return null; }
+            if (!C.exchange.readInvite(got.text)) { api.toast('that code is not the invite of a campaign'); return null; }
+            api.toast('joining');
+            return C.exchange.joinInvite(got.text);
+          }).then(joined);
+        } }
+      ]
+    });
+  }
+
+  /* The game master starts a campaign in three taps on GitHub and one paste
+     here. The name is the only word typed, and it names the repository and
+     the key. */
+  function openStart(had) {
+    var st = had || { name: '', key: '', note: '', needRepo: false };
+    function nameNow(root) {
+      var f = root && root.querySelector('#campName');
+      if (f) st.name = f.value.trim();
+      return st.name;
+    }
+    function step(n, title, note, label, id) {
+      return '<div class="campstep"><span class="campn">' + n + '</span><span class="camptx"><span class="t">' + title + '</span>' +
+        (note ? '<span class="d">' + note + '</span>' : '') + '</span><button type="button" class="stog" id="' + id + '">' + label + '</button></div>';
+    }
+    api.sheet.open({
+      id: 'campstart',
+      title: 'Start a campaign',
+      dock: true,
+      metaClass: 'sheet-meta one',
+      meta: '<input class="sheet-search" id="campName" type="text" placeholder="Name of the campaign" aria-label="Name of the campaign" value="' + C.chrome.esc(st.name) + '">' +
+        step(1, 'Make its repository', 'GitHub opens with it filled in, private. Tap Create.', 'Open', 'campRepo') +
+        step(2, 'Make its key', 'GitHub opens with the key filled in. Under Repository access choose Only select repositories, pick the repository you just made, then Generate and copy the key.', 'Open', 'campKeyGo') +
+        step(3, st.needRepo ? 'Paste the address of the repository' : 'Paste the key', st.needRepo ? 'The key reaches no repository the app can find: copy the address of the repository from GitHub and paste it.' : 'The app finds the repository with it and writes the first file.', 'Paste', 'campPaste') +
+        '<input class="sheet-search" id="campKey" type="text" autocomplete="off" placeholder="or paste it here" aria-label="The key, pasted" value="">' +
+        (st.note ? '<p class="campwarn">' + C.chrome.esc(st.note) + '</p>' : ''),
+      onPaint: function (root) {
+        var go = function (id, fn) { var b = root.querySelector('#' + id); if (b) b.addEventListener('click', fn); };
+        go('campRepo', function () {
+          if (!nameNow(root)) { api.toast('name the campaign first'); return; }
+          C.exchange.openUrl(shelf.newRepoUrl(st.name));
+        });
+        go('campKeyGo', function () {
+          if (!nameNow(root)) { api.toast('name the campaign first'); return; }
+          C.exchange.openUrl(shelf.keyUrl(st.name));
+        });
+        go('campPaste', function () {
+          if (!nameNow(root)) { api.toast('name the campaign first'); return; }
+          var typed = root.querySelector('#campKey');
+          var field = typed && typed.value.trim();
+          (field ? Promise.resolve(field) : C.exchange.clipText()).then(function (text) {
+            text = String(text || '').trim();
+            if (!text) { api.toast('the clipboard is empty: copy the key on GitHub first'); return; }
+            var isKey = /^(github_pat_|ghp_)/.test(text);
+            if (!isKey && !(st.needRepo && /github\.com\/[^/]+\/[^/]+/.test(text))) {
+              api.toast(st.needRepo ? 'that is not the address of a repository' : 'that is not a GitHub key: it starts with github_pat_');
+              return;
+            }
+            if (isKey) st.key = text;
+            api.toast('finding the repository');
+            shelf.claimCampaign(st.name, st.key, isKey ? '' : text).then(function (answer) {
+              if (answer.ok) {
+                api.save();
+                api.refresh();
+                openInvite(answer.campaign);
+                return;
+              }
+              st.note = answer.why;
+              st.needRepo = !!answer.needRepo;
+              openStart(st);
+            });
+          });
+        });
+      }
+    });
+  }
+
   /* The credits. The text of the rules comes from the System Reference
      Document, which is under Creative Commons Attribution 4.0, and the
      licence asks for this notice wherever the text is published. */
@@ -482,6 +696,21 @@
       '.gal.icons svg{width:21px;height:21px;display:block}',
       '.gal.icons .gname{display:none}',
       '.srow .seg{flex:0 0 auto}',
+      /* The campaign: a row per campaign joined, the two ways in below them,
+         the steps of a new one, and the QR code of the invite. */
+      '.camprow{gap:6px}',
+      '.camprow .stog{flex:0 0 auto}',
+      '.campacts{display:flex;gap:8px}',
+      '.campacts .stog{flex:1 1 0;min-height:40px}',
+      '.campstep{display:flex;align-items:center;gap:9px;padding:7px 0;border-top:1px solid var(--edge)}',
+      '.sheet-meta .campn{font-style:normal;flex:0 0 22px;height:22px;border-radius:50%;border:1px solid rgba(var(--arcane-rgb),.6);color:var(--arcane);font-size:12px;display:flex;align-items:center;justify-content:center}',
+      '.sheet-meta .camptx{font-style:normal;white-space:normal;overflow:visible;flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px}',
+      '.sheet-meta .camptx .t{font-style:normal;white-space:normal;font-size:13px;color:var(--ink)}',
+      '.sheet-meta .camptx .d{font-style:normal;font-size:11px;color:var(--muted);line-height:1.35;white-space:normal}',
+      '.campstep .stog{flex:0 0 auto;min-width:64px;min-height:36px}',
+      '.campqr{width:min(78vw,300px);margin:4px auto;border-radius:10px;overflow:hidden;background:#fff}',
+      '.campqr svg{display:block;width:100%;height:auto}',
+      '.campwarn{margin:4px 0 0;font-size:11.5px;line-height:1.4;color:var(--muted);white-space:normal}',
     ].join('\n'),
     html: [
       '<div class="charbody" id="settingsBody">',
@@ -489,6 +718,10 @@
          the one thing here that has to be seen before anything is read. */
       '  <div class="cshead"><span>Update</span><span class="rule"></span></div>',
       '  <div class="fcards" id="settingsUpdate"></div>',
+      /* The campaign comes second: the shelf of the table is where every
+         character of it is kept, and a player joins once. */
+      '  <div class="cshead"><span>Campaign</span><span class="rule"></span></div>',
+      '  <div class="fcards" id="settingsCampaign"></div>',
       '  <div class="cshead"><span>Pages</span><span class="rule"></span></div>',
       '  <div class="fcards" id="settingsList"></div>',
       /* The bar that carries those pages: one row or two. */
@@ -521,6 +754,7 @@
         address: root.querySelector('#settingsAddress'),
         credits: root.querySelector('#settingsCredits'),
         update: root.querySelector('#settingsUpdate'),
+        campaign: root.querySelector('#settingsCampaign'),
         themes: root.querySelector('#settingsThemes'),
         icons: root.querySelector('#settingsIcons')
       };
@@ -531,6 +765,7 @@
       E.list.innerHTML = '';
       files();
       update();
+      campaign();
       exchange();
       linkField();
       if (E.address) E.address.innerHTML = '';

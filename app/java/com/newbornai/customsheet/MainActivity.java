@@ -6,7 +6,13 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.Manifest;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -32,6 +38,7 @@ public class MainActivity extends Activity {
     private static final String ORIGIN = "https://sheet.local/";
     private static final int PICK = 41;
     private static final int PICK_IMAGE = 42;
+    private static final int CAMERA_ASK = 43;
     private static final int VOID = 0xff08070f;
 
     private WebView view;
@@ -39,6 +46,51 @@ public class MainActivity extends Activity {
     volatile boolean installSeen = false;
     private String pickedText = "";
     private ValueCallback<Uri[]> filePath;
+    /* The camera the page asked for, held while the phone asks the player. */
+    private PermissionRequest cameraAsk;
+
+    /* The page scans the QR code of an invite with the camera: the WebView
+       asks, and the phone asks the player once. Only the camera is ever
+       granted, and only to the page of the app. */
+    void askCamera(PermissionRequest request) {
+        boolean video = false;
+        for (String r : request.getResources()) if (PermissionRequest.RESOURCE_VIDEO_CAPTURE.equals(r)) video = true;
+        if (!video) { request.deny(); return; }
+        if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            request.grant(new String[] { PermissionRequest.RESOURCE_VIDEO_CAPTURE });
+            return;
+        }
+        cameraAsk = request;
+        requestPermissions(new String[] { Manifest.permission.CAMERA }, CAMERA_ASK);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int code, String[] names, int[] results) {
+        super.onRequestPermissionsResult(code, names, results);
+        if (code != CAMERA_ASK || cameraAsk == null) return;
+        PermissionRequest held = cameraAsk;
+        cameraAsk = null;
+        if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
+            held.grant(new String[] { PermissionRequest.RESOURCE_VIDEO_CAPTURE });
+        } else {
+            held.deny();
+        }
+    }
+
+    /* The words on the clipboard, read when the player taps to join, so an
+       invite copied from a message comes in without a field to paste into. */
+    String clipboardText() {
+        try {
+            ClipboardManager clip = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clip == null || !clip.hasPrimaryClip()) return "";
+            ClipData data = clip.getPrimaryClip();
+            if (data == null || data.getItemCount() == 0) return "";
+            CharSequence text = data.getItemAt(0).coerceToText(this);
+            return text == null ? "" : text.toString();
+        } catch (Exception e) {
+            return "";
+        }
+    }
 
     @Override
     protected void onPause() {
@@ -96,6 +148,9 @@ public class MainActivity extends Activity {
         settings.setAllowFileAccessFromFileURLs(false);
         settings.setAllowUniversalAccessFromFileURLs(false);
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        /* The camera of the QR scan plays in a video of the page, after the
+           phone has asked the player, which is past the tap that started it. */
+        settings.setMediaPlaybackRequiresUserGesture(false);
 
         view.setBackgroundColor(VOID);
         view.setOverScrollMode(View.OVER_SCROLL_NEVER);
@@ -460,6 +515,23 @@ public class MainActivity extends Activity {
 
         /* Offers a piece of text to the phone, so a link can be sent to
            somebody. */
+        /* The clipboard, for an invite copied from a message. */
+        @JavascriptInterface
+        public String clipText() {
+            /* The clipboard is read on the thread of the activity: an older
+               phone builds its clipboard with a handler of the thread that
+               first asks for it. */
+            String[] answer = new String[] { "" };
+            java.util.concurrent.CountDownLatch done = new java.util.concurrent.CountDownLatch(1);
+            host.runOnUiThread(new ClipRead(host, answer, done));
+            try {
+                done.await(2, java.util.concurrent.TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                return "";
+            }
+            return answer[0];
+        }
+
         @JavascriptInterface
         public String shareText(String text) {
             try {
@@ -650,6 +722,11 @@ public class MainActivity extends Activity {
         }
 
         @Override
+        public void onPermissionRequest(PermissionRequest request) {
+            host.runOnUiThread(new CameraAsk(host, request));
+        }
+
+        @Override
         public boolean onShowFileChooser(WebView web, ValueCallback<Uri[]> callback, FileChooserParams params) {
             host.awaitFile(callback);
             try {
@@ -662,6 +739,43 @@ public class MainActivity extends Activity {
                 host.takeFile(null);
                 return false;
             }
+        }
+    }
+
+    /* Named classes and not anonymous ones, for the d8 of build-tools 34. */
+    private static class ClipRead implements Runnable {
+
+        private final MainActivity host;
+        private final String[] answer;
+        private final java.util.concurrent.CountDownLatch done;
+
+        ClipRead(MainActivity host, String[] answer, java.util.concurrent.CountDownLatch done) {
+            this.host = host;
+            this.answer = answer;
+            this.done = done;
+        }
+
+        public void run() {
+            try {
+                answer[0] = host.clipboardText();
+            } finally {
+                done.countDown();
+            }
+        }
+    }
+
+    private static class CameraAsk implements Runnable {
+
+        private final MainActivity host;
+        private final PermissionRequest request;
+
+        CameraAsk(MainActivity host, PermissionRequest request) {
+            this.host = host;
+            this.request = request;
+        }
+
+        public void run() {
+            host.askCamera(request);
         }
     }
 

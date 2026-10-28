@@ -922,6 +922,9 @@ body{
 .sheet-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:14px;row-gap:5px;margin-top:2px}
 
 .sheet-meta.one{grid-template-columns:minmax(0,1fr)}
+/* The camera of the QR scan of an invite: the picture fills the width, and a
+   square frame of the theme says where the code goes. */
+.qrcam{width:100%;max-height:52vh;aspect-ratio:1;object-fit:cover;border:2px solid rgba(var(--arcane-rgb),.6);border-radius:12px;background:#000}
 
 .sheet-meta.one span{font-size:9.5px;font-style:italic;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
@@ -2589,6 +2592,7 @@ body{
 <script src="slider.js"></script>
 <script src="attackbox.js"></script>
 <script src="toggle.js"></script>
+<script src="qr.js"></script>
 <script src="shelf.js"></script>
 <script src="images.js"></script>
 <script src="klass.js"></script>

@@ -17,7 +17,7 @@
   /* The characters of the table live in the private repository. The public
      one carries no character and never will: a push there would put one in a
      repository anyone can read. */
-  var DEFAULT_REPO = 'NewbornAI/kustom-mandal';
+  var DEFAULT_REPO = '';
 
   /* deps: net is the GitHub client, store reads and writes the shelf part of
      the store by name, openUrl sends an address to the browser of the phone,
@@ -38,15 +38,76 @@
     function set(key, value) { store.set(key, value); }
     function say(text) { set('ghLast', text || ''); }
 
+    /* ---- the campaigns ----
+
+       A campaign is a repository the game master runs, one per table, and the
+       key of it: a fine-grained token that reaches that one repository and
+       its contents, and nothing else. The key travels in the invite, so a
+       player needs no account of their own. The app remembers every campaign
+       it joined, and one of them is the shelf; none chosen is the shelf of a
+       sign in, the way it was before campaigns. */
+    function campaigns() {
+      var list = get('campaigns');
+      return Array.isArray(list) ? list.filter(function (c) { return c && c.repo; }) : [];
+    }
+
+    function current() {
+      var id = get('campaign');
+      if (!id) return null;
+      return campaigns().filter(function (c) { return c.id === id; })[0] || null;
+    }
+
+    function idOf(repoName) { return String(repoName || '').toLowerCase(); }
+
+    /* A campaign joined twice is the same campaign: the second one replaces
+       the first, and the newest key wins. */
+    function addCampaign(c) {
+      var repoName = String((c && c.repo) || '').trim().replace(/^https?:\/\/github\.com\//i, '').replace(/\.git$/, '').replace(/\/+$/, '');
+      if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repoName)) return null;
+      var entry = {
+        id: idOf(repoName),
+        name: String((c && c.name) || '').trim() || repoName.split('/')[1],
+        repo: repoName,
+        key: String((c && c.key) || '').trim()
+      };
+      var list = campaigns().filter(function (x) { return x.id !== entry.id; });
+      list.push(entry);
+      set('campaigns', list);
+      set('campaign', entry.id);
+      return entry;
+    }
+
+    /* The campaign the shelf reads and writes; '' is the shelf of the sign
+       in. */
+    function useCampaign(id) {
+      var found = campaigns().filter(function (c) { return c.id === id; })[0];
+      set('campaign', found ? found.id : '');
+      return found || null;
+    }
+
+    function removeCampaign(id) {
+      set('campaigns', campaigns().filter(function (c) { return c.id !== id; }));
+      if (get('campaign') === id) set('campaign', '');
+    }
+
     /* ---- the shelf itself ---- */
 
-    function repo() { return String(get('shelf') || DEFAULT_REPO); }
+    function repo() {
+      var c = current();
+      if (c) return c.repo;
+      return String(get('shelf') || DEFAULT_REPO);
+    }
+
+    /* A shelf may be no repository at all: the public build names none, and a
+       player has one once they start or join a campaign. */
+    function hasShelf() { return !!repo(); }
 
     function setRepo(name) { set('shelf', String(name || '').trim() || DEFAULT_REPO); }
 
     /* Where a character is written: the main branch holds the shared ones, a
-       branch of one's own holds the ones that are not ready yet. */
-    function branch() { return get('branch') || 'main'; }
+       branch of one's own holds the ones that are not ready yet. A campaign
+       is one table, so it writes to its main branch. */
+    function branch() { return current() ? 'main' : (get('branch') || 'main'); }
 
     function setBranch(name) { set('branch', String(name || '').trim() || 'main'); }
 
@@ -55,6 +116,8 @@
     function session() { return get('gh') || null; }
 
     function token() {
+      var c = current();
+      if (c && c.key) return c.key;
       var s = session();
       return (s && s.token) || get('token') || '';
     }
@@ -64,6 +127,8 @@
     /* A read may be anonymous. A token that has run out is not sent, so the
        public shelf is still read without one. */
     function readToken() {
+      var c = current();
+      if (c && c.key) return c.key;
       var s = session();
       if (!s || !s.token) return '';
       if (s.expires && s.expires <= Date.now()) return '';
@@ -89,6 +154,8 @@
        eight hours and a refresh token for six months, so the app renews the
        session rather than asking the player to sign in again. */
     function tokenNow() {
+      var c = current();
+      if (c && c.key) return Promise.resolve(c.key);
       var s = session();
       var held = token();
       if (!held) return Promise.reject(new Error('connect to GitHub first'));
@@ -221,7 +288,22 @@
        own can be private. */
     function characters(ref) {
       if (!net) return Promise.reject(new Error('the shelf cannot be read'));
+      if (!hasShelf()) return Promise.reject(new Error('start or join a campaign first'));
       return net.listCharacters(repo(), ref, readToken());
+    }
+
+    /* One character of the shelf, read through the API with the key or the
+       sign in, so a private campaign is read the way a public shelf is. */
+    function read(name, ref) {
+      if (!net) return Promise.reject(new Error('the shelf cannot be read'));
+      var path = '/repos/' + repo() + '/contents/characters/' + encodeURIComponent(name) + '?ref=' + encodeURIComponent(ref || branch());
+      return net.api('GET', path, null, readToken()).then(function (f) {
+        if (!f || typeof f.content !== 'string') throw new Error('that file holds no character');
+        var raw = atob(f.content.replace(/\s+/g, ''));
+        var bytes = new Uint8Array(raw.length);
+        for (var i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+        return new TextDecoder().decode(bytes);
+      });
     }
 
     /* The branches are the shelves of the players: anybody may open one. */
@@ -247,6 +329,9 @@
        connection that cannot be renewed answers with a sentence instead of a
        throw: the page has nothing to repair, only something to say. */
     function renew() {
+      if (current() && current().key) {
+        return Promise.reject(new Error('the key of the campaign was refused: ask the game master for a new invite'));
+      }
       var s = session();
       if (!s || !s.refresh || !net || !net.refreshSession) {
         return Promise.reject(new Error('the connection has run out, sign in again'));
@@ -258,7 +343,10 @@
       });
     }
 
-    function ranOut() { return { ok: false, why: 'the connection has run out, sign in again' }; }
+    function ranOut() {
+      if (current() && current().key) return { ok: false, why: 'the key of the campaign was refused: ask the game master for a new invite' };
+      return { ok: false, why: 'the connection has run out, sign in again' };
+    }
 
     /* The character being played goes onto the shelf, one file per character,
        named after it, on the branch that is named. The branch may not be
@@ -266,6 +354,7 @@
     function put(rec, message) {
       if (!net) return Promise.resolve({ ok: false, why: 'the shelf cannot write yet' });
       if (!rec || !rec.char) return Promise.resolve({ ok: false, why: 'there is no character' });
+      if (!hasShelf()) return Promise.resolve({ ok: false, why: 'start or join a campaign first, in the settings' });
       var name = fileName(rec);
       var text = JSON.stringify(packageOf(rec), null, 2);
       var commit = message || ((rec.char.name || 'a character') + ' goes to the shelf');
@@ -333,7 +422,120 @@
       });
     }
 
+    /* ---- a campaign of one's own ----
+
+       The game master makes two things on GitHub, each from a page the app
+       fills in: the repository, private, and the key of it. Only the choice
+       of the repository for the key is left to a tap, because GitHub takes no
+       address for it. The key is then pasted here, the repository is found
+       with it, and a file says what the campaign is called. */
+    function slug(name) {
+      return String(name || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 90) || 'campaign';
+    }
+
+    function newRepoUrl(name) {
+      return 'https://github.com/new?name=' + encodeURIComponent(slug(name)) +
+        '&description=' + encodeURIComponent('The characters of the campaign ' + String(name || '').trim() + ', kept by custom-sheet') +
+        '&visibility=private';
+    }
+
+    function keyUrl(name) {
+      var label = ('Table key ' + String(name || '').trim()).slice(0, 40);
+      return 'https://github.com/settings/personal-access-tokens/new?name=' + encodeURIComponent(label) +
+        '&description=' + encodeURIComponent('Lets the players of ' + String(name || '').trim() + ' read and write the characters of the campaign. Give it only the repository ' + slug(name) + '.') +
+        '&expires_in=366&contents=write';
+    }
+
+    /* The repository a key reaches: the one the app named first, then the
+       ones the key can write, then the address the game master pasted. */
+    function findRepo(key, name, address) {
+      var pasted = String(address || '').trim().replace(/^https?:\/\/github\.com\//i, '').replace(/\.git$/, '').replace(/\/+$/, '').split('/').slice(0, 2).join('/');
+      function check(full) {
+        return net.api('GET', '/repos/' + full, null, key).then(function (r) { return (r && r.full_name) || ''; })
+          .catch(function () { return ''; });
+      }
+      if (/^[^/]+\/[^/]+$/.test(pasted)) return check(pasted);
+      return net.whoAmI(key).then(function (login) {
+        return check(login + '/' + slug(name)).then(function (found) {
+          if (found) return found;
+          return net.api('GET', '/user/repos?per_page=100&sort=created', null, key).then(function (rows) {
+            var mine = (Array.isArray(rows) ? rows : []).filter(function (r) { return r && (!r.permissions || r.permissions.push); });
+            var named = mine.filter(function (r) { return r.name === slug(name); })[0];
+            if (named) return named.full_name;
+            return mine.length === 1 ? mine[0].full_name : '';
+          }).catch(function () { return ''; });
+        });
+      }).catch(function () { return ''; });
+    }
+
+    /* The key pasted, the repository found, the file of the campaign
+       written: the write is the proof that the key can write. A repository
+       that is still empty takes the file as its first commit. */
+    function claimCampaign(name, key, address) {
+      if (!net) return Promise.reject(new Error('the shelf cannot write yet'));
+      var k = String(key || '').trim();
+      if (!/^(github_pat_|ghp_)[A-Za-z0-9_]{20,}$/.test(k)) {
+        return Promise.resolve({ ok: false, why: 'that is not a GitHub key: it starts with github_pat_' });
+      }
+      return findRepo(k, name, address).then(function (full) {
+        if (!full) return { ok: false, why: 'the key reaches no repository yet: on GitHub, give it the repository of the campaign', needRepo: true };
+        var body = {
+          message: 'The campaign ' + String(name || '').trim() + ' begins',
+          content: b64(JSON.stringify({ name: String(name || '').trim(), app: 'custom-sheet' }, null, 2) + '\n')
+        };
+        return net.api('GET', '/repos/' + full + '/contents/campaign.json', null, k).then(function (found) {
+          body.sha = found && found.sha;
+        }).catch(function () {}).then(function () {
+          return net.api('PUT', '/repos/' + full + '/contents/campaign.json', body, k);
+        }).then(function () {
+          var entry = addCampaign({ name: name, repo: full, key: k });
+          return { ok: true, campaign: entry };
+        }).catch(function (e) {
+          var status = e && e.status;
+          return { ok: false, why: status === 403 || status === 404
+            ? 'the key cannot write ' + full + ': on GitHub, give it Contents read and write'
+            : String((e && e.message) || e) };
+        });
+      });
+    }
+
+    /* An invite comes in: the key is asked whether it opens the repository,
+       and the campaign is remembered and becomes the shelf. */
+    function joinCampaign(invite) {
+      if (!net) return Promise.reject(new Error('the shelf cannot be read'));
+      var i = invite || {};
+      if (!i.repo) return Promise.resolve({ ok: false, why: 'that invite names no campaign' });
+      return net.api('GET', '/repos/' + i.repo, null, i.key || '').then(function (r) {
+        var entry = addCampaign({ name: i.name, repo: (r && r.full_name) || i.repo, key: i.key });
+        return { ok: true, campaign: entry };
+      }).catch(function (e) {
+        var status = e && e.status;
+        return { ok: false, why: status === 401 || status === 404
+          ? 'the key of that invite no longer opens the campaign: ask the game master for a new one'
+          : 'GitHub did not answer: ' + String((e && e.message) || e) };
+      });
+    }
+
+    function b64(text) {
+      var bytes = new TextEncoder().encode(String(text));
+      var out = '';
+      for (var i = 0; i < bytes.length; i++) out += String.fromCharCode(bytes[i]);
+      return btoa(out);
+    }
+
     return {
+      campaigns: campaigns,
+      current: current,
+      addCampaign: addCampaign,
+      useCampaign: useCampaign,
+      removeCampaign: removeCampaign,
+      hasShelf: hasShelf,
+      slug: slug,
+      newRepoUrl: newRepoUrl,
+      keyUrl: keyUrl,
+      claimCampaign: claimCampaign,
+      joinCampaign: joinCampaign,
       repo: repo,
       setRepo: setRepo,
       branch: branch,
@@ -346,6 +548,7 @@
       token: token,
       setToken: setToken,
       characters: characters,
+      read: read,
       branches: branches,
       put: put,
       remove: remove,

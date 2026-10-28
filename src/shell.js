@@ -923,6 +923,12 @@
       version: VERSION,
       installUpdate: installUpdate,
       openUrl: openUrl,
+      inviteLink: inviteLink,
+      readInvite: readInvite,
+      joinInvite: joinInvite,
+      clipText: clipText,
+      scanQr: scanQr,
+      qrSvg: qrSvg,
       shelf: SHELF
     }
   };
@@ -1273,6 +1279,7 @@
         return '<div class="ghnote">GitHub did not answer</div>' +
           '<div class="crow" role="button" tabindex="0" data-ghretry="1"><span class="cn">Try again</span></div>';
       }
+      if (gh.state === 'none') return '<div class="ghnote">Start or join a campaign in the settings, and its characters are here.</div>';
       if (!gh.chars.length) return '<div class="ghnote">The shelf holds no character yet.</div>';
       return gh.chars.map(function (c) {
         return CARD.line({
@@ -1292,7 +1299,7 @@
         rows: intakeRows() +
           '<div class="crow ghrow' + (gh.open ? ' open' : '') + '" role="button" tabindex="0" data-gh="1">' +
           '<span class="ghico">' + GH_MARK + '</span>' +
-          '<span class="cn">GitHub</span>' +
+          '<span class="cn">' + esc(SHELF.current() ? SHELF.current().name : 'GitHub') + '</span>' +
           '<span class="ghchev"></span></div>' +
           (gh.open ? '<div class="ghlist">' + ghBody() + '</div>' : ''),
         onPick: onPick
@@ -1303,9 +1310,15 @@
     /* The record of each character is read once the list is on screen, and
        its classes are written into the row it belongs to, so the list is
        painted once and nothing moves under the finger. */
+    /* A character of the shelf is read through the API, with the key of
+       the campaign, and by its address when the API will not say. */
+    function shelfText(c) {
+      return SHELF.read(c.name, c.ref).catch(function () { return readUrl(c.url); });
+    }
+
     function labelChars() {
       gh.chars.forEach(function (c) {
-        readUrl(c.url).then(function (text) {
+        shelfText(c).then(function (text) {
           var pkg = JSON.parse(text);
           var ch = (pkg && pkg.record && pkg.record.char) || (pkg && pkg.char) || {};
           var line = classLine(ch);
@@ -1324,6 +1337,7 @@
     }
 
     function load() {
+      if (!SHELF.hasShelf()) { gh.state = 'none'; paint(); return; }
       gh.state = 'loading';
       paint();
       SHELF.characters('').then(function (chars) {
@@ -1346,9 +1360,10 @@
         return;
       }
       if (picked.shelf !== undefined) {
-        importUrl(picked.shelf).then(function (answer) {
+        var entry = gh.chars.filter(function (c) { return c.url === picked.shelf; })[0];
+        (entry ? shelfText(entry).then(importPackage) : importUrl(picked.shelf)).then(function (answer) {
           toast(landed(answer, 'that character did not come'));
-        });
+        }).catch(function (e) { toast(String((e && e.message) || e)); });
         return;
       }
       if (picked.intake === undefined) return;
@@ -1374,6 +1389,14 @@
           var field = root.querySelector('#pasteLink');
           var where = field && field.value ? field.value.trim() : '';
           if (!where) return;
+          if (readInvite(where)) {
+            joinInvite(where).then(function (answer) {
+              if (answer.ok) sheet.close();
+              toast(answer.ok ? 'you joined ' + answer.campaign.name : answer.why);
+              refresh();
+            });
+            return;
+          }
           importAny(where).then(function (answer) {
             toast(landed(answer, 'that link holds no character'));
           });
@@ -1642,6 +1665,125 @@
     return squeeze(json).then(function (packed) {
       if (!packed) return LINK_BASE + 'p=0' + toBase64Url(new TextEncoder().encode(json));
       return LINK_BASE + 'p=1' + toBase64Url(packed);
+    });
+  }
+
+  /* ---- the invite of a campaign ----
+
+     The game master's repository and its key travel in a link, the way a
+     character does: in the fragment, which a browser never sends to GitHub.
+     The same text is drawn as a QR code on the game master's screen, so a
+     player joins by copying the link from a message or by pointing the
+     camera at the screen, and never types. */
+  function inviteLink(c) {
+    var body = JSON.stringify({ v: 1, n: (c && c.name) || '', r: (c && c.repo) || '', k: (c && c.key) || '' });
+    return LINK_BASE + 'c=' + toBase64Url(new TextEncoder().encode(body));
+  }
+
+  function readInvite(text) {
+    var m = String(text || '').match(/[#&]c=([A-Za-z0-9_-]+)/);
+    if (!m) return null;
+    try {
+      var o = JSON.parse(new TextDecoder().decode(fromBase64Url(m[1])));
+      if (!o || !o.r) return null;
+      return { name: String(o.n || ''), repo: String(o.r), key: String(o.k || '') };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /* An invite comes in: the key is tried on the repository, and the
+     campaign becomes the shelf. */
+  function joinInvite(text) {
+    var invite = readInvite(text);
+    if (!invite) return Promise.resolve({ ok: false, why: 'that is not the invite of a campaign' });
+    return SHELF.joinCampaign(invite).then(function (answer) {
+      if (answer.ok) save();
+      return answer;
+    });
+  }
+
+  /* The words on the clipboard: the phone's shell reads them, a browser
+     asks for them. Either may say no, and the answer is then empty. */
+  function clipText() {
+    var shell = phone('clipText');
+    if (shell) {
+      try { return Promise.resolve(String(shell.clipText() || '')); } catch (e) { return Promise.resolve(''); }
+    }
+    if (navigator.clipboard && navigator.clipboard.readText) {
+      return navigator.clipboard.readText().then(function (t) { return String(t || ''); }).catch(function () { return ''; });
+    }
+    return Promise.resolve('');
+  }
+
+  function qrSvg(text, label) {
+    return window.SheetQR ? window.SheetQR.svg(text, { label: label }) : '';
+  }
+
+  /* The camera reads the QR code of an invite. The phone's WebView carries a
+     barcode detector; a screen without one, or without a camera, is told to
+     paste instead. The camera stops as soon as the sheet closes. */
+  function scanQr() {
+    var can = typeof window.BarcodeDetector === 'function' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
+    if (!can) return Promise.resolve({ ok: false, why: 'this screen cannot read a QR code: copy the invite link and paste it instead' });
+    return new Promise(function (done) {
+      var stream = null;
+      var timer = null;
+      var finished = false;
+      var detector = null;
+      try { detector = new window.BarcodeDetector({ formats: ['qr_code'] }); } catch (e) {
+        done({ ok: false, why: 'this screen cannot read a QR code: copy the invite link and paste it instead' });
+        return;
+      }
+      function stop(result) {
+        if (finished) return;
+        finished = true;
+        if (timer) clearTimeout(timer);
+        if (stream) stream.getTracks().forEach(function (t) { t.stop(); });
+        done(result);
+      }
+      sheet.open({
+        id: 'scanqr',
+        title: 'Scan the invite',
+        dock: true,
+        metaClass: 'sheet-meta one',
+        meta: '<video class="qrcam" id="qrCam" playsinline muted autoplay></video>' +
+          '<span>Point the camera at the code on the game master\'s screen.</span>',
+        actions: [{ label: 'Cancel', kind: 'quiet', onClick: function () { sheet.close(); } }],
+        onClose: function () { stop({ ok: false, why: '' }); }
+      });
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false }).then(function (got) {
+        stream = got;
+        if (finished) { got.getTracks().forEach(function (t) { t.stop(); }); return; }
+        var video = document.getElementById('qrCam');
+        if (!video) { stop({ ok: false, why: '' }); return; }
+        video.srcObject = got;
+        var playing = video.play();
+        if (playing && playing.catch) playing.catch(function () {});
+        /* A detector the phone cannot run (the service behind it is missing)
+           fails every time: after a few misses the player is told to paste. */
+        var misses = 0;
+        (function look() {
+          if (finished) return;
+          detector.detect(video).then(function (codes) {
+            misses = 0;
+            var hit = (codes || []).map(function (c) { return c && c.rawValue; }).filter(Boolean)[0];
+            if (hit) { stop({ ok: true, text: hit }); sheet.close(); return; }
+            timer = setTimeout(look, 250);
+          }).catch(function () {
+            misses += 1;
+            if (misses >= 8) {
+              stop({ ok: false, why: 'this phone cannot read a QR code: copy the invite link and paste it instead' });
+              sheet.close();
+              return;
+            }
+            timer = setTimeout(look, 400);
+          });
+        })();
+      }).catch(function (e) {
+        stop({ ok: false, why: 'the camera did not open' + (e && e.name === 'NotAllowedError' ? ': the phone said no' : '') });
+        sheet.close();
+      });
     });
   }
 
@@ -3081,6 +3223,10 @@
     if (sheet.top()) { sheet.close(); return 'closed'; }
     if (!el.condTip.hidden) { el.condTip.hidden = true; return 'closed'; }
     if (current === 'settings') { leaveSettings(); return 'closed'; }
+    /* A page reached from a page, like the level up, is not a tab of the bar:
+       back returns to the page it was opened from. */
+    var open = PAGES.filter(function (x) { return x.id === current; })[0];
+    if (open && open.back && barOrder().indexOf(current) < 0) { show(open.back); return 'closed'; }
     return rewindOnce() ? 'rewound' : 'none';
   };
   wireHead();

@@ -125,6 +125,15 @@ if (shell.indexOf('NewbornAI/kustom-mandal#') < 0) throw new Error('the link bas
 shell = shell.replace('NewbornAI/kustom-mandal#', REPO + '#');
 writeFileSync(shellAt, shell, 'utf8');
 
+/* The shelf of the private tree is the private repository of the table. A
+   stranger's build names none: its players start or join a campaign of their
+   own, in the settings. */
+const shelfAt = join(tree, 'src', 'shelf.js');
+let shelfSrc = readFileSync(shelfAt, 'utf8');
+if (shelfSrc.indexOf("var DEFAULT_REPO = 'NewbornAI/kustom-mandal';") < 0) throw new Error('the default shelf moved: check src/shelf.js before publishing');
+shelfSrc = shelfSrc.replace("var DEFAULT_REPO = 'NewbornAI/kustom-mandal';", "var DEFAULT_REPO = '';");
+writeFileSync(shelfAt, shelfSrc, 'utf8');
+
 const apkAt = join(tree, 'tools', 'build-apk.ps1');
 let apk = readFileSync(apkAt, 'utf8');
 apk = apk.split('NewbornAI/kustom-mandal').join(REPO);

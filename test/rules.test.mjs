@@ -1763,6 +1763,23 @@ check('a tapped hit die shows what is left even when its count has the focus',
     shell.indexOf('Then write its background') < shell.indexOf('paint three pictures of it with paint_choices'), true);
 }
 
+{
+  const st = harness.source('pages/settings.js');
+  const sh = harness.source('shell.js');
+  const java = harness.source('../app/java/com/newbornai/customsheet/MainActivity.java');
+  const manifest = harness.source('../app/AndroidManifest.xml');
+  check('the settings carry a Campaign section: start, join, invite, switch, leave',
+    [st.indexOf('id="settingsCampaign"') >= 0, st.indexOf("'Start a campaign as the game master'") >= 0, st.indexOf("'Join a campaign with its invite'") >= 0,
+      st.indexOf('function openInvite(c)') >= 0, st.indexOf('shelf.useCampaign(c.id)') >= 0, st.indexOf('shelf.removeCampaign(c.id)') >= 0].join('/'), 'true/true/true/true/true/true');
+  check('the invite is a link of the repository with the campaign in the fragment, drawn as a QR code, and the paste door takes it',
+    [sh.indexOf("LINK_BASE + 'c=' + toBase64Url") >= 0, sh.indexOf('qrSvg: qrSvg') >= 0, sh.indexOf('if (readInvite(where)) {') >= 0].join('/'), 'true/true/true');
+  check('a player joins from the clipboard or the camera, and the camera is the only thing asked of the phone',
+    [sh.indexOf("phone('clipText')") >= 0, sh.indexOf("formats: ['qr_code']") >= 0, sh.indexOf('navigator.mediaDevices.getUserMedia') >= 0,
+      java.indexOf('RESOURCE_VIDEO_CAPTURE') >= 0, java.indexOf('public String clipText()') >= 0, manifest.indexOf('android.permission.CAMERA') >= 0,
+      manifest.indexOf('android:required="false"') >= 0].join('/'), 'true/true/true/true/true/true/true');
+  check('the public build empties the default shelf', harness.source('../tools/publish-public.mjs').indexOf("var DEFAULT_REPO = '';") >= 0, true);
+}
+
 console.log('the upgrade of a cantrip');
 {
   /* True Strike's extra radiant dice come from its own paragraph in the book. */

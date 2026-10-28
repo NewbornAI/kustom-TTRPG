@@ -183,6 +183,79 @@ check('the branches are the shelves of the players', shelfBranches, ['main', 'yn
 shelf.setRepo('yngwie/custom-sheet');
 check('a repository of the player replaces the one of the project', shelf.repo(), 'yngwie/custom-sheet');
 
+/* A campaign: a repository the game master runs and the key of it, joined by
+   an invite and remembered. The key stands for the sign in while it is the
+   shelf, and no campaign leaves the shelf of the sign in as it was. */
+console.log('a campaign');
+{
+  const cHeld = { ui: {} };
+  const cCalls = [];
+  const cNet = {
+    api: (method, path, body, token) => {
+      cCalls.push([method, path, token]);
+      if (path === '/repos/gm/strahd' && token === 'github_pat_goodkey0000000000000000') return Promise.resolve({ full_name: 'gm/strahd' });
+      if (path.indexOf('/contents/campaign.json') > 0 && method === 'GET') { const e = new Error('Not Found'); e.status = 404; return Promise.reject(e); }
+      if (path.indexOf('/contents/campaign.json') > 0 && method === 'PUT') return Promise.resolve({});
+      if (path === '/repos/gm/strahd/contents/characters/pip.json?ref=main') return Promise.resolve({ content: Buffer.from('{"a":"é"}').toString('base64') });
+      const e = new Error('Not Found'); e.status = 404; return Promise.reject(e);
+    },
+    whoAmI: () => Promise.resolve('gm'),
+    putFile: (repoName, path, text, message, branch, token) => { cCalls.push(['putFile', repoName, path, branch, token]); return Promise.resolve({ content: { html_url: 'u' } }); },
+    listCharacters: (repoName, ref, token) => { cCalls.push(['list', repoName, token]); return Promise.resolve([]); }
+  };
+  const cShelf = S({ net: cNet, store: { get: (k) => cHeld.ui[k], set: (k, v) => { cHeld.ui[k] = v; } }, openUrl: () => {}, packageOf: (rec) => ({ record: rec }) });
+  global.atob = (t) => Buffer.from(t, 'base64').toString('binary');
+  check('with no campaign the shelf is the one of the sign in', [cShelf.current(), cShelf.repo()], [null, 'NewbornAI/kustom-mandal']);
+  const refused = await cShelf.joinCampaign({ name: 'Strahd', repo: 'gm/strahd', key: 'github_pat_stale' });
+  check('an invite whose key GitHub refuses is not remembered, and says why', [refused.ok, /no longer opens/.test(refused.why), cShelf.campaigns().length], [false, true, 0]);
+  const joined = await cShelf.joinCampaign({ name: 'Strahd', repo: 'gm/strahd', key: 'github_pat_goodkey0000000000000000' });
+  check('an invite whose key opens the repository is joined', [joined.ok, cShelf.current().repo, cShelf.repo()], [true, 'gm/strahd', 'gm/strahd']);
+  check('the key stands for the sign in', [cShelf.signedIn(), cShelf.token()], [true, 'github_pat_goodkey0000000000000000']);
+  const put = await cShelf.put({ char: { name: 'Pip' } });
+  const wrote = cCalls.filter((c) => c[0] === 'putFile').pop();
+  check('a character goes to the campaign, on its main branch, with the key', [put.ok, wrote[1], wrote[2], wrote[3], wrote[4]], [true, 'gm/strahd', 'characters/pip.json', 'main', 'github_pat_goodkey0000000000000000']);
+  check('a character of the campaign is read through the API, with the key, as text', await cShelf.read('pip.json'), '{"a":"é"}');
+  cShelf.addCampaign({ name: 'Second', repo: 'https://github.com/gm/second.git', key: 'github_pat_two' });
+  check('a second campaign is joined beside the first, by its address as well', [cShelf.campaigns().map((c) => c.repo), cShelf.current().id], [['gm/strahd', 'gm/second'], 'gm/second']);
+  check('the player switches between them', [cShelf.useCampaign('gm/strahd').name, cShelf.repo(), cShelf.useCampaign(''), cShelf.repo()], ['Strahd', 'gm/strahd', null, 'NewbornAI/kustom-mandal']);
+  cShelf.useCampaign('gm/second');
+  cShelf.removeCampaign('gm/second');
+  check('leaving the campaign in use goes back to the shelf of the sign in', [cShelf.campaigns().length, cShelf.current(), cShelf.repo()], [1, null, 'NewbornAI/kustom-mandal']);
+  check('a name is made a repository name', [cShelf.slug('Curse of Strahd'), cShelf.slug('Épées & Dragons!')], ['curse-of-strahd', 'epees-dragons']);
+  check('the page that makes the repository is filled in, private', cShelf.newRepoUrl('Curse of Strahd'), 'https://github.com/new?name=curse-of-strahd&description=The%20characters%20of%20the%20campaign%20Curse%20of%20Strahd%2C%20kept%20by%20custom-sheet&visibility=private');
+  const keyPage = new URL(cShelf.keyUrl('Curse of Strahd'));
+  check('the page that makes the key asks for contents write, a year, and nothing else', [keyPage.pathname, keyPage.searchParams.get('contents'), keyPage.searchParams.get('expires_in'), [...keyPage.searchParams.keys()].sort()], ['/settings/personal-access-tokens/new', 'write', '366', ['contents', 'description', 'expires_in', 'name']]);
+  const bad = await cShelf.claimCampaign('Strahd', 'not a key', '');
+  check('a pasted text that is no key is refused before GitHub is asked', [bad.ok, /github_pat_/.test(bad.why)], [false, true]);
+  cHeld.ui = {};
+  const claimed = await cShelf.claimCampaign('Strahd', 'github_pat_goodkey0000000000000000', 'https://github.com/gm/strahd');
+  check('a key and the address of its repository start the campaign, and the first file is written', [claimed.ok, cShelf.current().name, cCalls.filter((c) => c[0] === 'PUT' && c[1].indexOf('campaign.json') > 0).length], [true, 'Strahd', 1]);
+  const publicCode = source('shelf.js').replace("var DEFAULT_REPO = 'NewbornAI/kustom-mandal';", "var DEFAULT_REPO = '';");
+  const pub = {};
+  new Function('window', publicCode)(pub);
+  const noShelf = pub.SheetShelf({ net: cNet, store: { get: () => undefined, set: () => {} }, openUrl: () => {}, packageOf: () => ({}) });
+  const refusedPut = await noShelf.put({ char: { name: 'Pip' } });
+  check('a public build has no default repository: nothing is written, and it says what to do first',
+    [noShelf.hasShelf(), refusedPut.ok, /campaign/.test(refusedPut.why)], [false, false, true]);
+}
+
+/* The QR code of an invite is the standard symbol: the smallest version that
+   holds the text, the finder squares in three corners, and the same text
+   gives the same drawing. */
+console.log('the QR code');
+{
+  const win = {};
+  new Function('window', source('qr.js'))(win);
+  const q = win.SheetQR.encode('https://github.com/x/y#c=' + 'a'.repeat(200));
+  const finder = (x0, y0) => [0, 1, 2, 3, 4, 5, 6].every((i) => q.dark[y0][x0 + i] && q.dark[y0 + 6][x0 + i] && q.dark[y0 + i][x0] && q.dark[y0 + i][x0 + 6]) && !q.dark[y0 + 1][x0 + 1] && q.dark[y0 + 3][x0 + 3];
+  check('an invite of 225 characters fits version 11', [q.version, q.size], [11, 61]);
+  check('the three finder squares are there', [finder(0, 0), finder(q.size - 7, 0), finder(0, q.size - 7)], [true, true, true]);
+  check('the timing lines alternate', q.dark[6].slice(8, q.size - 8).every((d, i) => d === (i % 2 === 0)), true);
+  check('the same text draws the same symbol', JSON.stringify(win.SheetQR.encode('abc').dark) === JSON.stringify(win.SheetQR.encode('abc').dark), true);
+  check('a text that is too long is refused', (() => { try { win.SheetQR.encode('x'.repeat(2400)); return 'drawn'; } catch (e) { return 'refused'; } })(), 'refused');
+  check('the drawing is a square with the quiet zone of four modules', new RegExp('viewBox="0 0 ' + (q.size + 8) + ' ' + (q.size + 8) + '"').test(win.SheetQR.svg('https://github.com/x/y#c=' + 'a'.repeat(200))), true);
+}
+
 /* The phone: a call goes through the bridge, the async way when the shell
    offers it, so the page is not held while the network answers. */
 console.log('the bridge of the phone');
