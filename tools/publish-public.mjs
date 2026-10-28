@@ -118,7 +118,17 @@ const shellAt = join(tree, 'src', 'shell.js');
 let shell = readFileSync(shellAt, 'utf8');
 if (shell.indexOf('192.168.0.125') < 0) throw new Error('the house address moved: check src/shell.js before publishing');
 shell = shell.replace("'http://192.168.0.125:8123'", "''");
+/* A character link is a fragment behind the repository of the app: the private
+   tree names the private repository, the public build names its own, or the
+   link a stranger receives lands on a page they cannot read. */
+if (shell.indexOf('NewbornAI/kustom-mandal#') < 0) throw new Error('the link base moved: check src/shell.js before publishing');
+shell = shell.replace('NewbornAI/kustom-mandal#', REPO + '#');
 writeFileSync(shellAt, shell, 'utf8');
+
+const apkAt = join(tree, 'tools', 'build-apk.ps1');
+let apk = readFileSync(apkAt, 'utf8');
+apk = apk.split('NewbornAI/kustom-mandal').join(REPO);
+writeFileSync(apkAt, apk, 'utf8');
 
 /* The icon generator reaches for a playwright install by an absolute path on
    this machine: a tool of the private tree, not of the public one. */

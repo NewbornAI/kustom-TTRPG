@@ -1632,9 +1632,10 @@
     return new Response(stream.readable).text();
   }
 
-  /* The link a character travels in. It opens the repository of the app,
-     which is a harmless place for it to point. */
-  var LINK_BASE = 'https://github.com/NewbornAI/custom-sheet#';
+  /* The link a character travels in. It opens the repository of the app, the
+     private one that carries the characters and the whole corpus; the character
+     itself travels in the fragment, so the page behind it is only a host. */
+  var LINK_BASE = 'https://github.com/NewbornAI/kustom-TTRPG#';
 
   function linkOf(pkg) {
     var json = JSON.stringify(pkg);

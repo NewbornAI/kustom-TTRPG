@@ -232,7 +232,7 @@ if ($Release) {
   if (-not (Get-Command gh -ErrorAction SilentlyContinue)) { throw "-Release needs the gh command, signed in to GitHub" }
   $version = $found.Groups[1].Value
   $tag = 'app-' + ($version -replace '[^0-9T]', '' -replace 'T', '-').Substring(0, 15)
-  & gh release create $tag $shipped --repo NewbornAI/custom-sheet --title ("custom-sheet " + $version) --notes ("The package built from the page of " + $version + ".") --latest
+  & gh release create $tag $shipped --repo NewbornAI/kustom-TTRPG --title ("custom-sheet " + $version) --notes ("The package built from the page of " + $version + ".") --latest
   if ($LASTEXITCODE -ne 0) { throw "gh could not publish the release $tag" }
-  Write-Output ("released as " + $tag + ": https://github.com/NewbornAI/custom-sheet/releases/latest/download/custom-sheet.apk")
+  Write-Output ("released as " + $tag + ": https://github.com/NewbornAI/kustom-TTRPG/releases/latest/download/custom-sheet.apk")
 }
