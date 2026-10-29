@@ -3093,7 +3093,7 @@ console.log('the fight');
   elsF['#fightNext'].click();
   check('and to the one after it', fightRec.fight.counter, 12);
   elsF['#fightNext'].click();
-  check('at the end of the round it starts again', fightRec.fight.counter, 100);
+  check('at the end of the round it starts again at the top', fightRec.fight.counter, 999);
   elsF['#fightPrev'].click();
   check('the other arrow goes back to the creature before', fightRec.fight.counter, 12);
 
@@ -3144,13 +3144,34 @@ console.log('the fight');
   pick.onList({ target: { closest: (sel) => (sel === '.row' ? { dataset: { key: 'bugbear|mm' } } : null) } });
   const added = fightRec.fight.list[fightRec.fight.list.length - 1];
   check('a picked creature comes with its hit points and its armour class',
-    [added.name, added.hp, added.hpMax, added.ac, added.init].join('/'), 'Bugbear/27/27/16/100');
+    [added.name, added.hp, added.hpMax, added.ac, added.init, added.rolled].join('/'), 'Bugbear/27/27/16//false');
+  /* A creature that has not rolled waits with no initiative at all, at the
+     top of the order, and the edit mode gives its name and its initiative a
+     field. */
+  check('a creature that waits shows the die and no number',
+    [/class="iniinit waiting"/.test(rowsHtml()), /<span>100<\/span>/.test(rowsHtml())].join('/'), 'true/false');
 
   /* The remove is a step of the history, so the back key brings it back. */
   editing = true;
   spec.render(apiF);
-  check('the edit mode writes the initiative and shows the remove',
-    [/class="iniinit ininum"/.test(rowsHtml()), /class="inix"/.test(rowsHtml())].join('/'), 'true/true');
+  check('the edit mode writes the initiative and the name, and shows the remove',
+    [/class="iniinit ininum"/.test(rowsHtml()), /class="ininame ininamefield"/.test(rowsHtml()),
+      /class="inix"/.test(rowsHtml())].join('/'), 'true/true/true');
+  /* A field is written as it is typed, and an initiative emptied by hand puts
+     the creature back among the ones that wait. */
+  const fieldFor = (role, value, id) => {
+    const field = {
+      dataset: { role: role }, value: value,
+      closest: (sel) => (sel === '[data-role="init"], [data-role="name"]' ? field
+        : (sel === '.inirow' ? { dataset: { id: id } } : null))
+    };
+    return field;
+  };
+  const second = () => fightRec.fight.list.filter((c) => c.id === 'f2')[0];
+  rootF.fire('input', { target: fieldFor('name', 'Worg', 'f2') });
+  check('the name is written as it is typed', second().name, 'Worg');
+  rootF.fire('input', { target: fieldFor('init', '', 'f2') });
+  check('an emptied initiative waits again', [second().init, second().rolled].join('/'), '/false');
   const before = fightRec.fight.list.length;
   clickRole('remove', 'f1');
   check('the cross takes the creature out', fightRec.fight.list.length, before - 1);

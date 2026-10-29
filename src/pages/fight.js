@@ -23,12 +23,22 @@
   var api = null;
   var E = {};
 
+  /* Above any initiative a table rolls, and the place a creature waits at
+     before its initiative is rolled: an empty initiative is the top of the
+     order, so the creatures still to roll stand above the ones that did. */
+  var TOP = 999;
+
   /* The fight of the character: the creatures and the counter. */
   function slice() {
     var rec = api.character();
     if (!rec.fight) rec.fight = { list: [], counter: 100 };
     if (!Array.isArray(rec.fight.list)) rec.fight.list = [];
     if (typeof rec.fight.counter !== 'number') rec.fight.counter = 100;
+    /* The place a creature waits at used to be 100 written in its initiative;
+       an empty initiative is what waits now, so an old card is read as one. */
+    rec.fight.list.forEach(function (c) {
+      if (!c.rolled && Number(c.init) === 100) c.init = null;
+    });
     return rec.fight;
   }
 
@@ -42,25 +52,34 @@
     return found;
   }
 
-  /* The order the table acts in: the initiative from the highest, the name
-     for two creatures that share one. */
+  /* The order the table acts in: the creatures still to roll first, then the
+     initiative from the highest, the name for two creatures that share one. */
   function order() {
     return combatants().slice().sort(function (a, b) {
-      var d = (Number(b.init) || 0) - (Number(a.init) || 0);
-      if (d) return d;
+      var ea = a.init === null || a.init === undefined || a.init === '';
+      var eb = b.init === null || b.init === undefined || b.init === '';
+      if (ea !== eb) return ea ? -1 : 1;
+      if (!ea) {
+        var d = (Number(b.init) || 0) - (Number(a.init) || 0);
+        if (d) return d;
+      }
       return String(a.name || '').localeCompare(String(b.name || ''));
     });
   }
 
-  /* The top of the order: where a turn starts, and the 100 a creature that
-     has not rolled stands at while the fight is empty. */
+  /* The top of the order: the empty initiative of a creature still to roll
+     when there is one, the highest initiative otherwise, and the sentinel in
+     an empty fight or a fight where every creature waits. */
   function topInit() {
-    var top = 100;
+    var top = 0;
     var any = false;
+    var waiting = false;
     combatants().forEach(function (c) {
+      if (c.init === null || c.init === undefined || c.init === '') { waiting = true; return; }
       var n = Number(c.init) || 0;
       if (!any || n > top) { top = n; any = true; }
     });
+    if (waiting || !any) return TOP;
     return top;
   }
 
@@ -75,8 +94,10 @@
   }
 
   /* A creature is lit while its initiative is at or above the counter: it is
-     the one playing, or one that has played. The rest are still to act. */
+     the one playing, or one that has played. The rest are still to act, and a
+     creature that has not rolled waits at the top, so it is lit. */
   function lit(c) {
+    if (c.init === null || c.init === undefined || c.init === '') return true;
     return (Number(c.init) || 0) >= counter();
   }
 
@@ -137,7 +158,7 @@
       id: 'f' + Date.now() + Math.floor(Math.random() * 1000),
       key: key,
       name: block.name,
-      init: 100,
+      init: null,
       rolled: false,
       hp: hp,
       hpMax: hp,
@@ -194,20 +215,24 @@
     var on = lit(c);
     var editing = api.editing('fight');
     var html = '<div class="inirow' + (on ? ' lit' : '') + '" data-id="' + esc(c.id) + '">';
-    /* The initiative: the die that rolls it while it waits, the number once
-       it was rolled, and a field in the edit mode. */
+    /* The initiative: the die alone while it waits, the number once it was
+       rolled, and a field in the edit mode. */
+    var blank = c.init === null || c.init === undefined || c.init === '';
     if (editing) {
       html += '<input class="iniinit ininum" data-role="init" type="number" inputmode="numeric" value="' +
-        (Number(c.init) || 0) + '" aria-label="Initiative of ' + esc(c.name) + '">';
+        (blank ? '' : Number(c.init)) + '" aria-label="Initiative of ' + esc(c.name) + '">';
     } else {
-      html += '<button type="button" class="iniinit' + (c.rolled ? '' : ' waiting') + '" data-role="init-roll" ' +
-        'aria-label="' + (c.rolled ? 'Roll the initiative of ' + esc(c.name) + ' again' : 'Roll the initiative of ' + esc(c.name)) + '">' +
-        (c.rolled ? '' : C.chrome.dieIcon(20)) +
-        '<span>' + (Number(c.init) || 0) + '</span></button>';
+      html += '<button type="button" class="iniinit' + (blank ? ' waiting' : '') + '" data-role="init-roll" ' +
+        'aria-label="' + (blank ? 'Roll the initiative of ' + esc(c.name) : 'Roll the initiative of ' + esc(c.name) + ' again') + '">' +
+        (blank
+          ? C.chrome.dieIcon(20)
+          : '<span>' + Number(c.init) + '</span>') + '</button>';
     }
     html += '<div class="inimid">' +
-      '<button type="button" class="ininame" data-role="stat" aria-label="The stat block of ' + esc(c.name) + '">' +
-        esc(c.name) + '</button>' +
+      (editing
+        ? '<input class="ininame ininamefield" data-role="name" type="text" value="' + esc(c.name) + '" aria-label="Name of the creature">'
+        : '<button type="button" class="ininame" data-role="stat" aria-label="The stat block of ' + esc(c.name) + '">' +
+          esc(c.name) + '</button>') +
       '<div class="inimeta">' +
         '<span class="iniac">AC ' + esc(c.ac) + '</span>' +
         '<button type="button" class="inihp" data-role="hp" aria-label="The hit points of ' + esc(c.name) + '">' +
@@ -258,9 +283,12 @@
   function step(dir) {
     var s = slice();
     var now = counter();
-    var inits = combatants().map(function (c) { return Number(c.init) || 0; });
+    var inits = combatants().map(function (c) {
+      if (c.init === null || c.init === undefined || c.init === '') return null;
+      return Number(c.init) || 0;
+    }).filter(function (n) { return n !== null; });
     if (!inits.length) {
-      s.counter = 100;
+      s.counter = TOP;
     } else {
       var candidates = inits.filter(function (n) { return dir < 0 ? n < now : n > now; });
       if (candidates.length) {
@@ -367,6 +395,9 @@
       '.ininame{min-width:0;background:none;border:0;padding:0;font:inherit;font-size:13px;color:var(--ink);' +
         'text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
       '.ininame:active{color:var(--arcane)}',
+      '.ininamefield{width:100%;min-width:0;background:none;border:0;border-bottom:1px solid var(--edge);' +
+        'border-radius:0;padding:0 0 1px;font:inherit;font-size:13px;color:var(--ink)}',
+      '.ininamefield:focus{outline:none;border-bottom-color:var(--arcane);color:var(--arcane)}',
       '.inimeta{display:flex;align-items:center;gap:10px;font-size:10.5px;color:var(--muted)}',
       '.iniac{letter-spacing:.04em;font-variant-numeric:tabular-nums}',
       '.inihp{background:none;border:0;padding:0;font:inherit;font-size:11px;color:var(--ink);cursor:pointer;' +
@@ -415,15 +446,22 @@
         C.creature.roll(c, name, ix, api, { mark: 'rows', root: root });
       });
 
-      /* The initiative is typed in the edit mode, and the list sorts itself
-         when the field is left rather than under the finger. */
+      /* The initiative and the name are typed in the edit mode, and the list
+         sorts itself when the field is left rather than under the finger. An
+         initiative emptied by hand puts the creature back among the ones
+         still to roll. */
       root.addEventListener('input', function (ev) {
-        var field = ev.target.closest ? ev.target.closest('[data-role="init"]') : null;
+        var field = ev.target.closest ? ev.target.closest('[data-role="init"], [data-role="name"]') : null;
         if (!field) return;
         var row = field.closest('.inirow');
         var c = row ? byId(row.dataset.id) : null;
         if (!c) return;
-        if (field.value === '') return;
+        if (field.dataset.role === 'name') {
+          c.name = field.value;
+          api.save();
+          return;
+        }
+        if (field.value === '') { c.init = null; c.rolled = false; api.save(); return; }
         var n = Number(field.value);
         if (!isFinite(n)) return;
         c.init = n;
@@ -431,7 +469,7 @@
         api.save();
       });
       root.addEventListener('change', function (ev) {
-        var field = ev.target.closest ? ev.target.closest('[data-role="init"]') : null;
+        var field = ev.target.closest ? ev.target.closest('[data-role="init"], [data-role="name"]') : null;
         if (!field) return;
         api.markDirty('rows');
         commit();
@@ -459,6 +497,9 @@
             return;
           }
           if (role === 'remove') { remove(c); return; }
+          /* A field of the edit mode works itself, and the row under it is
+             not a tap. */
+          if (role === 'init' || role === 'name') return;
           return;
         }
         /* A tap on the box of a swing is the box's own. */
