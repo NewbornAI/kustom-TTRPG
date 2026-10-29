@@ -343,6 +343,80 @@ try {
   await page.evaluate(() => window.__sheetBack());
   await wait(200);
 
+
+  console.log('the fight');
+  /* The board of a large battle: the plus opens the bestiary, ten rows fit a
+     phone, the two arrows move the turn, a swing rolls in its open row, and
+     the hit points of a creature open the keypad of the sheet. */
+  await page.evaluate(() => {
+    const s = JSON.parse(localStorage.getItem('customsheet.state.v3'));
+    const rec = s.characters[s.current];
+    rec.pages = ['fight', 'spells', 'features'];
+    const rows = [
+      ['goblin|mm', 'Goblin', 22, 7, 15], ['goblin boss|xmm', 'Goblin Boss', 18, 21, 17],
+      ['wolf|xmm', 'Wolf', 18, 11, 12], ['skeleton|xmm', 'Skeleton', 15, 13, 14],
+      ['bandit|xmm', 'Bandit', 12, 11, 12], ['ogre|xmm', 'Ogre', 9, 68, 11],
+      ['giant rat|xmm', 'Giant Rat', 9, 7, 13], ['cultist|xmm', 'Cultist', 6, 9, 12],
+      ['stirge|xmm', 'Stirge', 4, 5, 13], ['goblin warrior|xmm', 'Goblin Warrior', 3, 10, 15],
+      ['skeleton|mm', 'Skeleton (2014)', 100, 13, 13], ['wolf|mm', 'Wolf (2014)', 100, 11, 12]
+    ];
+    rec.fight = {
+      list: rows.map((r, i) => ({ id: 'f' + i, key: r[0], name: r[1], init: r[2], rolled: r[2] !== 100,
+        hp: r[3], hpMax: r[3], ac: r[4], open: false, rolls: {}, saves: {}, edit: {} })),
+      counter: 100
+    };
+    localStorage.setItem('customsheet.state.v3', JSON.stringify(s));
+  });
+  await page.reload();
+  await wait(1200);
+  await page.evaluate(() => Sheet.show('fight'));
+  await wait(500);
+  const fight = () => page.evaluate(() => {
+    const body = document.querySelector('#view-fight .charbody').getBoundingClientRect();
+    const rows = [...document.querySelectorAll('.inirow')];
+    return {
+      rows: rows.length,
+      visible: rows.filter((r) => { const b = r.getBoundingClientRect(); return b.top >= body.top - 1 && b.bottom <= body.bottom + 1; }).length,
+      lit: rows.filter((r) => r.classList.contains('lit')).length,
+      head: !!document.querySelector('.inibar #fightAdd'),
+      bar: !!document.querySelector('.castbar #fightNext')
+    };
+  });
+  const f0 = await fight();
+  check('ten rows of a large fight fit the phone, the head and the turn with them',
+    [f0.rows, f0.visible >= 10, f0.head, f0.bar], [12, true, true, true]);
+  await page.click('#fightNext');
+  await wait(250);
+  check('the next turn lights one more creature', (await fight()).lit, f0.lit + 1);
+  await page.click('.inirow:nth-child(1) .iniexp');
+  await wait(300);
+  check('the chevron opens the attacks of the creature',
+    await page.evaluate(() => document.querySelectorAll('.iniatk .sdie').length > 0), true);
+  await page.locator('.iniatk .sdie').first().click();
+  await wait(400);
+  /* The row is the order, not the order of the slice: the card is found by
+     the id the row carries. */
+  const rowId = () => page.evaluate(() => document.querySelector('.inirow').dataset.id);
+  const cardNow = (id) => page.evaluate((key) => {
+    const s = JSON.parse(localStorage.getItem('customsheet.state.v3'));
+    const c = s.characters[s.current].fight.list.filter((x) => x.id === key)[0];
+    return { hp: c.hp, rolls: Object.keys(c.rolls || {}).length };
+  }, id);
+  const top = await rowId();
+  check('a tap on the die rolls the swing and keeps it on the creature', (await cardNow(top)).rolls, 1);
+  const full = (await cardNow(top)).hp;
+  await page.click('.inirow:nth-child(1) .inihp');
+  await wait(300);
+  await page.click('.hpk[data-key="5"]');
+  await page.click('.hpka[data-do="damage"]');
+  await wait(400);
+  check('the keypad of the sheet takes the hit points of the creature', (await cardNow(top)).hp, full - 5);
+  await page.evaluate(() => window.__sheetBack());
+  await wait(300);
+  check('and back brings them back', (await cardNow(top)).hp, full);
+  await page.evaluate(() => Sheet.show('character'));
+  await wait(200);
+
   console.log('the picture and the characters');
   /* The name in the banner opens the picture over the whole screen, and back
      closes it; the characters are cards with their pictures. */

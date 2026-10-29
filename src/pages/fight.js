@@ -52,10 +52,32 @@
     });
   }
 
+  /* The top of the order: where a turn starts, and the 100 a creature that
+     has not rolled stands at while the fight is empty. */
+  function topInit() {
+    var top = 100;
+    var any = false;
+    combatants().forEach(function (c) {
+      var n = Number(c.init) || 0;
+      if (!any || n > top) { top = n; any = true; }
+    });
+    return top;
+  }
+
+  /* The counter is the initiative of the turn being played. It is read at the
+     top of the order when it sits above it, because a counter above the
+     highest initiative lights no creature at all, and a fight that lights
+     nothing reads as broken rather than as waiting. */
+  function counter() {
+    var stored = Number(slice().counter);
+    if (!isFinite(stored)) return topInit();
+    return Math.min(stored, topInit());
+  }
+
   /* A creature is lit while its initiative is at or above the counter: it is
-     still to act in this round. */
+     the one playing, or one that has played. The rest are still to act. */
   function lit(c) {
-    return (Number(c.init) || 0) >= (Number(slice().counter) || 0);
+    return (Number(c.init) || 0) >= counter();
   }
 
   /* ---- the creature that joins ---- */
@@ -196,7 +218,9 @@
       html += '<button type="button" class="inix" data-role="remove" aria-label="Remove ' + esc(c.name) + ' from the fight">&times;</button>';
     }
     html += '</div>';
-    if (c.open) html += '<div class="iniatk">' + attacksHtml(c) + '</div>';
+    /* The attacks sit under the row rather than inside it, so the block of a
+       swing names the creature it belongs to as the row does. */
+    if (c.open) html += '<div class="iniatk" data-id="' + esc(c.id) + '">' + attacksHtml(c) + '</div>';
     return html;
   }
 
@@ -207,14 +231,16 @@
   }
 
   /* What the rows were built from: the creatures and what a row shows of
-     them, the counter that lights them, and the mode. */
+     them, the counter that lights them, the mode, and the corpus itself, so a
+     row opened before the bestiary arrived is built again with its attacks. */
   function parts(a) {
     return [
       a.state.current,
+      Object.keys(C.library.bestiary.creatures || {}).length,
       combatants().map(function (c) {
         return [c.id, c.init, c.rolled ? 1 : 0, c.hp, c.hpMax, c.ac, c.open ? 1 : 0].join(':');
       }).join('|'),
-      slice().counter,
+      counter(),
       a.editing('fight') ? 'edit' : 'read'
     ];
   }
@@ -227,16 +253,20 @@
      again. */
   function step(dir) {
     var s = slice();
-    var counter = Number(s.counter) || 0;
+    var now = counter();
     var inits = combatants().map(function (c) { return Number(c.init) || 0; });
-    var candidates = inits.filter(function (n) { return dir < 0 ? n < counter : n > counter; });
-    if (candidates.length) {
-      s.counter = dir < 0 ? Math.max.apply(null, candidates) : Math.min.apply(null, candidates);
+    if (!inits.length) {
+      s.counter = 100;
     } else {
-      /* The round is over going down, and the other arrow comes back from the
-         top to the last creature of the round, so an arrow pressed one time
-         too many is taken back by the one beside it. */
-      s.counter = dir < 0 || !inits.length ? 100 : Math.min.apply(null, inits);
+      var candidates = inits.filter(function (n) { return dir < 0 ? n < now : n > now; });
+      if (candidates.length) {
+        s.counter = dir < 0 ? Math.max.apply(null, candidates) : Math.min.apply(null, candidates);
+      } else {
+        /* The round is over going down, and the other arrow comes back from
+           the top to the last creature of the round, so an arrow pressed one
+           time too many is taken back by the one beside it. */
+        s.counter = dir < 0 ? topInit() : Math.min.apply(null, inits);
+      }
     }
     api.markDirty('rows');
     commit();
@@ -309,15 +339,16 @@
       /* The turn, in the shared look of the cast bar: the two arrows are the
          one place the battle moves. */
       C.cast.row({ buttons: [
-        { id: 'fightPrev', label: '\u25b2', aria: 'The turn before' },
-        { id: 'fightNext', label: '\u25bc', quick: true, aria: 'The next turn' }
+        { id: 'fightPrev', label: '\u25b2', quick: true, aria: 'The turn before' },
+        { id: 'fightNext', label: '\u25bc', aria: 'The next turn' }
       ] })
     ].join('\n'),
 
     css: [
       '.inibar{flex:0 0 auto;padding:0 2px 4px}',
+      /* Ten rows fit a phone: the row is 48, the badge keeps its 44 of touch. */
       '.inirow{display:flex;align-items:center;gap:8px;border:1px solid var(--edge);border-radius:8px;' +
-        'background:rgba(255,255,255,.03);padding:5px 7px;min-height:54px}',
+        'background:rgba(255,255,255,.03);padding:2px 6px;min-height:48px}',
       '.inirow.lit{border-color:rgba(var(--arcane-rgb),.42);background:rgba(var(--arcane-rgb),.06)}',
       '.inirow:not(.lit) .ininame,.inirow:not(.lit) .inimeta{opacity:.45}',
       '.iniinit{flex:0 0 auto;width:44px;min-height:44px;display:flex;flex-direction:column;align-items:center;' +
@@ -337,12 +368,12 @@
       '.inihp{background:none;border:0;padding:0;font:inherit;font-size:11px;color:var(--ink);cursor:pointer;' +
         'font-variant-numeric:tabular-nums}',
       '.inihp:active{color:var(--gold)}',
-      '.iniexp{flex:0 0 auto;width:28px;height:28px;display:flex;align-items:center;justify-content:center;' +
+      '.iniexp{flex:0 0 auto;width:34px;height:34px;display:flex;align-items:center;justify-content:center;' +
         'border:0;border-radius:6px;background:none;color:var(--muted);cursor:pointer;padding:0}',
       '.iniexp svg{width:16px;height:16px;display:block;transition:transform .16s}',
       '.iniexp.on svg{transform:rotate(180deg)}',
-      '.inix{flex:0 0 auto;width:24px;height:24px;border:1px solid rgba(var(--miss-rgb),.55);border-radius:6px;' +
-        'background:none;color:rgb(var(--miss-rgb));font-size:15px;line-height:1;cursor:pointer;padding:0}',
+      '.inix{flex:0 0 auto;width:28px;height:28px;border:1px solid rgba(var(--miss-rgb),.55);border-radius:6px;' +
+        'background:none;color:rgb(var(--miss-rgb));font-size:16px;line-height:1;cursor:pointer;padding:0}',
       '.iniatk{margin:2px 0 0 52px;display:flex;flex-direction:column;gap:5px}',
       '.inihead{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--muted)}',
       '.inikey{letter-spacing:.1em;text-transform:uppercase;color:#6f6a8d}',
@@ -372,8 +403,10 @@
       /* A swing rolls on a tap of its box, the way it does in the summons:
          the box decides what counts as that tap. */
       C.horizontalAttackBox.wire(root, function (ix, name, box) {
-        var row = box.closest ? box.closest('.inirow') : null;
-        var c = row ? byId(row.dataset.id) : null;
+        /* The row and the attacks under it carry the same id, so a swing of
+           an open row finds its creature. */
+        var holder = box.closest ? box.closest('[data-id]') : null;
+        var c = holder ? byId(holder.dataset.id) : null;
         if (!c || !name) return;
         C.creature.roll(c, name, ix, api, { mark: 'rows', root: root });
       });
