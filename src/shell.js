@@ -1195,10 +1195,10 @@
         id: 'class',
         label: 'From a class',
         run: function () {
-          /* The class and the library have to be there before a skeleton can
-             be built out of them. */
+          /* The class, the library and the origin books have to be there
+             before the creator can show them. */
           data('classes').then(function (ok) {
-            return ok ? data('features') : false;
+            return ok ? Promise.all([data('features'), data('species'), data('rules'), data('feats')]).then(function () { return true; }) : false;
           }).then(function (ok) {
             if (ok) openClassChooser();
           });
@@ -1312,13 +1312,13 @@
        painted once and nothing moves under the finger. */
     /* A character of the shelf is read through the API, with the key of
        the campaign, and by its address when the API will not say. */
-    function shelfText(c) {
-      return SHELF.read(c.name, c.ref).catch(function () { return readUrl(c.url); });
+    function shelfText(c, bare) {
+      return SHELF.read(c.name, c.ref, bare).catch(function () { return readUrl(c.url); });
     }
 
     function labelChars() {
       gh.chars.forEach(function (c) {
-        shelfText(c).then(function (text) {
+        shelfText(c, true).then(function (text) {
           var pkg = JSON.parse(text);
           var ch = (pkg && pkg.record && pkg.record.char) || (pkg && pkg.char) || {};
           var line = classLine(ch);
@@ -1908,9 +1908,45 @@
     return true;
   }
 
-  /* A character from a class. The skeleton is built from the class data
-     and the library, so the player or the agent only fills what is left: the
-     scores, the hit points, the armour class, the skills and the spells. */
+  /* A character from a class: the creator, one screen that updates as it is
+     touched (src/creator.js). The skeleton is built from the class data and
+     the library, and the origin checked and written by the origin module,
+     the one the fairy uses too. */
+  function makeCharacter(spec) {
+    var rec = skeleton(spec.className, spec.level, spec.sub, spec.name);
+    /* The skills of the class, chosen on the proficiencies tab, are proficient
+       before the origin adds its own. */
+    rec.char.skills = rec.char.skills || {};
+    (spec.classSkills || []).forEach(function (k) { rec.char.skills[k] = 1; });
+    var done = core.origin.apply(rec, spec.origin);
+    if (done.error) return { error: done.error };
+    if (spec.theme) rec.theme = spec.theme;
+    if (spec.icon) rec.icon = spec.icon;
+    /* A story the player wrote is theirs: the Background page is on, and a
+       fairy that paints reads it as written. */
+    if (spec.lore) {
+      rec.backstory = { text: spec.lore };
+      if (Array.isArray(rec.pages) && rec.pages.indexOf('backstory') < 0) {
+        var at = rec.pages.indexOf('agent');
+        if (at < 0) rec.pages.push('backstory'); else rec.pages.splice(at, 0, 'backstory');
+      }
+    }
+    addCharacter(rec);
+    return { ok: true };
+  }
+
+  var CREATOR = window.SheetCreator({
+    core: core,
+    esc: esc,
+    classes: function () { return CLASSDATA; },
+    featureByKey: function () { return FEATURE_BY_KEY; },
+    renderBlocks: renderBlocks,
+    SR: function () { return SR; },
+    sourceTag: function (x) { return core.library.sourceTag(x); },
+    toast: toast,
+    make: makeCharacter
+  });
+
   function openClassChooser() {
     if (!CLASSDATA.length) {
       CARD.list({
@@ -1922,271 +1958,7 @@
       });
       return;
     }
-    var rows = CLASSDATA.map(function (c) {
-      var caster = c.caster === 'full' ? 'full caster'
-        : (c.caster === 'half' ? 'half caster'
-        : (c.caster === 'third' ? 'third caster'
-        : (c.caster === 'pact' ? 'pact magic' : '')));
-      return '<button type="button" class="mtile ctile2" data-class="' + esc(c.name) + '">' +
-        '<span class="ctn">' + esc(c.name) + '</span>' +
-        '<span class="ctm">d' + (c.hd || 6) + (caster ? ' \u00b7 ' + caster : '') + '</span></button>';
-    }).join('');
-    CARD.list({
-      id: 'classchooser',
-      title: 'A class',
-      rows: '<div class="mtiles ctiles">' + rows + '</div>',
-      onPick: function (picked) { openLevelChooser(picked['class']); }
-    });
-  }
-
-  function openLevelChooser(className) {
-    var level = 1;
-    sheet.open({
-      id: 'levelchooser',
-      title: className,
-      dock: true,
-      list: '<div class="bigstep">' +
-        '<button type="button" data-step="-" aria-label="One level less">&minus;</button>' +
-        '<span class="bigval"><span class="bigk">LEVEL</span><span id="skelLevel">1</span></span>' +
-        '<button type="button" data-step="+" aria-label="One level more">+</button>' +
-        '</div>',
-      onList: function (ev) {
-        var step = ev.target.closest('[data-step]');
-        if (!step) return;
-        level = Math.max(1, Math.min(20, level + (step.dataset.step === '+' ? 1 : -1)));
-        var num = document.getElementById('skelLevel');
-        if (num) num.textContent = String(level);
-      },
-      actions: [{ label: 'Next', onClick: function () { openSubclassChooser(className, level); } }]
-    });
-  }
-
-  function openSubclassChooser(className, level) {
-    var cls = null;
-    CLASSDATA.forEach(function (c) { if (c.name === className) cls = c; });
-    var subs = (cls && cls.subclasses) || [];
-    var rows = subs.map(function (s) {
-      return CARD.line({
-        name: { text: s.name },
-        meta: { text: s.source || '' },
-        data: { sub: s.name },
-        pick: true
-      });
-    }).join('');
-    rows += CARD.line({ name: { text: 'No archetype' }, data: { none: '1' }, pick: true });
-    CARD.list({
-      id: 'subchooser',
-      title: 'The archetype',
-      metaClass: 'sheet-meta one',
-      meta: '<input class="sheet-search" id="skelName" type="text" placeholder="Name of the character" aria-label="Name of the character">',
-      rows: rows,
-      onPick: function (picked) {
-        var field = document.getElementById('skelName');
-        var name = (field && field.value ? field.value : '').trim();
-        var spec = { className: className, level: level, sub: '', name: name, origin: {} };
-        if (picked.sub !== undefined) spec.sub = picked.sub;
-        else if (picked.none === undefined) return;
-        openSpeciesStep(spec);
-      }
-    });
-  }
-
-  /* ---- the origin: the species, the scores and the background ----
-
-     Three steps after the class, each one skippable, and the character is
-     made at the end of the last: the skeleton of the class, then the origin
-     checked and written by the origin module, the one the fairy uses too. */
-
-  function finishCreation(spec) {
-    var rec = skeleton(spec.className, spec.level, spec.sub, spec.name);
-    var done = core.origin.apply(rec, spec.origin);
-    if (done.error) { toast(done.error); return; }
-    addCharacter(rec);
-  }
-
-  function skipAction(label, next) {
-    return { label: label, kind: 'quiet', onClick: next };
-  }
-
-  function openSpeciesStep(spec) {
-    Promise.all([data('species'), data('rules'), data('feats')]).then(function () {
-      var list = core.library.species;
-      if (!list.length) { openScoresStep(spec); return; }
-      CARD.list({
-        id: 'speciesstep',
-        title: 'A species',
-        metaClass: 'sheet-meta one',
-        meta: '<span>Its size, its speed and its traits. In the 2024 rules it raises no score: the background does.</span>',
-        rows: '<div class="mtiles ctiles">' + list.map(function (x) {
-          return '<button type="button" class="mtile ctile2" data-species="' + esc(x.name) + '">' +
-            '<span class="ctn">' + esc(x.name) + '</span>' +
-            '<span class="ctm">' + esc(x.size) + ' \u00b7 ' + x.speed + ' ft' + (x.darkvision ? ' \u00b7 dark ' + x.darkvision : '') + '</span></button>';
-        }).join('') + '</div>',
-        actions: [skipAction('No species', function () { openScoresStep(spec); })],
-        onPick: function (picked) {
-          var sp = core.origin.speciesOf(picked.species);
-          if (!sp) return;
-          spec.origin.species = sp.name;
-          var ask = sp.traits.filter(function (t) { return t.choice; })[0];
-          if (ask) openSpeciesChoice(spec, sp, ask); else openScoresStep(spec);
-        }
-      });
-    });
-  }
-
-  function openSpeciesChoice(spec, sp, trait) {
-    CARD.list({
-      id: 'speciespick',
-      title: trait.choice.label,
-      metaClass: 'sheet-meta one',
-      meta: '<span>' + esc(sp.name) + ': ' + esc(trait.name) + '</span>',
-      rows: trait.choice.options.map(function (o) {
-        return CARD.line({ name: { text: o.name }, meta: { text: o.gives }, data: { opt: o.name }, pick: true });
-      }).join(''),
-      onPick: function (picked) {
-        spec.origin.speciesChoice = picked.opt;
-        openScoresStep(spec);
-      }
-    });
-  }
-
-  var ABILITY_NAMES = { str: 'Strength', dex: 'Dexterity', con: 'Constitution', int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' };
-
-  /* The scores: a point buy from 8 with the points left in sight, or the
-     standard array stepped through its six values. Both read the rules
-     file. */
-  function openScoresStep(spec) {
-    var rules = core.library.rules;
-    var pb = rules.pointBuy || { budget: 27, min: 8, max: 15, cost: {} };
-    var arr = rules.standardArray || [15, 14, 13, 12, 10, 8];
-    var st = spec.scoreState = spec.scoreState || { method: 'pointbuy', scores: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 } };
-    function paintScores() {
-      var cost = core.origin.pointCost(st.scores);
-      var head = st.method === 'pointbuy'
-        ? (cost.error ? esc(cost.error) : '<b>' + cost.left + '</b> of ' + pb.budget + ' points left')
-        : (core.origin.check({ method: 'array', scores: st.scores }).why.length ? 'Give each of ' + arr.join(', ') + ' to one ability' : 'Each value is used once');
-      var rows = core.origin.ABS.map(function (a) {
-        var v = st.scores[a];
-        return '<div class="orow"><span class="ok">' + ABILITY_NAMES[a] + '</span>' +
-          '<button type="button" class="ostep" data-ab="' + a + '" data-d="-1" aria-label="Lower ' + ABILITY_NAMES[a] + '">&minus;</button>' +
-          '<span class="ov">' + v + '</span>' +
-          '<button type="button" class="ostep" data-ab="' + a + '" data-d="1" aria-label="Raise ' + ABILITY_NAMES[a] + '">+</button>' +
-          (st.method === 'pointbuy' ? '<span class="oc">' + (pb.cost[String(v)] || 0) + '</span>' : '') + '</div>';
-      }).join('');
-      sheet.open({
-        id: 'scoresstep',
-        title: 'Ability scores',
-        dock: true,
-        metaClass: 'sheet-meta one',
-        meta: core.toggle.segment({ key: 'method', aria: 'How the scores are made', on: st.method,
-          options: [{ id: 'pointbuy', label: 'Point buy' }, { id: 'array', label: 'Standard array' }] }),
-        list: '<div class="ohead">' + head + '</div><div class="orows">' + rows + '</div>' +
-          '<div class="onote">The background raises them next.</div>',
-        onPaint: function (root) {
-          var seg = root.querySelector('.sheet-meta .seg');
-          if (seg) seg.addEventListener('click', function (ev) {
-            var b = ev.target.closest('button');
-            if (!b || b.dataset.method === st.method) return;
-            st.method = b.dataset.method;
-            st.scores = st.method === 'array'
-              ? { str: arr[0], dex: arr[1], con: arr[2], int: arr[3], wis: arr[4], cha: arr[5] }
-              : { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 };
-            paintScores();
-          });
-        },
-        onList: function (ev) {
-          var b = ev.target.closest('[data-ab]');
-          if (!b) return;
-          var a = b.dataset.ab, d = Number(b.dataset.d);
-          if (st.method === 'pointbuy') {
-            st.scores[a] = Math.max(pb.min, Math.min(pb.max, st.scores[a] + d));
-          } else {
-            var vals = arr.slice().sort(function (x, y) { return x - y; });
-            var i = vals.indexOf(st.scores[a]);
-            st.scores[a] = vals[Math.max(0, Math.min(vals.length - 1, (i < 0 ? 0 : i) + d))];
-          }
-          paintScores();
-        },
-        actions: [
-          skipAction('Skip', function () { openBackgroundStep(spec); }),
-          { label: 'Next', onClick: function () {
-            var c = core.origin.check({ method: st.method, scores: st.scores });
-            if (c.why.length) { toast(c.why[0]); return; }
-            spec.origin.method = st.method;
-            spec.origin.scores = JSON.parse(JSON.stringify(st.scores));
-            openBackgroundStep(spec);
-          } }
-        ]
-      });
-    }
-    paintScores();
-  }
-
-  /* A background of the player's own: three abilities raised (+2 and +1,
-     or +1 to each), one Origin feat, two skills, a tool. */
-  function openBackgroundStep(spec) {
-    var bg = spec.bgState = spec.bgState || { increase: {}, feat: '', skills: [], tool: '' };
-    var feats = core.origin.originFeats();
-    function paintBg() {
-      var inc = core.origin.ABS.map(function (a) {
-        var v = bg.increase[a] || 0;
-        return '<button type="button" class="ochip' + (v ? ' on' : '') + '" data-inc="' + a + '">' + a.toUpperCase() + (v ? ' +' + v : '') + '</button>';
-      }).join('');
-      var plan = core.origin.check({ background: { increase: bg.increase } }).why;
-      var featChips = feats.map(function (f) {
-        return '<button type="button" class="ochip' + (bg.feat === f.name ? ' on' : '') + '" data-feat="' + esc(f.name) + '">' + esc(f.name) + '</button>';
-      }).join('');
-      var skillChips = (SR.SKILLS || []).map(function (k) {
-        return '<button type="button" class="ochip' + (bg.skills.indexOf(k.key) >= 0 ? ' on' : '') + '" data-skill="' + k.key + '">' + esc(k.name) + '</button>';
-      }).join('');
-      sheet.open({
-        id: 'backgroundstep',
-        title: 'A background of your own',
-        dock: true,
-        list: '<div class="ohead">Raise three abilities: tap one for +2, another for +1, or three for +1 each.' +
-            (Object.keys(bg.increase).length && plan.length ? ' <span class="owarn">' + esc(plan[0]) + '</span>' : '') + '</div>' +
-          '<div class="ochips">' + inc + '</div>' +
-          '<div class="ohead">An Origin feat</div><div class="ochips">' + (featChips || '<span class="onote">The feats are not here yet.</span>') + '</div>' +
-          '<div class="ohead">Two skills</div><div class="ochips">' + skillChips + '</div>' +
-          '<div class="ohead">A tool</div><input class="sheet-search" id="bgTool" type="text" placeholder="e.g. Thieves\u2019 tools" value="' + esc(bg.tool) + '">',
-        onPaint: function (root) {
-          var tool = root.querySelector('#bgTool');
-          if (tool) tool.addEventListener('input', function () { bg.tool = tool.value; });
-        },
-        onList: function (ev) {
-          var b = ev.target.closest('button');
-          if (!b) return;
-          if (b.dataset.inc) {
-            var a = b.dataset.inc;
-            var v = bg.increase[a] || 0;
-            var others = Object.keys(bg.increase).filter(function (x) { return x !== a; });
-            var two = others.some(function (x) { return bg.increase[x] === 2; });
-            /* 0, then +1, then +2 (when no other is at +2 and at most one
-               other is raised), then 0 again */
-            var next = v === 0 ? 1 : (v === 1 && !two && others.length <= 1 ? 2 : 0);
-            if (next) bg.increase[a] = next; else delete bg.increase[a];
-          } else if (b.dataset.feat) {
-            bg.feat = bg.feat === b.dataset.feat ? '' : b.dataset.feat;
-          } else if (b.dataset.skill) {
-            var at = bg.skills.indexOf(b.dataset.skill);
-            if (at >= 0) bg.skills.splice(at, 1);
-            else { bg.skills.push(b.dataset.skill); if (bg.skills.length > 2) bg.skills.shift(); }
-          }
-          paintBg();
-        },
-        actions: [
-          skipAction('Skip', function () { finishCreation(spec); }),
-          { label: 'Create', onClick: function () {
-            var o = { background: { name: 'Custom', increase: bg.increase, feat: bg.feat, skills: bg.skills, tool: bg.tool } };
-            var c = core.origin.check(Object.assign({}, spec.origin, o));
-            if (c.why.length) { toast(c.why[0]); return; }
-            spec.origin.background = o.background;
-            finishCreation(spec);
-          } }
-        ]
-      });
-    }
-    paintBg();
+    CREATOR.open();
   }
 
   /* The skeleton: the class, the level, the archetype, the features those
@@ -3220,6 +2992,7 @@
      says which, and 'none' lets the app step aside. */
   window.__sheetBack = function () {
     if (!el.viewer.hidden) { closePicture(); return 'closed'; }
+    if (CREATOR.back()) return 'closed';
     if (sheet.top()) { sheet.close(); return 'closed'; }
     if (!el.condTip.hidden) { el.condTip.hidden = true; return 'closed'; }
     if (current === 'settings') { leaveSettings(); return 'closed'; }

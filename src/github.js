@@ -148,14 +148,25 @@
   /* A character is written to the shelf as a file, on the branch, and the
      file is created when it is not there yet. */
   function putFile(repo, path, text, message, branch, token) {
+    /* A picture is written as bytes, already in base64: { base64: '...' }. */
+    var binary = text && typeof text === 'object' && typeof text.base64 === 'string';
     var body = {
       message: message,
-      content: b64(text),
+      content: binary ? text.base64 : b64(text),
       branch: branch
     };
     return api('GET', '/repos/' + repo + '/contents/' + path + '?ref=' + encodeURIComponent(branch), null, token)
       .then(function (found) {
         body.sha = found && found.sha;
+        /* A picture that is already there is not written again: git names a
+           file by the hash of its bytes, so the same hash is the same file,
+           and a push of a character does not carry its picture each time. */
+        if (binary && found && found.sha) {
+          return blobSha(text.base64).then(function (sha) {
+            if (sha === found.sha) return { unchanged: true, content: { html_url: found.html_url || '' } };
+            return api('PUT', '/repos/' + repo + '/contents/' + path, body, token);
+          });
+        }
         return api('PUT', '/repos/' + repo + '/contents/' + path, body, token);
       }).catch(function (e) {
         if (e && e.status === 404) return api('PUT', '/repos/' + repo + '/contents/' + path, body, token);
@@ -198,6 +209,19 @@
       return api('POST', '/repos/' + repo + '/git/refs', {
         ref: 'refs/heads/' + branch, sha: ref.object.sha
       }, token).then(function () { return branch; });
+    });
+  }
+
+  /* The name git gives a file: the SHA-1 of "blob <size>", a zero byte and
+     the bytes themselves. */
+  function blobSha(base64) {
+    var raw = atob(base64);
+    var head = 'blob ' + raw.length + '\0';
+    var bytes = new Uint8Array(head.length + raw.length);
+    for (var i = 0; i < head.length; i++) bytes[i] = head.charCodeAt(i);
+    for (var j = 0; j < raw.length; j++) bytes[head.length + j] = raw.charCodeAt(j);
+    return crypto.subtle.digest('SHA-1', bytes).then(function (buf) {
+      return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
     });
   }
 

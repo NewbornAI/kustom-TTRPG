@@ -66,6 +66,7 @@
       /* Saved as it is typed, without a repaint, so the caret stays put. */
       E.edit.addEventListener('input', function () {
         slice().text = E.edit.value;
+        slice().fairy = false;
         api.save();
       });
       E.edit.addEventListener('blur', function () { api.refresh(); });

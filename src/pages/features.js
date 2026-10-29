@@ -312,19 +312,8 @@
     return 'feat';
   }
 
-  var AB_SHORT = { Strength: 'Str', Dexterity: 'Dex', Constitution: 'Con', Intelligence: 'Int', Wisdom: 'Wis', Charisma: 'Cha' };
-
   /* The ability a feat raises, short: "+1 Int, Wis or Cha". */
-  function abilityOf(feat) {
-    var b = (feat.blocks || []).filter(function (x) { return x && /ability score/i.test(x.lead || ''); })[0];
-    if (!b) return '';
-    var names = (String(b.text).match(/Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma/g) || [])
-      .filter(function (x, i, l) { return l.indexOf(x) === i; }).map(function (x) { return AB_SHORT[x]; });
-    var by = (String(b.text).match(/by (\d+)/) || [])[1] || '1';
-    if (!names.length) return 'An ability +' + by;
-    if (names.length === 6) return '+' + by + ' to any ability';
-    return '+' + by + ' ' + (names.length > 1 ? names.slice(0, -1).join(', ') + ' or ' + names[names.length - 1] : names[0]);
-  }
+  function abilityOf(feat) { return C.origin.featAbility(feat); }
 
   function entries() {
     var out = [];

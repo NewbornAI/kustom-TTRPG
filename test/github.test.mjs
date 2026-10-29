@@ -65,6 +65,21 @@ check('with the token it was given', JSON.parse(ask.body).refresh_token, 'ghr_ol
 check('and no secret', JSON.parse(ask.body).client_secret, undefined);
 check('it comes back with a token that lasts', renewed.expires_in, 28800);
 
+console.log('a picture is not written twice');
+{
+  const bytes = Buffer.from('a picture of a tiefling').toString('base64');
+  const { createHash } = await import('node:crypto');
+  const sha = createHash('sha1').update(Buffer.concat([Buffer.from('blob ' + Buffer.from(bytes, 'base64').length + '\0'), Buffer.from(bytes, 'base64')])).digest('hex');
+  const before2 = calls.length;
+  answers['https://api.github.com/repos/gm/t/contents/characters/pip.webp?ref=main GET'] = { status: 200, body: JSON.stringify({ sha: sha, html_url: 'https://github.com/gm/t/blob/main/characters/pip.webp' }) };
+  const same = await G.putFile('gm/t', 'characters/pip.webp', { base64: bytes }, 'm', 'main', 'tok');
+  check('the same bytes are not written again', [same.unchanged, calls.slice(before2).filter((c) => c.method === 'PUT').length], [true, 0]);
+  answers['https://api.github.com/repos/gm/t/contents/characters/pip.webp?ref=main GET'] = { status: 200, body: JSON.stringify({ sha: 'other' }) };
+  await G.putFile('gm/t', 'characters/pip.webp', { base64: bytes }, 'm', 'main', 'tok');
+  const put = calls.filter((c) => c.method === 'PUT').pop();
+  check('other bytes are written, as bytes and not as text, over the old file', [JSON.parse(put.body).content, JSON.parse(put.body).sha], [bytes, 'other']);
+}
+
 console.log('the calls');
 await G.whoAmI('tok');
 const who = calls[calls.length - 1];
@@ -204,7 +219,6 @@ console.log('a campaign');
     listCharacters: (repoName, ref, token) => { cCalls.push(['list', repoName, token]); return Promise.resolve([]); }
   };
   const cShelf = S({ net: cNet, store: { get: (k) => cHeld.ui[k], set: (k, v) => { cHeld.ui[k] = v; } }, openUrl: () => {}, packageOf: (rec) => ({ record: rec }) });
-  global.atob = (t) => Buffer.from(t, 'base64').toString('binary');
   check('with no campaign the shelf is the one of the sign in', [cShelf.current(), cShelf.repo()], [null, 'NewbornAI/kustom-mandal']);
   const refused = await cShelf.joinCampaign({ name: 'Strahd', repo: 'gm/strahd', key: 'github_pat_stale' });
   check('an invite whose key GitHub refuses is not remembered, and says why', [refused.ok, /no longer opens/.test(refused.why), cShelf.campaigns().length], [false, true, 0]);
@@ -230,6 +244,57 @@ console.log('a campaign');
   cHeld.ui = {};
   const claimed = await cShelf.claimCampaign('Strahd', 'github_pat_goodkey0000000000000000', 'https://github.com/gm/strahd');
   check('a key and the address of its repository start the campaign, and the first file is written', [claimed.ok, cShelf.current().name, cCalls.filter((c) => c[0] === 'PUT' && c[1].indexOf('campaign.json') > 0).length], [true, 'Strahd', 1]);
+  /* The key is checked to open one repository only. */
+  const wide = { rows: [] };
+  const wNet = Object.assign({}, cNet, {
+    api: (method, path, body, token) => {
+      if (path.indexOf('/user/repos') === 0) return Promise.resolve(wide.rows);
+      if (path === '/repos/gm/strahd') return Promise.resolve({ full_name: 'gm/strahd' });
+      return cNet.api(method, path, body, token);
+    }
+  });
+  const wShelf = S({ net: wNet, store: { get: (k) => cHeld.ui[k], set: (k, v) => { cHeld.ui[k] = v; } }, openUrl: () => {}, packageOf: (rec) => ({ record: rec }) });
+  const KEY = 'github_pat_goodkey0000000000000000';
+  wide.rows = [{ full_name: 'gm/strahd', permissions: { push: true } }, { full_name: 'gm/secret-notes', permissions: { push: true } }, { full_name: 'gm/forked', permissions: { push: false } }];
+  cHeld.ui = {};
+  const broad = await wShelf.claimCampaign('Strahd', KEY, 'gm/strahd');
+  check('a key that opens other repositories than the campaign is refused, and says how to make it again',
+    [broad.ok, broad.tooWide, /2 repositories/.test(broad.why), /Only select repositories/.test(broad.why), wShelf.campaigns().length], [false, true, true, true, 0]);
+  wide.rows = [{ full_name: 'gm/strahd', permissions: { push: true } }];
+  const narrow = await wShelf.claimCampaign('Strahd', KEY, 'gm/strahd');
+  check('a key that opens the campaign only is taken', [narrow.ok, wShelf.campaigns().length], [true, 1]);
+  const classic = await wShelf.claimCampaign('Strahd', 'ghp_' + 'a'.repeat(36), 'gm/strahd');
+  check('a classic key, which cannot be limited to a repository, is refused', [classic.ok, /classic/.test(classic.why)], [false, true]);
+
+  /* The picture of a character lives in the repository as a file of its
+     own, beside the character, and comes back with it. */
+  const files = {};
+  const pNet = Object.assign({}, cNet, {
+    putFile: (repoName, path, text, message, branchName, token) => { files[path] = text; return Promise.resolve({ content: { html_url: 'https://github.com/' + repoName + '/blob/main/' + path } }); },
+    api: (method, path, body, token) => {
+      const m = path.match(/\/contents\/(characters\/[^?]+)/);
+      if (m && method === 'GET' && files[decodeURIComponent(m[1])] !== undefined) {
+        const f = files[decodeURIComponent(m[1])];
+        return Promise.resolve({ content: typeof f === 'string' ? Buffer.from(f).toString('base64') : f.base64 });
+      }
+      if (path === '/repos/gm/strahd') return Promise.resolve({ full_name: 'gm/strahd' });
+      const e = new Error('Not Found'); e.status = 404; return Promise.reject(e);
+    }
+  });
+  const pShelf = S({ net: pNet, store: { get: (k) => cHeld.ui[k], set: (k, v) => { cHeld.ui[k] = v; } }, openUrl: () => {}, packageOf: (rec) => ({ kind: 'custom-sheet-character', record: JSON.parse(JSON.stringify(rec)) }) });
+  pShelf.addCampaign({ name: 'Strahd', repo: 'gm/strahd', key: KEY });
+  const bytes = Buffer.from('RIFFxxxxWEBPvp8 picture bytes').toString('base64');
+  const wrotePic = await pShelf.put({ char: { name: 'Pip' }, image: { data: 'data:image/webp;base64,' + bytes } });
+  const json = JSON.parse(files['characters/pip.json']);
+  check('a picture is written as a file beside the character, and the character keeps its name in its place',
+    [wrotePic.ok, files['characters/pip.webp'], json.record.image], [true, { base64: bytes }, { data: '', file: 'pip.webp' }]);
+  const back = JSON.parse(await pShelf.read('pip.json'));
+  check('the character comes back whole, with its picture', [back.record.image.data, back.record.image.file], ['data:image/webp;base64,' + bytes, undefined]);
+  await pShelf.put({ char: { name: 'Sam' } });
+  check('a character with no picture writes no picture file', [files['characters/sam.json'] !== undefined, Object.keys(files).filter((k) => /sam\./.test(k))], [true, ['characters/sam.json']]);
+  files['characters/old.json'] = JSON.stringify({ record: { image: { data: 'data:image/webp;base64,AAAA' } } });
+  check('a character of the old kind, with the picture inside, is read as it is', JSON.parse(await pShelf.read('old.json')).record.image.data, 'data:image/webp;base64,AAAA');
+
   const publicCode = source('shelf.js').replace("var DEFAULT_REPO = 'NewbornAI/kustom-mandal';", "var DEFAULT_REPO = '';");
   const pub = {};
   new Function('window', publicCode)(pub);

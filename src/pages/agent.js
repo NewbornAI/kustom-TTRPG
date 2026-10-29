@@ -54,8 +54,9 @@
     '- Before the first picture, read the background, and write it with write_backstory if the sheet has none. Do not hand the story to the painter: distill it into the concept.',
     '- The painter is literal and not clever: it draws every word you give it, all of them, somewhere. So a concept is one plain sentence of at most 25 words. The app already tells it the species, the background and the armour worn, and the style; do not repeat them, and never name a weapon (they come out pasted onto nothing).',
     '- Taste in a concept: who this person is and how they hold themselves (wary, amused, tired, defiant, shy, proud), what their life has done to their clothes (patched, borrowed, too fine for the road), and at most ONE telling detail, placed precisely ("a thin scar through the left eyebrow", "ink on the fingers of the right hand", "a dead brother\'s too-big coat"). One detail drawn well beats five drawn badly. Prefer the unexpected reading of the species and class to the cliche: a gentle orc, a scruffy paladin, a tiefling who dresses like a clerk. No glowing eyes, no floating runes, no spiky armour.',
-    '- A picture is paint_picture with one concept. Ask for the look when the player cares; otherwise choose.',
-    '- Three pictures are paint_choices with three concepts that are three different readings of the same character, not one person in three poses: different ages, moods and lives (the veteran who regrets it, the eager novice, the one who does it for the money). If the three captions could be swapped between the pictures, they are too alike. Give each its own age in its sentence; the app gives each its own place and light.',
+    '- Two kinds of picture. A free one (the player asked for nothing in particular, and the background is empty or one you wrote): you invent the concept, as above. A faithful one: the player described what they want, or wrote their own background. Then you invent nothing and rewrite nothing: pass their words in asked, exactly as they wrote them (trim only the chatter around them: "can you paint..."), and the app hands the painter those words and the player\'s own background as they are. The app then deals no age, place or light of its own. Never translate a request into your own taste, never swap a detail for another, never drop one.',
+    '- A picture is paint_picture. Free: one concept. Faithful: asked, and no concept unless the player left a gap to fill.',
+    '- Three pictures are paint_choices with three concepts that are three different readings of the same character, not one person in three poses: different ages, moods and lives (the veteran who regrets it, the eager novice, the one who does it for the money). If the three captions could be swapped between the pictures, they are too alike. Give each its own age in its sentence; the app gives each its own place and light. If the player asked for something specific, the three are that thing, with asked set, and the app deals nothing.',
     '- A picture that exists is changed with repaint_picture, not painted again from words: the face must stay the same person, so the change is one sentence and the rest is kept.',
     '- A theme of the picture is theme_from_picture: the drawing\'s own ground, ink and accent, made into a theme and worn. Ask before replacing a theme the player chose.',
     '- The books are the 2024 rules: a name from an older printing may not be there (the 2024 Necromancer has Harvest Undead where the 2014 one had Inured to Undeath). When a lookup misses, do not search again under other spellings: say it is not in the books and ask the player what it does, or use what the books carry.',
@@ -137,8 +138,8 @@
     { type: 'function', function: { name: 'look_at_page', description: 'Open a page and answer what it shows: its error if it broke, its text, and how each button did when pressed on a copy of the sheet.', parameters: { type: 'object', properties: { id: { type: 'string' } }, required: ['id'] } } },
     { type: 'function', function: { name: 'remove_page', description: 'Take away a page this character was given.', parameters: { type: 'object', properties: { id: { type: 'string' } }, required: ['id'] } } },
     { type: 'function', function: { name: 'write_backstory', description: 'Write the background of the character on its Background page, replacing what is there: at most 30 words, two short sentences, on why the character became an adventurer. The pictures are distilled from it. Longer only when the player asks for longer (long: true). Read the page first with read_sheet if the player may have written one, and keep what they wrote.', parameters: { type: 'object', properties: { text: { type: 'string', description: 'the story, at most 30 words' }, long: { type: 'boolean', description: 'true only when the player asked for a longer story' } }, required: ['text'] } } },
-    { type: 'function', function: { name: 'paint_picture', description: 'Draw the character and put the picture on the Image page. The app already tells the painter the species, the background and the armour worn; you give the concept, one sentence of at most 25 words: who this person is, their attitude, and at most one telling detail placed precisely. Never weapons, never the style. A picture takes about half a minute.', parameters: { type: 'object', properties: { concept: { type: 'string', description: 'one sentence, at most 25 words' } }, required: ['concept'] } } },
-    { type: 'function', function: { name: 'paint_choices', description: 'Draw three pictures and show them full screen to swipe and pick from; the one picked lands on the Image page. Give three concepts, one sentence each of at most 25 words, that are three different readings of the same character (a different age, mood and life), not one person in three poses. Put the age in each sentence. The app adds the species, background and armour, and gives each picture its own place and light.', parameters: { type: 'object', properties: { concepts: { type: 'array', items: { type: 'string' }, description: 'three sentences, three different takes' }, count: { type: 'number', description: 'how many, 2 or 3 (default 3)' } }, required: ['concepts'] } } },
+    { type: 'function', function: { name: 'paint_picture', description: 'Draw the character and put the picture on the Image page. The app already tells the painter the species, the background and the armour worn; you give the concept, one sentence of at most 25 words: who this person is, their attitude, and at most one telling detail placed precisely. Never weapons, never the style. When the player described the picture they want, or wrote their own background, set asked to their words, unchanged: the painter then draws them and the app invents nothing. A picture takes about half a minute.', parameters: { type: 'object', properties: { concept: { type: 'string', description: 'free picture: one sentence, at most 25 words' }, asked: { type: 'string', description: 'faithful picture: what the player asked for, in their own words, unchanged' } } } } },
+    { type: 'function', function: { name: 'paint_choices', description: 'Draw three pictures and show them full screen to swipe and pick from; the one picked lands on the Image page. Give three concepts, one sentence each of at most 25 words, that are three different readings of the same character (a different age, mood and life), not one person in three poses. Put the age in each sentence. The app adds the species, background and armour, and gives each picture its own place and light.', parameters: { type: 'object', properties: { concepts: { type: 'array', items: { type: 'string' }, description: 'free pictures: three sentences, three different takes' }, asked: { type: 'string', description: 'faithful pictures: what the player asked for, in their own words, unchanged' }, count: { type: 'number', description: 'how many, 2 or 3 (default 3)' } } } } },
     { type: 'function', function: { name: 'repaint_picture', description: 'Change one thing in the picture the character already has and keep the rest: the same face, the same pose, the same framing, the same style. change is what changes, one sentence, in the player\'s words. Use it rather than paint_picture when a picture exists and the player wants it different.', parameters: { type: 'object', properties: { change: { type: 'string', description: 'what changes, one sentence' } }, required: ['change'] } } },
     { type: 'function', function: { name: 'theme_from_picture', description: 'Read the colours of the character\'s picture and make it a theme, worn at once: the dark ground, the light ink and the accent colour of the drawing. Ask before replacing a theme the player chose.', parameters: { type: 'object', properties: { name: { type: 'string', description: 'the name of the theme, the character\'s name if left out' }, wear: { type: 'boolean', description: 'wear it now (default true)' } } } } },
   ];
@@ -503,15 +504,34 @@
     return out;
   }
 
-  function portrait(concept, take) {
+  /* The player's own words, when they are the brief: what they asked for
+     in this request, and the background they wrote themselves (one a fairy
+     wrote is the fairy's to distill, not the player's to be followed). They
+     go to the painter as they are, first, and the app deals nothing. */
+  function faith(args) {
+    var asked = String((args && args.asked) || '').trim().slice(0, 700);
+    var b = rec().backstory;
+    var own = b && typeof b.text === 'string' && b.text.trim() && !b.fairy ? b.text.trim().slice(0, 500) : '';
+    return (asked || own) ? { asked: asked, story: own } : null;
+  }
+
+  function portrait(concept, take, faithful) {
     var brief = {
       asset: 'character portrait',
-      who: sitter() || 'an adventurer',
-      concept: concept,
-      view: 'bust, three-quarter view, centered',
-      style: PICTURE_STYLE,
-      exclusions: ['no text', 'no watermark', 'no frame', 'one person only', 'no weapons'].concat(PICTURE_NOT)
+      who: sitter() || 'an adventurer'
     };
+    if (faithful) {
+      if (faithful.asked) brief.request = faithful.asked;
+      if (faithful.story) brief.story = faithful.story;
+      if (concept) brief.concept = concept;
+    } else {
+      brief.concept = concept;
+    }
+    brief.view = 'bust, three-quarter view, centered';
+    brief.style = PICTURE_STYLE;
+    if (faithful) brief.priority_emphasis = ['TOP PRIORITY: draw what the ' + (faithful.asked ? 'request' : 'story') + ' says, every detail as written, and nothing it does not say', 'the species, armour and style are fixed; everything else follows the ' + (faithful.asked ? 'request' : 'story')];
+    brief.exclusions = ['no text', 'no watermark', 'no frame', 'one person only', 'no weapons'].concat(PICTURE_NOT);
+    if (faithful) take = null;
     if (take && take.age) brief.age = take.age;
     if (take && take.setting) brief.setting = take.setting;
     return brief;
@@ -532,7 +552,7 @@
     backup();
     var r = rec();
     C.rest.push(r);
-    r.backstory = { text: text };
+    r.backstory = { text: text, fairy: true };
     /* The page shows itself on the character that has a story. */
     if (Array.isArray(r.pages) && r.pages.indexOf('backstory') < 0) {
       var at = r.pages.indexOf('agent');
@@ -581,8 +601,9 @@
 
   function paintPicture(args) {
     var concept = conceptOf(args);
-    if (!concept) return { error: 'paint_picture needs a concept' };
-    return drawPicture(portrait(concept, null), '');
+    var f = faith(args);
+    if (!concept && !f) return { error: 'paint_picture needs a concept, or asked: the player\'s own words' };
+    return drawPicture(portrait(concept, null, f), '');
   }
 
   /* Two or three pictures to pick from: one take of the fairy's each, with
@@ -593,6 +614,8 @@
       .map(function (x) { return String(x || '').trim().slice(0, 300); }).filter(Boolean);
     var one = conceptOf(args);
     if (!concepts.length && one) concepts = [one];
+    var f = faith(args);
+    if (!concepts.length && f) concepts = [''];
     if (!concepts.length) return { error: 'paint_choices needs concepts: three sentences, three different takes on the character' };
     var count = Math.max(2, Math.min(3, Math.floor(Number(args.count) || 3)));
     var ages = dealt(TAKES.age, count), settings = dealt(TAKES.setting, count);
@@ -608,7 +631,7 @@
         /* The fairy's take for this picture, or its one take again with a
            different age, place and light: the app's dealing is what keeps
            the set apart when the fairy did not. */
-        var brief = portrait(concepts[ix % concepts.length], { age: ownAges ? '' : ages[ix], setting: settings[ix] });
+        var brief = portrait(concepts[ix % concepts.length], { age: ownAges ? '' : ages[ix], setting: settings[ix] }, f);
         return lasting(C.exchange.postJson(url, { prompt: JSON.stringify(brief) }), 240000).then(function (json) {
           return json && json.data ? C.images.fit(json.data) : '';
         }).then(function (small) { if (small) made.push(small); });

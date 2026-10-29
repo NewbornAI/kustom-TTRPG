@@ -160,6 +160,20 @@
       return { ok: true, added: added, abilities: ch.abilities, spent: c.spent };
     }
 
-    return { check: check, apply: apply, pointCost: pointCost, originFeats: originFeats, speciesOf: speciesOf, ABS: ABS };
+    /* The ability a feat raises, short: "+1 Int, Wis or Cha". One reading for
+       the picker of the features and the creator's origin feat. */
+    var AB_SHORT = { Strength: 'Str', Dexterity: 'Dex', Constitution: 'Con', Intelligence: 'Int', Wisdom: 'Wis', Charisma: 'Cha' };
+    function featAbility(feat) {
+      var b = (feat.blocks || []).filter(function (x) { return x && /ability score/i.test(x.lead || ''); })[0];
+      if (!b) return '';
+      var names = (String(b.text).match(/Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma/g) || [])
+        .filter(function (x, i, l) { return l.indexOf(x) === i; }).map(function (x) { return AB_SHORT[x]; });
+      var by = (String(b.text).match(/by (\d+)/) || [])[1] || '1';
+      if (!names.length) return 'An ability +' + by;
+      if (names.length === 6) return '+' + by + ' to any ability';
+      return '+' + by + ' ' + (names.length > 1 ? names.slice(0, -1).join(', ') + ' or ' + names[names.length - 1] : names[0]);
+    }
+
+    return { featAbility: featAbility, check: check, apply: apply, pointCost: pointCost, originFeats: originFeats, speciesOf: speciesOf, ABS: ABS };
   };
 })(typeof window !== 'undefined' ? window : this);

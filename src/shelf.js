@@ -294,7 +294,7 @@
 
     /* One character of the shelf, read through the API with the key or the
        sign in, so a private campaign is read the way a public shelf is. */
-    function read(name, ref) {
+    function read(name, ref, bare) {
       if (!net) return Promise.reject(new Error('the shelf cannot be read'));
       var path = '/repos/' + repo() + '/contents/characters/' + encodeURIComponent(name) + '?ref=' + encodeURIComponent(ref || branch());
       return net.api('GET', path, null, readToken()).then(function (f) {
@@ -302,7 +302,24 @@
         var raw = atob(f.content.replace(/\s+/g, ''));
         var bytes = new Uint8Array(raw.length);
         for (var i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
-        return new TextDecoder().decode(bytes);
+        var text = new TextDecoder().decode(bytes);
+        /* The picture of the character is its own file: it is read back and
+           put into the package, so the character arrives whole. A picture
+           that cannot be read leaves the character without one, not
+           without the character. */
+        var pkg = null;
+        try { pkg = JSON.parse(text); } catch (e) { return text; }
+        var img = pkg && pkg.record && pkg.record.image;
+        if (bare || !img || img.data || !/^[A-Za-z0-9._-]+\.(webp|png|jpg)$/.test(String(img.file || ''))) return text;
+        var pic = '/repos/' + repo() + '/contents/characters/' + encodeURIComponent(img.file) + '?ref=' + encodeURIComponent(ref || branch());
+        return net.api('GET', pic, null, readToken()).then(function (p) {
+          var mime = MIME[String(img.file).split('.').pop()];
+          if (p && typeof p.content === 'string' && p.content.length) {
+            img.data = 'data:' + mime + ';base64,' + p.content.replace(/\s+/g, '');
+          }
+          delete img.file;
+          return JSON.stringify(pkg);
+        }).catch(function () { delete img.file; return JSON.stringify(pkg); });
       });
     }
 
@@ -356,14 +373,25 @@
       if (!rec || !rec.char) return Promise.resolve({ ok: false, why: 'there is no character' });
       if (!hasShelf()) return Promise.resolve({ ok: false, why: 'start or join a campaign first, in the settings' });
       var name = fileName(rec);
-      var text = JSON.stringify(packageOf(rec), null, 2);
+      var pkg = packageOf(rec);
+      /* The picture is a file of its own beside the character, so it can be
+         seen on GitHub and shared with the character, and the character's
+         file stays small: the package keeps the name of the file in its
+         place. */
+      var picture = pictureOf(rec, name);
+      if (picture) pkg = withoutPicture(pkg, picture.file);
+      var text = JSON.stringify(pkg, null, 2);
       var commit = message || ((rec.char.name || 'a character') + ' goes to the shelf');
       var where = branch();
       function send(token) {
-        return net.putFile(repo(), 'characters/' + name, text, commit, where, token)
-          .then(function (answer) {
-            return { ok: true, url: (answer && answer.content && answer.content.html_url) || '' };
-          });
+        var first = picture
+          ? net.putFile(repo(), 'characters/' + picture.file, { base64: picture.base64 }, (rec.char.name || 'a character') + ' has a picture', where, token)
+          : Promise.resolve(null);
+        return first.then(function () {
+          return net.putFile(repo(), 'characters/' + name, text, commit, where, token);
+        }).then(function (answer) {
+          return { ok: true, url: (answer && answer.content && answer.content.html_url) || '' };
+        });
       }
       return tokenNow().then(function (token) {
         return send(token).catch(function (e) {
@@ -381,12 +409,37 @@
       });
     }
 
-    /* A character goes off the shelf as well as on it. */
+    /* The picture of a character as a file: the data URL is cut into its
+       type and its bytes, and named after the character. Only the types the
+       app writes are kept; anything else stays inside the package. */
+    var EXT = { 'image/webp': 'webp', 'image/png': 'png', 'image/jpeg': 'jpg' };
+    var MIME = { webp: 'image/webp', png: 'image/png', jpg: 'image/jpeg' };
+
+    function pictureOf(rec, jsonName) {
+      var data = rec && rec.image && rec.image.data;
+      var m = typeof data === 'string' && data.match(/^data:(image\/(?:webp|png|jpeg));base64,([A-Za-z0-9+/=]+)$/);
+      if (!m) return null;
+      return { file: jsonName.replace(/\.json$/, '') + '.' + EXT[m[1]], base64: m[2] };
+    }
+
+    function withoutPicture(pkg, file) {
+      var copy = JSON.parse(JSON.stringify(pkg));
+      if (copy.record && copy.record.image) copy.record.image = { data: '', file: file };
+      return copy;
+    }
+
+    /* A character goes off the shelf as well as on it, and its picture with
+       it. */
     function remove(name) {
       if (!net) return Promise.resolve({ ok: false, why: 'the shelf cannot write yet' });
       function send(token) {
-        return net.deleteFile(repo(), 'characters/' + name, 'a character leaves the shelf', branch(), token)
-          .then(function () { return { ok: true }; });
+        var base = String(name).replace(/\.json$/, '');
+        var pictures = Object.keys(MIME).map(function (ext) {
+          return net.deleteFile(repo(), 'characters/' + base + '.' + ext, 'a character leaves the shelf', branch(), token).catch(function () {});
+        });
+        return Promise.all(pictures).then(function () {
+          return net.deleteFile(repo(), 'characters/' + name, 'a character leaves the shelf', branch(), token);
+        }).then(function () { return { ok: true }; });
       }
       return tokenNow().then(function (token) {
         return send(token).catch(function (e) {
@@ -469,17 +522,44 @@
       }).catch(function () { return ''; });
     }
 
-    /* The key pasted, the repository found, the file of the campaign
-       written: the write is the proof that the key can write. A repository
-       that is still empty takes the file as its first commit. */
+    /* What a key can write. A key limited to one repository lists that one;
+       a key on all repositories lists every repository of its owner, and the
+       app refuses it: the invite hands the key to every player, so it must
+       open this table and nothing else. GitHub takes no address for the
+       choice of repositories, so it is checked here once the key is in. */
+    function reach(key) {
+      return net.api('GET', '/user/repos?per_page=100&affiliation=owner,collaborator,organization_member', null, key).then(function (rows) {
+        return (Array.isArray(rows) ? rows : []).filter(function (r) { return r && r.full_name && (!r.permissions || r.permissions.push); })
+          .map(function (r) { return r.full_name; });
+      }).catch(function () { return null; });
+    }
+
+    /* The key pasted, the repository found, the key checked to open that
+       one repository only, the file of the campaign written: the write is
+       the proof that the key can write. A repository that is still empty
+       takes the file as its first commit. */
     function claimCampaign(name, key, address) {
       if (!net) return Promise.reject(new Error('the shelf cannot write yet'));
       var k = String(key || '').trim();
-      if (!/^(github_pat_|ghp_)[A-Za-z0-9_]{20,}$/.test(k)) {
+      if (/^ghp_/.test(k)) {
+        return Promise.resolve({ ok: false, why: 'that is a classic key, which reaches every repository you have: make a fine-grained one, from Start a campaign, step 2' });
+      }
+      if (!/^github_pat_[A-Za-z0-9_]{20,}$/.test(k)) {
         return Promise.resolve({ ok: false, why: 'that is not a GitHub key: it starts with github_pat_' });
       }
       return findRepo(k, name, address).then(function (full) {
         if (!full) return { ok: false, why: 'the key reaches no repository yet: on GitHub, give it the repository of the campaign', needRepo: true };
+        return reach(k).then(function (writable) {
+          if (writable && writable.length > 1) {
+            return { ok: false, tooWide: true, why: 'that key opens ' + writable.length + ' repositories, not only ' + full + ': on GitHub, make it again and under Repository access choose Only select repositories, then pick just ' + full };
+          }
+          return null;
+        }).then(function (tooWide) {
+          return tooWide || save(full);
+        });
+      });
+
+      function save(full) {
         var body = {
           message: 'The campaign ' + String(name || '').trim() + ' begins',
           content: b64(JSON.stringify({ name: String(name || '').trim(), app: 'custom-sheet' }, null, 2) + '\n')
@@ -497,7 +577,7 @@
             ? 'the key cannot write ' + full + ': on GitHub, give it Contents read and write'
             : String((e && e.message) || e) };
         });
-      });
+      }
     }
 
     /* An invite comes in: the key is asked whether it opens the repository,

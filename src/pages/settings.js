@@ -587,7 +587,7 @@
       metaClass: 'sheet-meta one',
       meta: '<input class="sheet-search" id="campName" type="text" placeholder="Name of the campaign" aria-label="Name of the campaign" value="' + C.chrome.esc(st.name) + '">' +
         step(1, 'Make its repository', 'GitHub opens with it filled in, private. Tap Create.', 'Open', 'campRepo') +
-        step(2, 'Make its key', 'GitHub opens with the key filled in. Under Repository access choose Only select repositories, pick the repository you just made, then Generate and copy the key.', 'Open', 'campKeyGo') +
+        step(2, 'Make its key', 'GitHub opens with the key filled in, but it starts on All repositories: under Repository access choose Only select repositories and pick the repository you just made, then Generate and copy the key. The app refuses a key that reaches more.', 'Open', 'campKeyGo') +
         step(3, st.needRepo ? 'Paste the address of the repository' : 'Paste the key', st.needRepo ? 'The key reaches no repository the app can find: copy the address of the repository from GitHub and paste it.' : 'The app finds the repository with it and writes the first file.', 'Paste', 'campPaste') +
         '<input class="sheet-search" id="campKey" type="text" autocomplete="off" placeholder="or paste it here" aria-label="The key, pasted" value="">' +
         (st.note ? '<p class="campwarn">' + C.chrome.esc(st.note) + '</p>' : ''),

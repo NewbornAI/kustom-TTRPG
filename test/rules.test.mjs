@@ -1751,8 +1751,21 @@ check('a tapped hit die shows what is left even when its count has the focus',
     [src.indexOf("name: 'write_backstory'") >= 0, src.indexOf("if (name === 'write_backstory') return writeBackstory(args);") >= 0,
       src.indexOf("'backstory', 'pages']") >= 0].join('/'), 'true/true/true');
   check('a brief is short: who sits from the sheet without weapons, one concept, and no story or art list for the literal painter',
-    [src.indexOf("it.category === 'armour'") >= 0, src.indexOf("'one person only', 'no weapons'") >= 0, src.indexOf('brief.story') < 0, src.indexOf('art_direction') < 0,
-      src.indexOf("return drawPicture(portrait(concept, null), '');") >= 0].join('/'), 'true/true/true/true/true');
+    [src.indexOf("it.category === 'armour'") >= 0, src.indexOf("'one person only', 'no weapons'") >= 0, src.indexOf('art_direction') < 0,
+      src.indexOf("return drawPicture(portrait(concept, null, f), '');") >= 0, src.indexOf('r.backstory = { text: text, fairy: true };') >= 0].join('/'), 'true/true/true/true/true');
+  check('a faithful picture: the player\'s words or own background go to the painter unchanged, and the app deals no age, place or light',
+    [src.indexOf('brief.request = faithful.asked') >= 0, src.indexOf('brief.story = faithful.story') >= 0, src.indexOf('&& !b.fairy') >= 0,
+      src.indexOf('if (faithful) take = null;') >= 0, src.indexOf('Never translate a request into your own taste') >= 0,
+      harness.source('pages/backstory.js').indexOf('slice().fairy = false;') >= 0].join('/'), 'true/true/true/true/true/true');
+  const cre = harness.source('creator.js');
+  check('the creator is one screen: a top bar of the level and the choices, a tab each, the archetype only from level 3, and a Select on every card',
+    [cre.indexOf('id="crLevel"') >= 0, cre.indexOf("t.id !== 'sub' || showsSub()") >= 0, cre.indexOf('st.level >= 3') >= 0,
+      cre.indexOf('data-pick') >= 0, cre.indexOf("{ id: 'two', label: '+2 +1' }") >= 0, cre.indexOf("{ id: 'three', label: '+1 +1 +1' }") >= 0,
+      shell.indexOf('CREATOR.open()') >= 0, shell.indexOf('if (CREATOR.back()) return') >= 0].join('/'), 'true/true/true/true/true/true/true/true');
+  check('the creator names a tab after its choice, takes the name in the bar, picks skills and the theme, and shows the origin feats like the picker',
+    [cre.indexOf('function labelOf(t)') >= 0, cre.indexOf('id="crName"') >= 0, cre.indexOf("{ id: 'skills', label: 'Proficiencies' }") >= 0,
+      cre.indexOf("{ id: 'theme', label: 'Theme' }") >= 0, cre.indexOf('core.origin.featAbility(f)') >= 0, cre.indexOf('crnone">Choose a class') >= 0,
+      cre.indexOf('Create</button>') < 0].join('/'), 'true/true/true/true/true/true/true');
   const chr = harness.source('pages/character.js');
   check('two inspirations sit beside the hit points: heroic on every sheet, bardic where the feature is or the wrench turned it on',
     [chr.indexOf('id="inspCol"') >= 0, chr.indexOf("key: 'heroic', id: 'inspHeroic'") >= 0, chr.indexOf("f.key === 'bardicInspiration'") >= 0,
@@ -2280,9 +2293,10 @@ console.log('the page the phone opens at launch');
      and the page reached that too, then 700000 when the agent page joined,
      then 800000, and the agent's tools reached that too, so it is 900000
      then 900000 when the fairy painted and laid out pages, so it is 1000000
+     then 1100000 when the creator took a screen of its own (about 20 KB),
      now: a book inlined would still cross it, the page being close to
      900000 and the spell book alone over half a megabyte. */
-  check('the page is small without them', built.length < 1000000, true);
+  check('the page is small without them', built.length < 1100000, true);
   const bookMarker = JSON.parse(readFileSync(resolve(root, 'data', 'spellbook.json'), 'utf8')).spells[0].blocks[0].text;
   const beastMarker = JSON.parse(readFileSync(resolve(root, 'data', 'bestiary.json'), 'utf8')).creatures.ghast.traits[0].text;
   check('the book did not come inside the page', bookMarker.length > 40 && built.indexOf(bookMarker) < 0, true);

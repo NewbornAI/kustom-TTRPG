@@ -82,6 +82,7 @@
   var asiFirst = '';
   var asiSecond = '';
   var choiceFeat = '';
+  var featText = '';
 
   function pickIndex() {
     var list = rows();
@@ -107,12 +108,53 @@
     }).join('') + '</select>';
   }
 
-  function featSelect() {
-    var list = feats().slice().sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
-    return '<select class="lvsel lvfeat" id="lvFeat">' +
-      '<option value="">take no feat</option>' +
-      list.map(function (f) { return '<option value="' + esc(f.name) + '"' + (f.name === choiceFeat ? ' selected' : '') + '>' + esc(f.name) + '</option>'; }).join('') +
-    '</select>';
+  /* The feats of the books, the way the creator of a character shows them: a
+     search, then a card for each feat with the ability it raises and its
+     prerequisite, and the + that chooses it. */
+  function featAbility(f) {
+    return C.origin && typeof C.origin.featAbility === 'function' ? C.origin.featAbility(f) : '';
+  }
+
+  function featCards() {
+    var t = featText.trim().toLowerCase();
+    var list = feats().filter(function (f) {
+      return !t || String(f.name).toLowerCase().indexOf(t) >= 0 || featAbility(f).toLowerCase().indexOf(t) >= 0;
+    }).sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
+    if (!list.length) return '<div class="crnone">' + (t ? 'Nothing matches.' : 'The feats are not here yet.') + '</div>';
+    return list.map(function (f) {
+      var has = choiceFeat === f.name, ab = featAbility(f);
+      return '<div class="crfp" data-feat="' + esc(f.name) + '" role="button" tabindex="0">' +
+        '<div class="crfpb"><div class="crfpn">' + esc(f.name) + '</div>' +
+        (ab ? '<div class="crfpa">' + esc(ab) + '</div>' : '') +
+        (f.prerequisite ? '<div class="crfpp">' + esc(f.prerequisite) + '</div>' : '') + '</div>' +
+        '<button type="button" class="crfpadd' + (has ? ' on' : '') + '" data-pickfeat="' + esc(f.name) + '" aria-pressed="' + (has ? 'true' : 'false') + '" aria-label="' +
+        (has ? esc(f.name) + ' is chosen' : 'Choose ' + esc(f.name)) + '">' + (has ? '\u2713' : '+') + '</button></div>';
+    }).join('');
+  }
+
+  function paintFeats() {
+    var box = E.body.querySelector('#lvFeats');
+    if (!box) return;
+    box.innerHTML = featCards();
+    wireFeats();
+  }
+
+  function wireFeats() {
+    var box = E.body.querySelector('#lvFeats');
+    if (!box) return;
+    Array.prototype.forEach.call(box.querySelectorAll('[data-pickfeat]'), function (b) {
+      b.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        choiceFeat = b.getAttribute('data-pickfeat');
+        paintFeats();
+      });
+    });
+    Array.prototype.forEach.call(box.querySelectorAll('[data-feat]'), function (row) {
+      row.addEventListener('click', function () {
+        choiceFeat = row.getAttribute('data-feat');
+        paintFeats();
+      });
+    });
   }
 
   function subclassBlock(info, row, level) {
@@ -136,7 +178,8 @@
       '</div>';
     if (choiceAsi === 'two') box += '<div class="lvpick">' + abilitySelect('lvAb1', asiFirst) + '</div>';
     if (choiceAsi === 'pair') box += '<div class="lvpick">' + abilitySelect('lvAb1', asiFirst) + abilitySelect('lvAb2', asiSecond) + '</div>';
-    if (choiceAsi === 'feat') box += '<div class="lvpick">' + featSelect() + '</div>';
+    if (choiceAsi === 'feat') box += '<div class="lvfeatq"><input class="sheet-search" id="lvFeatQ" type="search" placeholder="Search the feats" value="' + esc(featText) + '" aria-label="Search the feats"></div>' +
+      '<div class="crfps" id="lvFeats">' + featCards() + '</div>';
     return box + '</div>';
   }
 
@@ -167,7 +210,7 @@
     var wasProf = SR.profBonus(totalLevel());
     var prof = SR.profBonus(totalLevel() + 1);
 
-    var head = '<div class="lvhead"><div class="lvtitle"><b>' + esc(row.name) + '</b>' +
+    var head = '<div class="lvwhead"><div class="lvtitle"><b>' + esc(row.name) + '</b>' +
       '<span>' + esc(String(row.level)) + '</span><i>&rarr;</i><span class="lvto">' + esc(String(level)) + '</span></div>' +
       (list.length > 1 ? '<div class="lvchips lvwhich">' + list.map(function (r, i) {
         return '<button class="lvchip' + (i === at ? ' on' : '') + '" type="button" data-row="' + i + '">' + esc(r.name) + ' ' + esc(String(r.level)) + '</button>';
@@ -209,7 +252,9 @@
     });
     if (E.body.querySelector('#lvAb1')) E.body.querySelector('#lvAb1').addEventListener('change', function () { asiFirst = this.value; });
     if (E.body.querySelector('#lvAb2')) E.body.querySelector('#lvAb2').addEventListener('change', function () { asiSecond = this.value; });
-    if (E.body.querySelector('#lvFeat')) E.body.querySelector('#lvFeat').addEventListener('change', function () { choiceFeat = this.value; });
+    var q = E.body.querySelector('#lvFeatQ');
+    if (q) q.addEventListener('input', function () { featText = q.value; paintFeats(); });
+    wireFeats();
     if (E.body.querySelector('#lvSpells')) E.body.querySelector('#lvSpells').addEventListener('click', function () { Sheet.show('spells'); });
     if (E.body.querySelector('#lvBack')) E.body.querySelector('#lvBack').addEventListener('click', function () { Sheet.show('character'); });
     if (E.body.querySelector('#lvGo')) E.body.querySelector('#lvGo').addEventListener('click', function () { take(info, row, level); });
@@ -268,7 +313,7 @@
 
   Sheet.page({
     id: 'levelup',
-    title: 'Level up',
+    title: 'Level up wizard',
     hidden: true,
     on: false,
     back: 'character',
@@ -276,7 +321,7 @@
     css: [
       '.lvbody{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:none;padding:2px 2px 14px;color:var(--ink);font-family:var(--sans);font-size:13.5px;line-height:1.5}',
       '.lvbody::-webkit-scrollbar{display:none}',
-      '.lvhead{display:flex;flex-direction:column;gap:8px;margin:2px 0 10px}',
+      '.lvwhead{display:flex;flex-direction:column;gap:8px;margin:2px 0 10px}',
       '.lvtitle{display:flex;align-items:baseline;gap:8px;font-family:var(--display)}',
       '.lvtitle b{font-size:19px;font-weight:700;color:var(--gold)}',
       '.lvtitle span{font-size:17px;color:var(--ink)}',
