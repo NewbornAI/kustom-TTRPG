@@ -394,6 +394,7 @@
     if (rows.length && document.activeElement !== E.charLevel) E.charLevel.value = String(SR.classLevels(rows));
     /* The next level is offered where the level is read, and not at 20. */
     if (E.charLevelUp) E.charLevelUp.hidden = !api.editing('character') || !rows.length || SR.classLevels(rows) >= 20;
+    if (E.charLevelHead) E.charLevelHead.hidden = !rows.length;
     E.charClassSum.hidden = !rows.length;
     E.charClassSum.textContent = rows.map(function (r) {
       return r.name + ' ' + r.level + (r.subclass ? ', ' + r.subclass : '');
@@ -927,12 +928,15 @@
       '.cnlevel{flex:0 0 auto;margin-left:auto;display:flex;align-items:baseline;gap:4px;padding:2px 7px 3px;border:1px solid var(--edge);border-radius:7px;background:rgba(255,255,255,.03);}',
       '.cnlevel .ck{font-size:9px;letter-spacing:.16em;color:var(--muted)}',
       '.cnlevel .cinput{width:1.7em;font-size:15px;text-align:center;font-variant-numeric:tabular-nums}',
-      /* The level has its own section, like the abilities and the skills, and
-         the way to the next one is the + of its header, in edit mode. */
+      /* The classes and their levels are the header of their own section, the
+         way Abilities heads the scores, and the way to the next level is the
+         + the Features and Spells pages use to add, in edit mode. */
       '.lvhead{margin-top:2px}',
-      '.csadd{flex:0 0 auto;width:26px;height:26px;display:flex;align-items:center;justify-content:center;padding:0;border:1px solid rgba(var(--arcane-rgb),.5);border-radius:50%;background:rgba(var(--arcane-rgb),.12);color:var(--arcane);font-family:var(--sans);font-size:16px;line-height:1;cursor:pointer}',
-      '.csadd:active{background:rgba(var(--arcane-rgb),.24)}',
+      '.lvhead .clsum{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9.5px;letter-spacing:.16em;color:var(--ink)}',
+      '.csadd{flex:0 0 auto;width:26px;height:26px;display:flex;align-items:center;justify-content:center;padding:0;border:1px solid rgba(var(--arcane-rgb),.5);border-radius:7px;background:rgba(var(--arcane-rgb),.14);color:var(--ink);font-family:var(--sans);font-size:18px;line-height:1;cursor:pointer}',
+      '.csadd:active{background:rgba(var(--arcane-rgb),.28)}',
       '.csadd[hidden]{display:none}',
+      '.lvhead[hidden]{display:none}',
       /* One row, always: the tiles share what the hit dice leave them. */
       '.ctop{display:flex;flex-wrap:nowrap;gap:6px;flex:0 0 auto}',
       /* The edit mode's dice editor takes a line of its own under the row. */
@@ -1098,9 +1102,8 @@
       '      <input class="cinput" id="charLevel" type="number" inputmode="numeric" min="1" max="20" placeholder="1" aria-label="Character level">',
       '    </label>',
       '  </div>',
-      '  <div class="cshead lvhead"><span>Level</span><span class="rule"></span>',
+      '  <div class="cshead lvhead" id="charLevelHead"><span class="clsum" id="charClassSum"></span><span class="rule"></span>',
       '    <button class="csadd" id="charLevelUp" type="button" aria-label="Level up wizard">+</button></div>',
-      '  <div class="clsum" id="charClassSum"></div>',
       '  <div class="hprow">',
       '  <section class="hpcard" id="hpCard" aria-label="Hit points">',
       '    <button class="hpstep minus" id="charHpDown" type="button" aria-label="Lose a hit point">&minus;</button>',
@@ -1178,6 +1181,7 @@
         charInit: root.querySelector('#charInit'),
         charLevel: root.querySelector('#charLevel'),
         charLevelUp: root.querySelector('#charLevelUp'),
+        charLevelHead: root.querySelector('#charLevelHead'),
         charLevelBox: root.querySelector('.cnlevel'),
         charHpNow: root.querySelector('#charHpNow'),
         charHpMax: root.querySelector('#charHpMax'),
