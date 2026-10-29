@@ -3084,7 +3084,7 @@ console.log('the fight');
   const clickRole = (role, id) => {
     const target = {
       closest: (sel) => (sel === '[data-role]' ? { dataset: { role: role } }
-        : (sel === '.inirow' ? { dataset: { id: id } } : null))
+        : (sel === '[data-id]' || sel === '.inirow' ? { dataset: { id: id } } : null))
     };
     rootF.fire('click', { target: target });
   };
@@ -3099,6 +3099,34 @@ console.log('the fight');
 
   /* The initiative is one d20 and the bonus of the block. */
   check('a d20 and the bonus of the creature', R.rollInitiative(4, maxRoll), { die: 20, bonus: 4, total: 24 });
+  check('a handful of dice is rolled and added', R.rollDice(2, 6, maxRoll), { rolls: [6, 6], total: 12 });
+
+  /* An action that rolls on a table, the eye rays of a beholder: the die
+     picks a ray and the damage of that ray is rolled with it. */
+  const beholder = all['beholder|xmm'];
+  const rays = beholder.actions.filter((a) => a.table)[0];
+  check('the eye rays are a table of ten rows on a d10',
+    [rays.name, rays.table.die.sides, rays.table.rows.length].join('/'), 'Eye Rays/10/10');
+  check('and a row carries its save and its damage',
+    [rays.table.rows[3].name, rays.table.rows[3].damage, rays.table.rows[3].type].join('/'),
+    'Slowing Ray/4d8/necrotic');
+  const realR = fightCore.R;
+  fightCore.R = Object.assign({}, realR, { rollDice: () => ({ rolls: [4], total: 4 }) });
+  const rayCard = { key: 'beholder|xmm', form: '', slot: null, rolls: {}, saves: {}, tables: {} };
+  const wasRolled = fightCore.creature.rollTable(rayCard, 'Eye Rays', apiF, { mark: 'rows' });
+  fightCore.R = realR;
+  check('a table roll lands on the row of its die and rolls its damage',
+    [wasRolled, rayCard.tables['Eye Rays'].n, rayCard.tables['Eye Rays'].name, rayCard.tables['Eye Rays'].damage.total].join('/'),
+    'true/4/Slowing Ray/4');
+  /* The row of a beholder that is open draws the table, and the fight keeps
+     the roll on the creature that made it. */
+  fightRec.fight.list.push({ id: 'f9', key: 'beholder|xmm', name: 'Beholder', init: 30, rolled: true,
+    hp: 190, hpMax: 190, ac: 18, open: true, rolls: {}, tables: {}, saves: {}, edit: {} });
+  spec.render(apiF);
+  check('an open row of a beholder carries the die of its eye rays',
+    [/class="stable"/.test(rowsHtml()), /data-role="table"/.test(rowsHtml()), /d10/.test(rowsHtml())].join('/'),
+    'true/true/true');
+  check('and a multiattack says its sentence under its name', /class="sttext"/.test(rowsHtml()), true);
   check('and the dexterity when the book says nothing', fightCore.creature.initBonus(all['goblin|mm']), 2);
   /* A creature saved against a printing the corpus no longer holds finds its
      block by name, which is the one the corpus keeps. */
@@ -3466,7 +3494,7 @@ console.log('the style of a page lives with the page');
   check('the shell styles no class of one page, save the settings rows', [...new Set(strays)].join(' | '), '');
 
   /* The blocks more than one page paints stay with the shell. */
-  const shared = ['.f{', '.f .k{', '.mini{', '.empty{', '.row', '.crow{', '.sheet-search{', '.cshead{', '.srcline{', '.castbar{', '.castbtn{', '.lvlrow{', '.lvlrange{', '.sblock{', '.satkgrid{', '.chiprow{', '.sabil{', '.sabrow{', '.savetog{', '.statmeta .f{', '.snoteblock{', '.sgroup{', '.suses{', '.hpk{'];
+  const shared = ['.f{', '.f .k{', '.mini{', '.empty{', '.row', '.crow{', '.sheet-search{', '.cshead{', '.srcline{', '.castbar{', '.castbtn{', '.lvlrow{', '.lvlrange{', '.sblock{', '.satkgrid{', '.chiprow{', '.sabil{', '.sabrow{', '.savetog{', '.statmeta .f{', '.snoteblock{', '.sgroup{', '.suses{', '.hpk{', '.stable{', '.stdie{'];
   check('the shell keeps the blocks more than one page paints', shared.filter((s) => shellCss.indexOf(s) < 0), []);
   /* And the rules a page owns are in that page, not in the shell. */
   const moved = ['.hpstrip{', '.slotstrip{', '.fcard{', '.updblock{', '.csname{', '.cname-btn'];

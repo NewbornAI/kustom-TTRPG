@@ -180,7 +180,11 @@
         '<span class="inimult">\u00d7' + multi.count + '</span>' : '') + '</div>';
     html += '<div class="satk">' + actions.map(function (a) {
       if (a.count) return '';
-      if (!a.attack) return C.creature.noteRow(a, null, null, false);
+      /* An action that rolls on a table, the eye rays of a beholder, is rolled
+         rather than swung: one die picks the ray, and the damage of that ray
+         is rolled with it. */
+      if (a.table) return C.creature.tableGroup(a, (c.tables || {})[a.name], false);
+      if (!a.attack) return C.creature.noteRow(a, null, null, false, true);
       return C.creature.attackGroup(a, null, C.creature.rollsOf(c, a.name), false);
     }).join('') + '</div>';
     return html;
@@ -196,7 +200,7 @@
       html += '<input class="iniinit ininum" data-role="init" type="number" inputmode="numeric" value="' +
         (Number(c.init) || 0) + '" aria-label="Initiative of ' + esc(c.name) + '">';
     } else {
-      html += '<button type="button" class="iniinit' + (c.rolled ? '' : ' waiting') + '" data-role="roll" ' +
+      html += '<button type="button" class="iniinit' + (c.rolled ? '' : ' waiting') + '" data-role="init-roll" ' +
         'aria-label="' + (c.rolled ? 'Roll the initiative of ' + esc(c.name) + ' again' : 'Roll the initiative of ' + esc(c.name)) + '">' +
         (c.rolled ? '' : C.chrome.dieIcon(20)) +
         '<span>' + (Number(c.init) || 0) + '</span></button>';
@@ -435,11 +439,17 @@
 
       root.addEventListener('click', function (ev) {
         var roleEl = ev.target.closest ? ev.target.closest('[data-role]') : null;
-        var row = ev.target.closest ? ev.target.closest('.inirow') : null;
+        /* The attacks under a row carry the id of the row, so a die of the
+           block reaches the creature it belongs to. */
+        var row = ev.target.closest ? ev.target.closest('[data-id]') : null;
         var c = row ? byId(row.dataset.id) : null;
         if (roleEl && c) {
           var role = roleEl.dataset.role;
-          if (role === 'roll') { rollInit(c, roleEl); return; }
+          if (role === 'init-roll') { rollInit(c, roleEl); return; }
+          if (role === 'table') { C.creature.rollTable(c, roleEl.dataset.name, api, { mark: 'rows', root: root }); return; }
+          /* The die and the body of a swing are the attack box's own taps,
+             which it hands back to the page as a roll. */
+          if (role === 'roll') return;
           if (role === 'stat') { C.creature.openStat(c, api); return; }
           if (role === 'hp') { openHp(c); return; }
           if (role === 'open') {

@@ -455,6 +455,52 @@ function rawTraits(entry) {
   return entry.trait || [];
 }
 
+/* A table an action rolls on: the eye rays of a beholder, the weapon
+   invention of a kobold, the gaze of a demon lord. The book writes it as a
+   list whose rows are numbered, "1: Charm Ray", and the action says which die
+   to roll, so the rows and the die are kept apart from the prose and a page
+   can roll one and show what it did. */
+function tableOf(entry) {
+  let found = null;
+  (entry.entries || []).forEach((e) => {
+    if (found || !e || typeof e !== 'object' || e.type !== 'list' || !Array.isArray(e.items)) return;
+    const rows = [];
+    e.items.forEach((item) => {
+      if (!item || typeof item !== 'object' || !item.name) return;
+      /* A row covers one number ("4: Slowing Ray") or a pair of them
+         ("1-2: Beguiling Gaze"), and the dash may be any of the three. */
+      const m = String(item.name).match(/^(\d{1,2})\s*(?:[-\u2013\u2014]\s*(\d{1,2}))?\s*:\s*(.+)$/);
+      if (!m) return;
+      const raw = entriesText(item.entries);
+      const read = actionOf(raw);
+      rows.push({
+        n: Number(m[1]),
+        to: m[2] ? Number(m[2]) : Number(m[1]),
+        name: creatureText(String(m[3])),
+        text: read.text,
+        damage: read.damage,
+        damageParts: read.damageParts,
+        type: read.type
+      });
+    });
+    if (rows.length < 3) return;
+    /* The die the action says to roll: the first dice tag of its words, and
+       one die up to the highest number of the table when it names none. */
+    const intro = (entry.entries || []).filter((x) => typeof x === 'string').join(' ');
+    /* The die the action says to roll, which is the dice after the word
+       "roll": a damage formula in the same paragraph is not the table's die. */
+    const told = String(intro).match(/\broll(?:s|ing)?\b[^.;]{0,40}?(\d*)d(\d+)/i);
+    const top = rows.reduce((n, r) => Math.max(n, r.to), 0);
+    found = {
+      die: told && Number(told[2]) > 1
+        ? { count: Number(told[1]) || 1, sides: Number(told[2]) }
+        : { count: 1, sides: top },
+      rows: rows
+    };
+  });
+  return found;
+}
+
 function shapeActions(list) {
   return (list || []).map((a) => {
     const raw = entriesText(a.entries);
@@ -475,6 +521,8 @@ function shapeActions(list) {
       const count = parseMultiattack(raw);
       if (count) out.count = count;
     }
+    const table = tableOf(a);
+    if (table) out.table = table;
     return out;
   });
 }

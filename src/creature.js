@@ -247,7 +247,10 @@
           count: deriveCount(a.count, ctx),
           type: a.type || '',
           attack: /^(Melee|Ranged)( or (Melee|Ranged))? (weapon |spell )?attack:/i.test(a.text || ''),
-          multi: a.count ? null : multi
+          multi: a.count ? null : multi,
+          /* An action that rolls on a table keeps the table: the eye rays of
+             a beholder are a d10 and ten rows, and a page rolls it. */
+          table: a.table || null
         };
       });
       return { ac: ac, hpMax: hp, actions: actions, form: form, block: found };
@@ -556,8 +559,10 @@
 
     /* An action that is not an attack: a healing, a touch. It shows its dice
        and it does not roll. A page that keeps no uses passes null and the
-       action is read without a counter. */
-    function noteRow(a, edit, uses, editing) {
+       action is read without a counter; a page that has room for the words
+       passes true and the action's sentence is read under its name, which is
+       what a multiattack of a beholder needs. */
+    function noteRow(a, edit, uses, editing, showText) {
       var core = C();
       var damage = edit && edit.damage !== undefined && edit.damage !== '' ? edit.damage : a.damage;
       var type = damageType(a);
@@ -578,7 +583,80 @@
       }
       if (type) out += '<em class="stype" style="color:' + core.horizontalAttackBox.colour(type) + '">' + core.chrome.esc(type) + '</em>';
       out += '</div>';
+      if (showText && a.text) out += '<p class="sttext">' + core.chrome.markup(a.text) + '</p>';
       return out;
+    }
+
+    /* ---- the table an action rolls on ---- */
+
+    /* An action that rolls on a table, the eye rays of a beholder: its name,
+       the die that rolls the row, and the row the last roll landed on with
+       the damage it rolled. The die is a button; the row, its words and its
+       damage are read under it. */
+    function tableGroup(a, result, editing) {
+      var core = C();
+      var table = a.table;
+      var sides = table.die.sides;
+      var out = '<div class="stable" data-name="' + core.chrome.esc(a.name) + '">' +
+        '<div class="stabletop"><span class="satkname">' + core.chrome.esc(a.name) + '</span>';
+      if (!editing) {
+        out += '<button type="button" class="stdie" data-role="table" data-name="' + core.chrome.esc(a.name) + '" ' +
+          'aria-label="Roll the ' + core.chrome.esc(a.name) + ', a d' + sides + '">' +
+          core.chrome.dieIcon(sides) + '<span>d' + sides + '</span></button>';
+      }
+      out += '</div>';
+      if (result) {
+        var damage = result.damage;
+        out += '<div class="stres">' +
+          '<span class="stnum">' + result.n + '</span>' +
+          '<span class="stname">\u00b7 ' + core.chrome.esc(result.name) + '</span>' +
+          (damage ? '<span class="stdmg">' + core.chrome.esc(compact(damage.formula)) + ' \u2192 ' + damage.total + '</span>' +
+            (damage.type ? '<em class="stype" style="color:' + core.horizontalAttackBox.colour(damage.type) + '">' +
+              core.chrome.esc(damage.type) + '</em>' : '') : '') +
+          '</div>' +
+          '<p class="sttext">' + core.chrome.markup(result.text) + '</p>';
+      }
+      return out + '</div>';
+    }
+
+    /* One roll of a table, kept on the card: the die, the row it landed on,
+       and the damage of that row rolled at the same time, since the table's
+       row is what says what the dice are for. The page says what to mark
+       dirty and where the boxes are. */
+    function rollTable(card, name, api, opts) {
+      var o = opts || {};
+      var core = C();
+      var out = derive(card, api);
+      if (!out) return false;
+      var action = null;
+      out.actions.forEach(function (a) { if (a.name === name) action = a; });
+      if (!action || !action.table) return false;
+      var table = action.table;
+      var die = core.R.rollDice(table.die.count, table.die.sides);
+      var row = null;
+      table.rows.forEach(function (r) {
+        if (!row && die.total >= r.n && die.total <= (r.to === undefined ? r.n : r.to)) row = r;
+      });
+      if (!row) row = table.rows[table.rows.length - 1];
+      var damage = null;
+      if (row.damageParts && row.damageParts.dice && !row.damageParts.dice.levelCount) {
+        var parts = row.damageParts;
+        var rolled = core.R.rollDice(parts.dice.count, parts.dice.size);
+        var flat = 0;
+        (parts.flat || []).forEach(function (t) { if (t.const !== undefined) flat += t.const; });
+        damage = { rolls: rolled.rolls, total: rolled.total + flat, formula: row.damage, type: row.type };
+      }
+      if (!card.tables) card.tables = {};
+      card.tables[name] = { die: die, n: row.n, name: row.name, text: row.text, damage: damage };
+      api.markDirty(o.mark || 'cards');
+      api.save();
+      api.refresh();
+      core.feedback.pick(name, die.total, row.name);
+      var shown = o.root && o.root.querySelectorAll ? o.root.querySelectorAll('.stdie[data-name]') : [];
+      for (var k = 0; k < shown.length; k++) {
+        if (shown[k].dataset && shown[k].dataset.name === name) { core.feedback.tap(shown[k]); break; }
+      }
+      return true;
     }
 
     /* ---- the roll of an attack ---- */
@@ -627,9 +705,11 @@
       openStat: openStat,
       attackGroup: attackGroup,
       noteRow: noteRow,
+      tableGroup: tableGroup,
       limitedOf: limitedOf,
       rollsOf: rollsOf,
-      roll: roll
+      roll: roll,
+      rollTable: rollTable
     };
   };
 })(typeof window !== 'undefined' ? window : this);

@@ -739,6 +739,27 @@ body{
 
 .snoteblock{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;font-size:12px}
 
+/* ---- the table an action rolls on: the eye rays of a beholder, the weapon
+   invention of a kobold. The die is the button; the row it landed on, its
+   words and the damage it rolled are read under it. ---- */
+.stable{display:flex;flex-direction:column;gap:4px;border:1px solid var(--edge);border-radius:6px;background:rgba(255,255,255,.02);padding:5px 7px}
+
+.stabletop{display:flex;align-items:center;gap:8px}
+
+.stdie{flex:0 0 auto;margin-left:auto;display:flex;align-items:center;gap:4px;height:32px;padding:0 9px;border:1px solid rgba(var(--arcane-rgb),.5);border-radius:6px;background:rgba(var(--arcane-rgb),.1);color:var(--arcane);font-family:var(--sans);font-size:11px;line-height:1;cursor:pointer}
+
+.stdie svg{width:15px;height:15px;display:block}
+
+.stres{display:flex;align-items:baseline;gap:6px;font-size:12px}
+
+.stnum{font-family:var(--display);font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums}
+
+.stname{color:var(--ink)}
+
+.stdmg{margin-left:auto;font-family:var(--sans);font-size:11.5px;color:var(--ink);font-variant-numeric:tabular-nums}
+
+.sttext{margin:0;font-size:11.5px;line-height:1.35;color:var(--muted)}
+
 /* ---- the hit points of one thing: the keypad the sheet opens for a
    character and a fight opens for a creature. ---- */
 .hpkline{display:flex;align-items:baseline;gap:8px;font-size:12px;color:var(--muted)}
@@ -1855,6 +1876,17 @@ body{
     return r.a;
   }
 
+  /* A handful of dice, for the tables a monster rolls on: the eye rays of a
+     beholder are a d10, its damage a few dice more. The count is held to what
+     a table can ask and the sides to a die the app draws. */
+  function rollDice(count, sides, rng) {
+    rng = rng || Math.random;
+    var n = Math.max(1, Math.min(20, Number(count) || 1));
+    var s = Math.max(2, Number(sides) || 6);
+    var rolls = dice(rng, n, s);
+    return { rolls: rolls, total: sum(rolls) };
+  }
+
   /* The initiative of a creature: one d20 and the bonus of its block, which
      is the dexterity of the monster unless the book says otherwise. A fight
      rolls one per creature at the top of the battle, so the die and the
@@ -1980,6 +2012,7 @@ body{
     throwSet: throwSet,
     throwAttack: throwAttack,
     keptD20: keptD20,
+    rollDice: rollDice,
     rollInitiative: rollInitiative,
     attackRead: attackRead,
     turnRead: turnRead,

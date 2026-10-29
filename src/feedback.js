@@ -43,6 +43,12 @@
         (result.crit ? ' \u00b7 critical' : ''));
     }
 
+    /* A table that was rolled says the number and the row it landed on:
+       "Eye Rays rolled 4 \u00b7 Slowing Ray". */
+    function pick(label, roll, what) {
+      say(label + ' rolled ' + roll + (what ? ' \u00b7 ' + what : ''));
+    }
+
     /* A tap that triggers something leaves its mark on the control it
        acted on, for a moment, so the eye lands where the change happened. */
     function tap(node) {
@@ -56,6 +62,6 @@
       }, 350);
     }
 
-    return { cast: cast, spent: spent, back: back, roll: roll, tap: tap };
+    return { cast: cast, spent: spent, back: back, roll: roll, pick: pick, tap: tap };
   };
 })(typeof window !== 'undefined' ? window : this);
