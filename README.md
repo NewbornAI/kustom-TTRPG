@@ -15,6 +15,7 @@ The rules text comes from the SRD. The characters are yours. The shape of the ap
 | features | What the character has and what is left of it. |
 | volley | The spell slider, the toggles and the beams. |
 | summons | The creatures at the table. Off until the settings turn it on. |
+| fight | The creatures of a large battle, in the order they act: the initiative, the hit points, and the attacks of each block under its row. Off until the settings turn it on. |
 | equipment | What the character carries, the effect each item has, and the kit its class starts with. |
 | image | The picture of the character, kept beside the store. |
 | attack | A turn of attacks: the Action with its way and weapon, the riders, the bonus action. Off until the settings turn it on. |

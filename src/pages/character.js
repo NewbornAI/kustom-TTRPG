@@ -788,75 +788,11 @@
     return true;
   }
 
-  /* The keypad: the amount is typed first, then what it is. It docks at the
-     bottom of the page, the four answers under the thumb, and closes once
-     one is given. Nothing is written until then, so a keypad left open
-     changes nothing. */
-  var HP_KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'C', '0', 'del'];
-
+  /* The keypad is the app's one: a character and a creature of a fight both
+     change their hit points with it, so the module draws it and this page
+     says what a move does to the record. */
   function openHpKeys() {
-    var typed = '';
-    var hp = CH.hp;
-    var keys = HP_KEYS.map(function (k) {
-      var label = k === 'del' ? '\u232b' : k;
-      var aria = k === 'del' ? 'Delete a digit' : (k === 'C' ? 'Clear' : k);
-      return '<button type="button" class="hpk" data-key="' + k + '" aria-label="' + aria + '">' + label + '</button>';
-    }).join('');
-    api.sheet.open({
-      id: 'hpkeys',
-      title: 'Hit points',
-      dock: true,
-      list: '<div class="hpkline"><span class="hpknow" id="hpkNow"></span><span class="hpkprev" id="hpkPrev"></span></div>' +
-        '<div class="hpkshow" id="hpkShow">0</div>' +
-        '<div class="hpkgrid">' + keys + '</div>' +
-        '<div class="hpkacts">' +
-        '<button type="button" class="hpka dmg" data-do="damage">Damage</button>' +
-        '<button type="button" class="hpka heal" data-do="heal">Heal</button>' +
-        '<button type="button" class="hpka set" data-do="set">Set</button>' +
-        '<button type="button" class="hpka tmp" data-do="temp">Temp</button></div>',
-      onPaint: function (root) { paintKeys(root); },
-      onList: function (ev) {
-        var root = ev.currentTarget || document;
-        var key = ev.target.closest('.hpk');
-        if (key) {
-          var k = key.dataset.key;
-          if (k === 'C') typed = '';
-          else if (k === 'del') typed = typed.slice(0, -1);
-          else typed = (typed + k).replace(/^0+(?=\d)/, '').slice(0, 3);
-          paintKeys(root);
-          return;
-        }
-        var act = ev.target.closest('.hpka');
-        if (!act || act.disabled || !typed) return;
-        var n = Number(typed);
-        api.sheet.close();
-        moveHp(act.dataset.do, n);
-      }
-    });
-
-    /* The line over the keys says where the hit points are and where each
-       answer would take them, so the choice is made with the result in
-       sight. */
-    function paintKeys(root) {
-      var now = root.querySelector('#hpkNow');
-      if (!now) return;
-      var n = Number(typed) || 0;
-      var temp = Number(hp.temp) || 0;
-      now.textContent = hp.current + (hp.max ? ' / ' + hp.max : '') + (temp ? '  +' + temp + ' temp' : '');
-      var dmg = SR.hpMove(hp, 'damage', n);
-      var heal = SR.hpMove(hp, 'heal', n);
-      root.querySelector('#hpkPrev').textContent = typed
-        ? 'damage \u2192 ' + dmg.current + (dmg.temp ? ' +' + dmg.temp : '') + ' \u00b7 heal \u2192 ' + heal.current
-        : '';
-      var show = root.querySelector('#hpkShow');
-      show.textContent = typed || '0';
-      show.classList.toggle('empty', !typed);
-      Array.prototype.forEach.call(root.querySelectorAll('.hpka'), function (b) {
-        b.disabled = !typed;
-        var word = { damage: 'Damage', heal: 'Heal', set: 'Set', temp: 'Temp' }[b.dataset.do];
-        b.textContent = typed ? word + ' ' + typed : word;
-      });
-    }
+    C.hpBox.open(api, { hp: CH.hp, title: 'Hit points', onMove: moveHp });
   }
 
   /* ---- the rests ---- */
@@ -981,23 +917,6 @@
       '.hptempfill{background:rgb(var(--temp-rgb))}',
       '@media (prefers-reduced-motion:reduce){.hpbar i{transition:none}}',
       /* The keypad, docked at the bottom of the page. */
-      '.hpkline{display:flex;align-items:baseline;gap:8px;font-size:12px;color:var(--muted)}',
-      '.hpknow{flex:0 0 auto;font-family:var(--display);font-size:17px;font-weight:700;color:var(--ink);white-space:pre}',
-      '.hpkprev{margin-left:auto;text-align:right}',
-      '.hpkshow{height:60px;display:flex;align-items:center;justify-content:center;border:1px solid var(--edge);border-radius:var(--r-box);background:rgba(255,255,255,.03);font-family:var(--display);font-size:38px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}',
-      '.hpkshow.empty{color:#5c5778}',
-      '.hpkgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gap-2)}',
-      '.hpk{height:46px;border:1px solid var(--edge);border-radius:10px;background:rgba(255,255,255,.04);color:var(--ink);font-family:var(--sans);font-size:19px;cursor:pointer;touch-action:manipulation}',
-      '.hpk:active{background:rgba(var(--arcane-rgb),.16)}',
-      '.hpkacts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--gap-3)}',
-      '.hpka{border-radius:var(--r-box);font-family:var(--sans);font-size:15px;font-weight:600;cursor:pointer;touch-action:manipulation}',
-      '.hpka.dmg,.hpka.heal{height:56px}',
-      '.hpka.set,.hpka.tmp{height:var(--tap);font-size:12.5px;font-weight:400}',
-      '.hpka.dmg{border:1px solid rgba(var(--dis-rgb),.6);background:rgba(var(--dis-rgb),.16);color:rgb(var(--dis-rgb))}',
-      '.hpka.heal{border:1px solid rgba(var(--heal-rgb),.6);background:rgba(var(--heal-rgb),.14);color:rgb(var(--heal-rgb))}',
-      '.hpka.set{border:1px solid var(--edge);background:none;color:var(--ink)}',
-      '.hpka.tmp{border:1px solid rgba(var(--temp-rgb),.45);background:none;color:rgb(var(--temp-rgb))}',
-      '.hpka:disabled{opacity:.45;cursor:default}',
       '.dicebox{flex:0 1 auto;min-width:0;margin-left:auto;display:flex;flex-wrap:nowrap;justify-content:flex-end;align-items:stretch;gap:6px}',
       /* A hit die counter stands up, the die over its count, so the row of
          the armour class holds any number of them. */

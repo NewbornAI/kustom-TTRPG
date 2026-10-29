@@ -701,6 +701,64 @@ body{
 
 .stype{font-style:normal;font-size:9.5px;letter-spacing:.04em}
 
+/* ---- the stat block of a creature: the abilities at the top with their
+   saving throws, the fields under them, and the attacks of the card. The
+   summons calls a creature and the fight tracks one, so both pages paint
+   this and the shell keeps it. ---- */
+.satk{display:flex;flex-direction:column;gap:6px}
+
+.sgroup{display:flex;flex-direction:column;gap:4px}
+
+.satkname{flex:1 1 auto;min-width:0;font-size:13px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.sabil{grid-column:1 / -1;display:flex;flex-direction:column;gap:2px;margin:0 0 3px}
+
+.sabrow{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
+
+.sab-h span{font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:#635e7e;text-align:center}
+
+.sab-v span{font-family:var(--display);font-size:15px;line-height:1.1;color:var(--ink);text-align:center;font-variant-numeric:tabular-nums}
+
+.sab-v em{font-style:normal;font-family:var(--sans);font-size:9px;color:var(--muted);margin-left:2px}
+
+.sab-s span{display:flex;align-items:center;justify-content:center;gap:4px;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+.sabsave.on{color:var(--gold)}
+
+.savetog{width:7px;height:7px;flex:0 0 auto;border-radius:50%;border:1px solid #453f63;background:none;padding:0;cursor:pointer}
+
+.savetog.on{background:var(--gold);border-color:var(--gold);box-shadow:0 0 6px rgba(var(--gold-rgb),.45)}
+
+.sspace{grid-column:1 / -1;height:3px}
+
+.statmeta .f{grid-template-columns:5.4em minmax(0,1fr)}
+
+.suses{border:1px solid var(--edge);border-radius:999px;background:none;color:var(--ink);font:inherit;font-size:10.5px;line-height:1.4;padding:1px 9px;cursor:pointer;font-variant-numeric:tabular-nums}
+
+.suses.out{color:#6f6a8d}
+
+.snoteblock{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;font-size:12px}
+
+/* ---- the hit points of one thing: the keypad the sheet opens for a
+   character and a fight opens for a creature. ---- */
+.hpkline{display:flex;align-items:baseline;gap:8px;font-size:12px;color:var(--muted)}
+.hpknow{flex:0 0 auto;font-family:var(--display);font-size:17px;font-weight:700;color:var(--ink);white-space:pre}
+.hpkprev{margin-left:auto;text-align:right}
+.hpkshow{height:60px;display:flex;align-items:center;justify-content:center;border:1px solid var(--edge);border-radius:var(--r-box);background:rgba(255,255,255,.03);font-family:var(--display);font-size:38px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.hpkshow.empty{color:#5c5778}
+.hpkgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gap-2)}
+.hpk{height:46px;border:1px solid var(--edge);border-radius:10px;background:rgba(255,255,255,.04);color:var(--ink);font-family:var(--sans);font-size:19px;cursor:pointer;touch-action:manipulation}
+.hpk:active{background:rgba(var(--arcane-rgb),.16)}
+.hpkacts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--gap-3)}
+.hpka{border-radius:var(--r-box);font-family:var(--sans);font-size:15px;font-weight:600;cursor:pointer;touch-action:manipulation}
+.hpka.dmg,.hpka.heal{height:56px}
+.hpka.set,.hpka.tmp{height:var(--tap);font-size:12.5px;font-weight:400}
+.hpka.dmg{border:1px solid rgba(var(--dis-rgb),.6);background:rgba(var(--dis-rgb),.16);color:rgb(var(--dis-rgb))}
+.hpka.heal{border:1px solid rgba(var(--heal-rgb),.6);background:rgba(var(--heal-rgb),.14);color:rgb(var(--heal-rgb))}
+.hpka.set{border:1px solid var(--edge);background:none;color:var(--ink)}
+.hpka.tmp{border:1px solid rgba(var(--temp-rgb),.45);background:none;color:rgb(var(--temp-rgb))}
+.hpka:disabled{opacity:.45;cursor:default}
+
 /* ---- the stacked attack box: one column of a page that lays its attacks
    out in a row, the hit in a die, the beam, the damage. The volley's look,
    shared, so a page that stands one up does not write it again. ---- */
@@ -1797,6 +1855,17 @@ body{
     return r.a;
   }
 
+  /* The initiative of a creature: one d20 and the bonus of its block, which
+     is the dexterity of the monster unless the book says otherwise. A fight
+     rolls one per creature at the top of the battle, so the die and the
+     total are kept apart and the row can show either. */
+  function rollInitiative(bonus, rng) {
+    rng = rng || Math.random;
+    var dieRoll = die(rng, 20);
+    var b = Number(bonus) || 0;
+    return { die: dieRoll, bonus: b, total: dieRoll + b };
+  }
+
   /* One roll read from its dice: the d20 it kept and the one it dropped,
      the total to hit, whether it hits (a natural one misses, and a tap says
      otherwise), a critical on a natural twenty that hits, and the parts of
@@ -1911,6 +1980,7 @@ body{
     throwSet: throwSet,
     throwAttack: throwAttack,
     keptD20: keptD20,
+    rollInitiative: rollInitiative,
     attackRead: attackRead,
     turnRead: turnRead,
     rollSurge: rollSurge,
@@ -2693,6 +2763,8 @@ body{
 <script src="slider.js"></script>
 <script src="attackbox.js"></script>
 <script src="toggle.js"></script>
+<script src="creature.js"></script>
+<script src="hpbox.js"></script>
 <script src="qr.js"></script>
 <script src="shelf.js"></script>
 <script src="images.js"></script>

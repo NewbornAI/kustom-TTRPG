@@ -67,55 +67,6 @@
     return found;
   }
 
-  /* ---- the creatures the app knows ---- */
-
-  function library() { return (C.library.bestiary && C.library.bestiary.creatures) || {}; }
-
-  /* The blocks are keyed by the name and the book, because the 2014 and the
-     2024 printing of one monster share a name and share nothing else. The
-     shell fills the index from name to the block the app prefers, which is
-     the first book of the name. A card keeps the key it was called with, and
-     a card written before the corpus held every book keeps only the name, so
-     the lookup falls back to the index. */
-  function blockOf(key) {
-    if (!key) return null;
-    var block = library()[key];
-    if (block) return block;
-    var index = (C.library.bestiary && C.library.bestiary.byName) || {};
-    if (index[key]) return library()[index[key]] || null;
-    return creatureByName(key);
-  }
-
-  /* A creature is found by the name the data carries, which is the lowercased
-     name. The name of a creature may carry its size, as the animated objects
-     do, so a name that is not there is looked for without it. */
-  function creatureByName(name) {
-    if (!name) return null;
-    var all = library();
-    var key = String(name).toLowerCase();
-    var index = (C.library.bestiary && C.library.bestiary.byName) || {};
-    if (index[key] && all[index[key]]) return all[index[key]];
-    var bare = key.replace(/\s*\([^)]*\)\s*$/, '');
-    if (index[bare] && all[index[bare]]) return all[index[bare]];
-    var keys = Object.keys(all);
-    for (var i = 0; i < keys.length; i++) {
-      if (String(all[keys[i]].name || '').toLowerCase() === key) return all[keys[i]];
-    }
-    return null;
-  }
-
-  function keyOf(block) {
-    if (!block) return '';
-    var out = String(block.name || '').toLowerCase() + '|' + String(block.source || '').toLowerCase();
-    if (library()[out]) return out;
-    var all = library();
-    var keys = Object.keys(all);
-    for (var i = 0; i < keys.length; i++) {
-      if (all[keys[i]] === block) return keys[i];
-    }
-    return '';
-  }
-
   /* ---- the summons the character can call ---- */
 
   /* A spell summons when the book says so, and a feature brings a creature
@@ -161,153 +112,6 @@
     return found;
   }
 
-  /* ---- the numbers of a summon ---- */
-
-  /* What the block of a creature says, worked out with the level of the
-     calling spell, the proficiency of the caster and the levels of the
-     classes the block names. */
-  function context(card) {
-    var ch = (api.character().char) || {};
-    return {
-      level: card.slot >= 0 ? card.slot : null,
-      prof: (C.SR && C.SR.profBonus && ch.level) ? C.SR.profBonus(ch.level) : null,
-      classLevel: function (name) {
-        var found = null;
-        (ch.classes || []).forEach(function (k) {
-          if (found === null && String(k.name || '').toLowerCase() === name) found = Number(k.level) || 0;
-        });
-        return found;
-      },
-      mod: function (ability) {
-        var score = Number((ch.abilities || {})[ability]);
-        if (!score) return null;
-        return C.SR && C.SR.abilityMod ? C.SR.abilityMod(score) : 0;
-      }
-    };
-  }
-
-  /* The terms of a formula, added up. A number the book does not give is
-     not a number the app can make up. */
-  function evalTerms(terms, ctx) {
-    if (!terms || !terms.length) return null;
-    var total = 0;
-    for (var i = 0; i < terms.length; i++) {
-      var t = terms[i];
-      if (t.const !== undefined) { total += t.const; continue; }
-      if (t.level) { if (ctx.level === null) return null; total += ctx.level; continue; }
-      if (t.perLevel) { if (ctx.level === null) return null; total += t.perLevel * ctx.level; continue; }
-      if (t.perLevelAbove) {
-        if (ctx.level === null) return null;
-        total += t.perLevelAbove * Math.max(0, ctx.level - t.above);
-        continue;
-      }
-      if (t.prof) { if (ctx.prof === null) return null; total += ctx.prof; continue; }
-      if (t.ability) {
-        var mod = ctx.mod(t.ability);
-        if (mod === null) return null;
-        total += mod;
-        continue;
-      }
-      if (t.class) {
-        var lv = ctx.classLevel(t.class);
-        if (lv === null) return null;
-        total += (t.per || 1) * lv;
-        continue;
-      }
-      return null;
-    }
-    return total;
-  }
-
-  /* The branch of a formula that belongs to a form: the block of the battle
-     familiar says "30 (Brute only) or 20 (Flyer or Stalker only)". */
-  function branchFor(formula, formName) {
-    if (!formula || !formula.branches || !formula.branches.length) return null;
-    if (formula.branches.length === 1) return formula.branches[0];
-    var needle = String(formName || '').toLowerCase();
-    for (var i = 0; i < formula.branches.length; i++) {
-      var words = String(formula.branches[i].qualifier || '').toLowerCase()
-        .replace(/only/g, '').split(/[^a-z0-9]+/).filter(Boolean);
-      for (var j = 0; j < words.length; j++) {
-        if (words[j] === needle) return formula.branches[i];
-      }
-    }
-    return formula.branches[0];
-  }
-
-  /* The damage of an attack, with the level of the slot in it. */
-  function deriveDamage(parts, ctx) {
-    if (!parts || !parts.dice) return null;
-    var count = parts.dice.count;
-    if (parts.dice.levelCount !== undefined) {
-      if (ctx.level === null) return null;
-      count = Math.max(1, ctx.level + parts.dice.levelCount);
-    }
-    if (count === undefined || count === null) return null;
-    var flat = evalTerms(parts.flat || [], ctx);
-    if (flat === null) return null;
-    var text = count + 'd' + parts.dice.size;
-    if (flat) text += ' + ' + flat;
-    return text;
-  }
-
-  /* The attack of a spell, which carries the attack of the caster. */
-  function deriveBonus(a, ctx) {
-    if (a.bonus) return a.bonus;
-    if (!/spell attack modifier/i.test(a.text || '')) return '';
-    var ch = api.character().char || {};
-    if (!ch.level || !C.SR || !C.SR.spellAttack) return '';
-    var bonus = C.SR.spellAttack(ch, C.library.primaryAbility ? C.library.primaryAbility(ch) : 'cha');
-    return (bonus >= 0 ? '+' : '') + bonus;
-  }
-
-  /* How many attacks a multiattack makes at this level. */
-  function deriveCount(count, ctx) {
-    if (!count) return null;
-    if (count.half) {
-      if (ctx.level === null) return null;
-      return Math.floor(ctx.level / 2);
-    }
-    return null;
-  }
-
-  /* Everything the card of a summon shows, worked out of its block, the form
-     it took and the slot that paid for it. */
-  function derive(card) {
-    var block = blockOf(card.key);
-    if (!block) return null;
-    var form = null;
-    if (block.forms) {
-      block.forms.forEach(function (f) { if (f.id === card.form) form = f; });
-      if (!form) form = block.forms[0];
-    }
-    var ctx = context(card);
-    var name = form ? form.name : '';
-    var ac = evalTerms((branchFor(form ? form.acTerms : block.acTerms, name) || {}).terms, ctx);
-    var hp = evalTerms((branchFor(form ? form.hpTerms : block.hpTerms, name) || {}).terms, ctx);
-    var raw = form ? form.actions : block.actions;
-    /* The multiattack says how many attacks the creature makes, so every
-       attack of that creature is made that many times. */
-    var multi = null;
-    raw.forEach(function (a) { if (a.count) multi = deriveCount(a.count, ctx); });
-    var actions = raw.map(function (a) {
-      return {
-        name: a.name,
-        text: a.text,
-        bonus: deriveBonus(a, ctx),
-        damage: deriveDamage(a.damageParts, ctx) || a.damage || '',
-        count: deriveCount(a.count, ctx),
-        type: a.type || '',
-        attack: /^(Melee|Ranged)( or (Melee|Ranged))? (weapon |spell )?attack:/i.test(a.text || ''),
-        multi: a.count ? null : multi
-      };
-    });
-    return { ac: ac, hpMax: hp, actions: actions, form: form, block: block };
-  }
-
-  /* The levels a slot may take: from the level of the spell that called
-     the creature to the highest slot the character has left. A creature a
-     feature brings has no level at all, and then there is nothing to move. */
   function slotRange(card) {
     /* The level of the spell is read from the book rather than from the list
        of what the character can call, since the book arrives after the card
@@ -328,344 +132,17 @@
   /* A creature that was at full hit points follows its new maximum when the
      level or the form changes, so a summon nobody hurt stays whole. */
   function keepFull(card, change) {
-    var before = derive(card);
+    var before = C.creature.derive(card, api);
     var full = !!(before && before.hpMax !== null && before.hpMax !== undefined &&
       card.hp === before.hpMax);
     change();
-    var after = derive(card);
+    var after = C.creature.derive(card, api);
     if (full && after && after.hpMax !== null && after.hpMax !== undefined) card.hp = after.hpMax;
   }
 
-  /* ---- the stat block of the creature ---- */
-
-  /* A list the book writes, as a line of text. */
-  function listText(list) {
-    if (!list || !list.length) return '';
-    return list.map(function (x) {
-      return x.note ? x.text + ' (' + x.note + ')' : x.text;
-    }).join(', ');
-  }
-
-  /* The proficiency of the caster, which the creatures of a summon are
-     bound to. */
-  function profOf() {
-    var rec = api.character() || {};
-    var ch = rec.char || {};
-    return (C.SR && C.SR.profBonus && ch.level) ? C.SR.profBonus(ch.level) : 0;
-  }
-
-  /* A number with its sign, the way the app writes them. */
-  function sign(n) {
-    n = Number(n) || 0;
-    return (n > 0 ? '+' : '') + n;
-  }
-
-  /* The key of an ability, from the name the book writes. */
-  function shortKey(name) {
-    var key = String(name || '').toLowerCase();
-    var found = '';
-    (C.SR.ABILITIES || []).forEach(function (a) { if (a.long.toLowerCase() === key) found = a.key; });
-    return found || key;
-  }
-
-  /* The saving throw the book writes, with the words of the caster put
-     right: a bonus that rides on the proficiency of the caster. */
-  function saveValue(text) {
-    var raw = String(text || '').replace(/PB/i, String(profOf()));
-    var bits = raw.match(/[+-]?\d+/g);
-    if (!bits) return null;
-    var total = 0;
-    bits.forEach(function (x) { total += Number(x); });
-    return total;
-  }
-
-  /* The saving throw of an ability: the modifier of the ability, and
-     whether the creature is proficient in it. The book decides to begin
-     with, and the player can say otherwise. */
-  function saveState(card, block, key, mod) {
-    var book = null;
-    (block.saves || []).forEach(function (s) { if (s.key === key) book = s; });
-    var on = card.saves && card.saves[key] !== undefined ? !!card.saves[key] : !!book;
-    var value = mod;
-    if (on) {
-      value = book ? saveValue(book.value) : mod + profOf();
-    }
-    if (value === null || !isFinite(value)) value = mod;
-    return { on: on, value: value };
-  }
-
-  /* The abilities, at the top of the block: the names above the scores and
-     the saving throws under them, the way a stat block writes them. The
-     dot is a proficiency, the way it is on the sheet of a character. */
-  function abilityRow(card, block) {
-    var scores = {};
-    (block.ability || []).forEach(function (a) { scores[shortKey(a.name)] = a.score; });
-    var names = '', values = '', saves = '';
-    (C.SR.ABILITIES || []).forEach(function (a) {
-      var score = scores[a.key];
-      if (score === undefined) return;
-      var mod = C.SR && C.SR.abilityMod ? C.SR.abilityMod(score) : Math.floor((score - 10) / 2);
-      var save = saveState(card, block, a.key, mod);
-      names += '<span>' + C.chrome.esc(a.name) + '</span>';
-      values += '<span>' + score + '<em>' + sign(mod) + '</em></span>';
-      saves += '<span class="sabsave' + (save.on ? ' on' : '') + '"><button type="button" class="savetog' + (save.on ? ' on' : '') + '" ' +
-        'data-save="' + a.key + '" aria-label="Proficient in the ' + a.long + ' saving throw"></button>' +
-        sign(save.value) + '</span>';
-    });
-    if (!names) return '';
-    return '<div class="sabil">' +
-      '<div class="sabrow sab-h">' + names + '</div>' +
-      '<div class="sabrow sab-v">' + values + '</div>' +
-      '<div class="sabrow sab-s">' + saves + '</div></div>';
-  }
-
-  /* One named thing of the block: its name and what it says. */
-  function statLine(name, text) {
-    if (!text) return '';
-    return '<p><b>' + C.chrome.esc(name) + '.</b> ' + C.chrome.markup(text) + '</p>';
-  }
-
-  /* The fields of the block: the numbers and the words around them. */
-  function statFields(block, out, card) {
-    var form = out ? out.form : null;
-    /* The numbers of the card are the numbers of the block at the slot it
-       was called with. */
-    var ac = out && out.ac !== null && out.ac !== undefined ? out.ac : (form && form.ac ? form.ac : block.ac);
-    var hp = out && out.hpMax !== null && out.hpMax !== undefined ? out.hpMax : (form && form.hp ? form.hp : block.hp);
-    var acText = form && form.acText ? form.acText : block.acText;
-    var hpText = form && form.hpText ? form.hpText : block.hpText;
-    /* The initiative is the dexterity of the creature, unless the book says
-       otherwise: a monster may be proficient in initiative, or expert in
-       it, and some have advantage on it. */
-    var dex = 0;
-    (block.ability || []).forEach(function (a) {
-      if (shortKey(a.name) === 'dex') dex = C.SR && C.SR.abilityMod ? C.SR.abilityMod(a.score) : Math.floor((a.score - 10) / 2);
-    });
-    var init = block.initiative;
-    var initText = sign(init ? init.value : dex) + (init && init.advantage ? ' (adv)' : '');
-    var cr = block.cr ? block.cr + ' (' + (block.xp || 0) + ' XP)' : 'None (XP 0)';
-    /* The form has its own speed: the brute and the stalker of the battle
-       familiar do not fly, and only the flyer does. */
-    var speed = form && form.speed ? form.speed : block.speed;
-    return abilityRow(card, block) +
-      C.chrome.field('Speed', speed) +
-      C.chrome.field('Initiative', initText) +
-      C.chrome.field('Resistance', listText(block.resist)) +
-      C.chrome.field('Vuln.', listText(block.vulnerable)) +
-      C.chrome.field('Immune', listText(block.immune)) +
-      C.chrome.field('Cond.Imm', listText(block.conditionImmune)) +
-      '<div class="sspace"></div>' +
-      C.chrome.field('Senses', listText(block.senses), '', true) +
-      C.chrome.field('Skills', listText(block.skills), '', true) +
-      '<div class="sspace"></div>' +
-      C.chrome.field('AC', acText ? ac + ' (' + acText + ')' : String(ac || ''), '', true) +
-      C.chrome.field('HP', hpText ? hp + ' (' + hpText + ')' : String(hp || ''), '', true) +
-      '<div class="sspace"></div>' +
-      C.chrome.field('Lang.', block.languages, '', true) +
-      C.chrome.field('Align', block.alignment) +
-      C.chrome.field('CR', cr);
-  }
-
-  /* The text of the block: the traits, the actions and the rest. Every
-     section of the block has one on the form too, so the bonus actions, the
-     reactions and the spellcasting of the creature that was called are the
-     ones the form has: the steed keeps one of its three. */
-  function statText(block, out, card) {
-    var form = out ? out.form : null;
-    var actions = form ? form.actions : block.actions;
-    var traits = form ? form.traits : block.traits;
-    var bonus = form && form.bonusActions ? form.bonusActions : block.bonusActions;
-    var reactions = form && form.reactions ? form.reactions : block.reactions;
-    var legendary = form && form.legendary ? form.legendary : block.legendary;
-    var casting = form && form.spellcasting ? form.spellcasting : block.spellcasting;
-    var html = '';
-    function section(title, list) {
-      if (!list || !list.length) return;
-      html += '<h3>' + C.chrome.esc(title) + '</h3>';
-      list.forEach(function (x) { html += statLine(x.name, spoken(x.text)); });
-    }
-    section('Traits', traits);
-    section('Actions', actions);
-    section('Bonus Actions', bonus);
-    section('Reactions', reactions);
-    section('Legendary Actions', legendary);
-    if (casting && casting.length) {
-      html += '<h3>Spellcasting</h3>';
-      casting.forEach(function (x) {
-        html += '<p><b>' + C.chrome.esc(x.name) + '.</b> ' + C.chrome.markup(spoken(x.header)) + '</p>';
-        if (x.text) html += '<p>' + C.chrome.markup(spoken(x.text)) + '</p>';
-      });
-    }
-    return html;
-  }
-
-  /* The full description shows the words of the book, not the numbers they
-     work out to: the spell's level stays the spell's level, and the
-     proficiency of the caster stays PB. The card itself carries the numbers
-     the creature was called with. */
-  function spoken(text) {
-    return String(text || '').replace(/summonSpellLevel/gi, "the spell's level");
-  }
-
-  /* The stat block of the creature, in the overlay of the app. */
-  function openStat(card) {
-    var block = blockOf(card.key);
-    if (!block) { api.toast('the app does not carry its block'); return; }
-    var out = derive(card);
-    api.sheet.open({
-      id: 'stat:' + card.key,
-      title: block.name,
-      tag: (block.size ? block.size + ' ' : '') + block.type,
-      metaClass: 'sheet-meta statmeta',
-      meta: statFields(block, out, card),
-      text: statText(block, out, card),
-      onPaint: function (root) {
-        /* The dot of a saving throw says the creature is proficient in it, and
-           the book decides to begin with. */
-        var dots = root.querySelectorAll('[data-save]');
-        Array.prototype.forEach.call(dots, function (dot) {
-          dot.addEventListener('click', function () {
-            var key = dot.dataset.save;
-            var on = saveState(card, block, key, 0).on;
-            if (!card.saves) card.saves = {};
-            card.saves[key] = !on;
-            api.save();
-            openStat(card);
-          });
-        });
-      }
-    });
-  }
-  /* ---- the cards ---- */
-
-  /* The type of a damage. The book says it, and an action that gives hit
-     points back is a healing whatever it does not say. The colour it wears
-     is the attack box's. */
-  function damageType(a) {
-    if (a.type) return a.type;
-    if (/regain|restore|heal/i.test(a.text || '')) return 'healing';
-    return '';
-  }
-
-  /* The rolls an attack holds: one per swing of the attack. */
-  function rollsOf(card, name) {
-    var v = card.rolls ? card.rolls[name] : null;
-    if (!v) return [];
-    return Array.isArray(v) ? v : [v];
-  }
-
-  /* The number of the bonus, when the book writes one. */
-  function bonusOf(text) {
-    if (text === undefined || text === null || text === '') return null;
-    var n = Number(String(text).replace(/[^0-9.+-]/g, ''));
-    return isFinite(n) ? n : null;
-  }
-
-  /* The kind of an attack and how far it reaches. */
-  function attackKind(a) {
-    var m = String(a.text || '').match(/^((?:Melee|Ranged)\s+(?:weapon\s+|spell\s+)?attack)/i);
-    return m ? m[1] : '';
-  }
-
-  function attackRange(a) {
-    var t = String(a.text || '');
-    var m = t.match(/\brange\s+([^.;,]+)/i);
-    if (m) return m[1].trim();
-    m = t.match(/\breach\s+([^.;,]+)/i);
-    if (m) return 'reach ' + m[1].trim();
-    return '';
-  }
-
-  /* A formula without the spaces around the plus. */
-  function compact(text) {
-    return String(text || '').replace(/\s*\+\s*/g, '+').trim();
-  }
-
-  /* One swing of an attack: the attack box, with the numbers of the block
-     and the roll it kept. The box is the block's; the numbers are this
-     page's. */
-  function swingBlock(a, edit, res, ix) {
-    var bonus = edit && edit.bonus !== undefined && edit.bonus !== '' ? edit.bonus : a.bonus;
-    var damage = edit && edit.damage !== undefined && edit.damage !== '' ? edit.damage : a.damage;
-    var type = damageType(a);
-    return C.horizontalAttackBox.swing({
-      name: a.name,
-      kind: attackKind(a),
-      bonus: bonus,
-      bonusOf: bonusOf(bonus),
-      range: attackRange(a),
-      damage: compact(damage),
-      type: type,
-      groups: res ? res.groups : (C.R && C.R.diceIn ? C.R.diceIn(damage || '') : []),
-      flat: res ? res.flat : (C.R && C.R.flatIn ? C.R.flatIn(damage || '') : 0),
-      res: res,
-      ix: ix
-    });
-  }
-
-  /* The same box with the wrench on: the numbers are fields. */
-  function editBlock(a, edit) {
-    var bonus = edit && edit.bonus !== undefined && edit.bonus !== '' ? edit.bonus : a.bonus;
-    var damage = edit && edit.damage !== undefined && edit.damage !== '' ? edit.damage : a.damage;
-    var type = damageType(a);
-    return C.horizontalAttackBox.edit({
-      name: a.name,
-      kind: attackKind(a),
-      bonus: bonus,
-      damage: damage,
-      type: type,
-      range: attackRange(a)
-    });
-  }
-
-  /* All the swings of an attack, under the one name of the attack. */
-  function attackGroup(a, edit, rolls) {
-    var out = '<div class="sgroup">';
-    if (api.editing('summons')) {
-      out += editBlock(a, edit);
-    } else {
-      var swings = a.multi && a.multi > 0 ? a.multi : 1;
-      for (var i = 0; i < swings; i++) out += swingBlock(a, edit, rolls[i] || null, i);
-    }
-    out += '</div>';
-    return out;
-  }
-  /* An action that can be used a number of times a day, like the healing
-     touch of a spirit. The book says so in the name of the action. */
-  function limitedOf(a) {
-    var m = String(a.name || '').match(/\((\d+)\s*\/\s*Day\)/i);
-    if (!m) return null;
-    return { max: Number(m[1]) || 1, name: String(a.name || '').replace(/\s*\([^)]*\)\s*$/, '') };
-  }
-
-  /* An action that is not an attack: a healing, a touch. It shows its dice
-     and it does not roll. */
-  function noteRow(a, edit, uses) {
-    var damage = edit && edit.damage !== undefined && edit.damage !== '' ? edit.damage : a.damage;
-    var type = damageType(a);
-    var limit = limitedOf(a);
-    var label = limit ? limit.name : a.name;
-    var out = '<div class="snoteblock" data-name="' + C.chrome.esc(a.name) + '">' +
-      '<span class="satkname">' + C.chrome.esc(label) + '</span>';
-    if (limit) {
-      var u = uses ? uses[a.name] : null;
-      var left = u ? Number(u.left) || 0 : limit.max;
-      out += '<button type="button" class="suses' + (left ? '' : ' out') + '" data-role="use" ' +
-        'aria-label="Use the ' + C.chrome.esc(label) + '">' + left + '/' + limit.max + '</button>';
-    }
-    if (api.editing('summons')) {
-      out += '<input class="scin satkdamage" data-role="atkdamage" type="text" value="' + C.chrome.esc(damage) + '" aria-label="Damage of the action">';
-    } else if (damage) {
-      out += '<span class="sformula">' + C.chrome.esc(compact(damage)) + '</span>';
-    }
-    if (type) out += '<em class="stype" style="color:' + C.horizontalAttackBox.colour(type) + '">' + C.chrome.esc(type) + '</em>';
-    out += '</div>';
-    return out;
-  }
-
   function cardHtml(s) {
-    var block = blockOf(s.key);
-    var out = derive(s);
+    var block = C.creature.block(s.key);
+    var out = C.creature.derive(s, api);
     var forms = block && block.forms && block.forms.length ? block.forms : null;
     var actions = out ? out.actions : [];
     var edit = (s.edit && s.edit.attacks) || {};
@@ -759,8 +236,8 @@
           '<span class="smultin">&times;' + multi.count + '</span>' : '') + '</div>';
       html += '<div class="satk">' + actions.map(function (a) {
         if (a.count) return '';
-        if (!a.attack) return noteRow(a, edit[a.name], s.uses);
-        return attackGroup(a, edit[a.name], rollsOf(s, a.name));
+        if (!a.attack) return C.creature.noteRow(a, edit[a.name], s.uses, api.editing('summons'));
+        return C.creature.attackGroup(a, edit[a.name], C.creature.rollsOf(s, a.name), api.editing('summons'));
       }).join('') + '</div>';
     }
     return html + '</div>';
@@ -823,12 +300,12 @@
     summons().push(s);
     rememberPick(s);
     /* The creature comes to the table with its hit points full. */
-    var full = derive(s);
+    var full = C.creature.derive(s, api);
     if (full && full.hpMax !== null && full.hpMax !== undefined) s.hp = full.hpMax;
     /* The actions that can be used a number of times a day come with their
        uses, and they are spent one by one. */
     (full ? full.actions : []).forEach(function (a) {
-      var limit = limitedOf(a);
+      var limit = C.creature.limitedOf(a);
       if (!limit) return;
       s.uses[a.name] = { left: limit.max, max: limit.max };
     });
@@ -880,9 +357,9 @@
         return;
       }
       names.forEach(function (name) {
-        var block = creatureByName(name);
+        var block = C.creature.byName(name);
         if (!block) return;
-        var key = keyOf(block);
+        var key = C.creature.keyOf(block);
         /* What the creature was called with last time, if it was called at
            all, and the form is dropped when the book no longer has it. */
         var last = pickOf(src.id, key);
@@ -912,7 +389,7 @@
            what the slots allow. */
         var range = slotRange(draft);
         if (range) draft.slot = Math.max(range.lo, Math.min(range.hi, Number(draft.slot) || range.lo));
-        var full = derive(draft);
+        var full = C.creature.derive(draft, api);
         if (full && full.hpMax !== null && full.hpMax !== undefined) draft.hp = full.hpMax;
         drafts[draft.id] = draft;
         html += cardHtml(draft);
@@ -935,14 +412,14 @@
     /* What the source names comes first: the Battle Familiar, the Dancing
        Item, the animals of the Find Familiar. */
     var rows = (source.creatures || []).map(function (name) {
-      var block = creatureByName(name);
-      return { key: keyOf(block), name: block ? block.name : name, cr: block ? block.cr : '' };
+      var block = C.creature.byName(name);
+      return { key: C.creature.keyOf(block), name: block ? block.name : name, cr: block ? block.cr : '' };
     });
     if (!rows.length) {
       /* A source that names nothing leaves the choice to the player, so the
          whole library is offered. */
-      rows = Object.keys(library()).map(function (key) {
-        var block = library()[key];
+      rows = Object.keys(C.library.bestiary.creatures || {}).map(function (key) {
+        var block = C.library.bestiary.creatures[key];
         return { key: key, name: block.name, cr: block.cr };
       });
     }
@@ -999,7 +476,7 @@
         if (picked.far !== undefined) { fetchCreature(picked.far, source); return; }
         if (picked.machine !== undefined) { fetchIndex(source); return; }
         if (picked.key === undefined) return;
-        var block = blockOf(picked.key);
+        var block = C.creature.block(picked.key);
         if (!block) return;
         addSummon(source, block, picked.key);
         api.sheet.closeAll();
@@ -1037,38 +514,6 @@
         api.sheet.closeAll();
       })
       .catch(function () { api.toast('the machine did not answer'); });
-  }
-
-  /* ---- the roll of an attack ---- */
-
-  function roll(card, name, ix) {
-    var out = derive(card);
-    if (!out) return;
-    var action = null;
-    out.actions.forEach(function (a) { if (a.name === name) action = a; });
-    if (!action || !action.attack) return;
-    var edit = (card.edit && card.edit.attacks && card.edit.attacks[name]) || {};
-    var bonus = edit.bonus !== undefined && edit.bonus !== '' ? edit.bonus : action.bonus;
-    var damage = edit.damage !== undefined && edit.damage !== '' ? edit.damage : action.damage;
-    var result = C.R.rollAttack(bonus, damage, !!card.adv);
-    if (!card.rolls) card.rolls = {};
-    var list = rollsOf(card, name);
-    while (list.length <= ix) list.push(null);
-    list[ix] = result;
-    card.rolls[name] = list;
-    api.markDirty('cards');
-    commit();
-    /* The swing says what it gave, in the one line the app gives feedback
-       with. The cards are written again with the roll under them, so the
-       outline goes on the box that is on the screen after that, not on the one
-       the finger left behind. */
-    C.feedback.roll(name, result);
-    var shown = E.list && E.list.querySelectorAll ? E.list.querySelectorAll('.sblock[data-name]') : [];
-    for (var k = 0; k < shown.length; k++) {
-      if (shown[k].dataset && shown[k].dataset.name === name &&
-        Number(shown[k].dataset.ix || 0) === ix) { C.feedback.tap(shown[k]); break; }
-    }
-    if (navigator.vibrate) navigator.vibrate(result.crit ? [14, 45, 14] : 16);
   }
 
   /* ---- the page ---- */
@@ -1115,8 +560,6 @@
       '.sstep{width:22px;height:22px;border-radius:5px;border:1px solid var(--edge);background:none;color:var(--ink);font:inherit;font-size:14px;line-height:1;cursor:pointer;flex:0 0 auto;padding:0}',
       '.sstep:active{border-color:var(--arcane);color:var(--arcane)}',
       '.sconc{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}',
-      '.satk{display:flex;flex-direction:column;gap:6px}',
-      '.sgroup{display:flex;flex-direction:column;gap:4px}',
       /* The slot of the creature, on a slider that greys the levels it
          cannot use, and the forms it can take, as toggles under it. */
       '.sslot{display:flex;align-items:center;gap:7px}',
@@ -1152,23 +595,8 @@
       '.scall:focus-visible{outline:2px solid var(--gold);outline-offset:2px}',
       '.scallmore{display:flex;align-items:center;gap:8px;padding:4px 2px}',
       '.scallmore .sk{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
-      '.satkname{flex:1 1 auto;min-width:0;font-size:13px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
-      '.sabil{grid-column:1 / -1;display:flex;flex-direction:column;gap:2px;margin:0 0 3px}',
-      '.sabrow{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}',
-      '.sab-h span{font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:#635e7e;text-align:center}',
-      '.sab-v span{font-family:var(--display);font-size:15px;line-height:1.1;color:var(--ink);text-align:center;font-variant-numeric:tabular-nums}',
-      '.sab-v em{font-style:normal;font-family:var(--sans);font-size:9px;color:var(--muted);margin-left:2px}',
-      '.sab-s span{display:flex;align-items:center;justify-content:center;gap:4px;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}',
-      '.sabsave.on{color:var(--gold)}',
-      '.savetog{width:7px;height:7px;flex:0 0 auto;border-radius:50%;border:1px solid #453f63;background:none;padding:0;cursor:pointer}',
-      '.savetog.on{background:var(--gold);border-color:var(--gold);box-shadow:0 0 6px rgba(var(--gold-rgb),.45)}',
-      '.sspace{grid-column:1 / -1;height:3px}',
-      '.statmeta .f{grid-template-columns:5.4em minmax(0,1fr)}',
-      '.suses{border:1px solid var(--edge);border-radius:999px;background:none;color:var(--ink);font:inherit;font-size:10.5px;line-height:1.4;padding:1px 9px;cursor:pointer;font-variant-numeric:tabular-nums}',
-      '.suses.out{color:#6f6a8d}',
       '.schip{border:1px solid var(--edge);border-radius:999px;background:none;color:var(--muted);font:inherit;font-size:10px;letter-spacing:.08em;line-height:1.4;padding:2px 9px;margin-left:auto;cursor:pointer;white-space:nowrap}',
       '.schip.on{border-color:rgba(var(--arcane-rgb),.55);color:var(--arcane);background:rgba(var(--arcane-rgb),.12)}',
-      '.snoteblock{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;font-size:12px}',
       '.ssep{font-size:10.5px;color:#6f6a8d;white-space:nowrap}',
       '.smulti{display:flex;align-items:center;gap:6px;padding:1px 0}',
       '.smultin{font-size:11px;color:var(--gold);font-variant-numeric:tabular-nums}',
@@ -1209,7 +637,7 @@
         var card = box.closest ? box.closest('.scard') : null;
         var s = card ? cardOf(card.dataset.id) : null;
         if (!s || !name) return;
-        roll(s, name, ix);
+        C.creature.roll(s, name, ix, api, { mark: 'cards', root: E.list });
       });
 
       /* The hit point box of a creature opens empty with its hit points in
@@ -1345,7 +773,7 @@
           /* The big plus of the call page is the summon itself. */
           if (role === 'call') {
             var src = sourceById(s.source);
-            var blk = blockOf(s.key);
+            var blk = C.creature.block(s.key);
             if (!src || !blk) return;
             addSummon(src, blk, s.key, s);
             return;
@@ -1393,7 +821,7 @@
           /* The spell or the feature the creature came from. */
           if (role === 'source') { openSource(s); return; }
           /* The stat block of the creature. */
-          if (role === 'stat') { openStat(s); return; }
+          if (role === 'stat') { C.creature.openStat(s, api); return; }
           return;
         }
         if (api.editing('summons')) return;
@@ -1408,17 +836,17 @@
         if (group) {
           var first = group.querySelector('.sblock[data-name]');
           if (first) {
-            var done = rollsOf(s, first.dataset.name);
+            var done = C.creature.rollsOf(s, first.dataset.name);
             var swings = group.querySelectorAll('.sblock').length;
             var at = 0;
             for (var i = 0; i < swings; i++) { if (!done[i]) { at = i; break; } }
-            roll(s, first.dataset.name, at);
+            C.creature.roll(s, first.dataset.name, at, api, { mark: 'cards', root: E.list });
             return;
           }
         }
         /* Anywhere else on the card is the stat block, which is the thing a
            player wants from a creature at the table. */
-        openStat(s);
+        C.creature.openStat(s, api);
       });
     },
 
@@ -1451,7 +879,7 @@
     return [
       a.state.current,
       summons().map(function (s) { return s.id; }),
-      Object.keys(library()).length,
+      Object.keys(C.library.bestiary.creatures || {}).length,
       (C.library.book.spells || []).length,
       a.editing('summons') ? 'edit' : 'read',
       summons().map(function (s) {

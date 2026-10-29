@@ -20,6 +20,7 @@
         (o.id ? ' id="' + o.id + '"' : '') +
         (o.hidden ? ' hidden' : '') +
         (o.disabled ? ' disabled' : '') +
+        (o.aria ? ' aria-label="' + o.aria + '"' : '') +
         ' type="button"><span>' + (o.label || 'Cast') + '</span></button>';
     }
 

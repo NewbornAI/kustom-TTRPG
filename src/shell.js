@@ -26,6 +26,13 @@
   var DRAG = window.SheetDrag();
   /* The one line and the one mark a spend, a refund or a tap leaves. */
   var FEEDBACK = window.SheetFeedback({ say: toast });
+  /* A creature of the bestiary as a page holds it: its numbers, its stat
+     block and its attack boxes. The summons calls one and the fight tracks
+     one, so the two read it through the same module. */
+  var CREATURE = window.SheetCreature(function () { return core; });
+  /* The keypad that changes the hit points of one thing: a character and a
+     creature of a fight answer the same question, so they open the same one. */
+  var HPBOX = window.SheetHpBox(function () { return core; });
 
   /* ---- the registry ---- */
 
@@ -876,6 +883,8 @@
     counter: COUNTER,
     rest: REST,
     feedback: FEEDBACK,
+    creature: CREATURE,
+    hpBox: HPBOX,
     library: {
       book: BOOK,
       bookByName: SPELL_BY_NAME,

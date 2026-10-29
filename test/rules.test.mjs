@@ -182,8 +182,9 @@ console.log('the level slider, the attack box and the toggle');
   const attackSrc = harness.source('pages/attack.js');
   check('the spell page asks the slider for the level',
     [spellsSrc.indexOf('C.slider.row(') >= 0, spellsSrc.indexOf('C.slider.wire(') >= 0].join('/'), 'true/true');
-  check('the summons ask the across box for the roll, the attack sheet the card',
-    [summonsSrc.indexOf('C.horizontalAttackBox.swing(') >= 0, summonsSrc.indexOf('C.horizontalAttackBox.edit(') >= 0,
+  const creatureSrc = harness.source('creature.js');
+  check('the creature asks the across box for the roll, the attack sheet the card',
+    [creatureSrc.indexOf('core.horizontalAttackBox.swing(') >= 0, creatureSrc.indexOf('core.horizontalAttackBox.edit(') >= 0,
       attackSrc.indexOf('C.attackCard.card(') >= 0].join('/'), 'true/true/true');
   /* The box carries the attack's name, and its reach right inside it, the way
      the book writes it. The summon no longer names the attack above the box,
@@ -309,8 +310,8 @@ console.log('the feedback of a roll');
   check('a rolled attack says what it gave', lines[0], 'Radiant Bow rolled 17, 12 damage');
   feedback.roll('Radiant Bow', { total: 20, damage: 18, crit: true });
   check('and a critical says so', lines[1], 'Radiant Bow rolled 20, 18 damage \u00b7 critical');
-  check('the summons asks for that line',
-    harness.source('pages/summons.js').indexOf('C.feedback.roll(') >= 0, true);
+  check('the creature asks for that line',
+    harness.source('creature.js').indexOf('C().feedback.roll(') >= 0, true);
   const boxSrc = harness.source('attackbox.js');
   check('and the swing it was tapped on takes the outline',
     [boxSrc.indexOf('data-tap') >= 0,
@@ -919,11 +920,14 @@ console.log('the hit point card');
     /\.hpstep\{flex:0 0 48px;min-height:48px/.test(src), true);
   check('the old strip and its sign are gone',
     [src.indexOf('id="hpSign"') < 0, src.indexOf('.hpstrip') < 0].join('/'), 'true/true');
+  /* The keypad is the app's one, so it lives in its module and the page
+     opens it with its own hit points. */
+  const hpSrc = harness.source('hpbox.js');
   check('the number opens the keypad, docked at the bottom',
-    [src.indexOf("id: 'hpkeys',") >= 0, src.indexOf('dock: true,') >= 0,
-      src.indexOf('openHpKeys();') >= 0].join('/'), 'true/true/true');
+    [hpSrc.indexOf("id: o.id || 'hpkeys',") >= 0, hpSrc.indexOf('dock: true,') >= 0,
+      src.indexOf('openHpKeys();') >= 0, src.indexOf('C.hpBox.open(') >= 0].join('/'), 'true/true/true/true');
   check('the keypad answers damage, heal, set and temp',
-    ['data-do="damage"', 'data-do="heal"', 'data-do="set"', 'data-do="temp"'].filter((k) => src.indexOf(k) < 0), []);
+    ['data-do="damage"', 'data-do="heal"', 'data-do="set"', 'data-do="temp"'].filter((k) => hpSrc.indexOf(k) < 0), []);
   check('one move is one step of the history, and it says what it did',
     [src.indexOf('var next = SR.hpMove(hp, kind, amount);') >= 0,
       src.indexOf("C.feedback.spent('hit point'") >= 0, src.indexOf('C.feedback.tap(E.hpCard);') >= 0].join('/'),
@@ -2611,6 +2615,12 @@ console.log('the bestiary');
   });
   core.horizontalAttackBox = summonBoxes.horizontal;
   core.verticalAttackBox = summonBoxes.vertical;
+  /* The creature block is the real one, reading this core: the numbers of a
+     block, its stat block and its attack boxes are the module both pages
+     paint. */
+  const creatureCtx = vm.createContext({});
+  vm.runInContext(harness.source('creature.js'), creatureCtx);
+  core.creature = creatureCtx.SheetCreature(function () { return core; });
   const taken = {};
   taken.summons = harness.page('summons', { core: core, navigator: { vibrate: () => {} } });
 
@@ -2907,6 +2917,9 @@ console.log('the bestiary');
   statCore.chrome.field = (label, value, cls, wide) => '<span class="f' + (wide ? ' wide' : '') +
     '"><span class="k">' + label + '</span><span class="v">' +
     (value === undefined || value === null || value === '' ? '-' : String(value)) + '</span></span>';
+  /* The creature block reads the core it was made for, so this one is made
+     for the core that draws its fields. */
+  statCore.creature = creatureCtx.SheetCreature(function () { return statCore; });
   const statPage = harness.page('summons', { core: statCore, navigator: { vibrate: () => {} } });
   const page4 = fakeEl();
   const opened4 = [];
@@ -2933,6 +2946,169 @@ console.log('the bestiary');
   check('another form flies', /fly 30 ft\. \(hover\)/.test(flyer.meta), true);
   check('and carries its own feature', /Flyby/.test(flyer.text), true);
   wizard.summons.list.length = 0;
+}
+console.log('the fight');
+{
+  /* The page runs the way the app loads it, with the modules it reads: the
+     creature block, the card of the bestiary, the cast bar and the keypad.
+     The bestiary is the corpus itself, so the block added is a real one. */
+  const all = JSON.parse(readFileSync(resolve(root, 'data', 'bestiary.json'), 'utf8')).creatures;
+  const byName = {};
+  Object.keys(all).forEach((k) => {
+    const name = String(all[k].name || '').toLowerCase();
+    if (name && !byName[name]) byName[name] = k;
+  });
+  const fbCtx = vm.createContext({});
+  vm.runInContext(harness.source('feedback.js'), fbCtx);
+  const rctx = vm.createContext({});
+  vm.runInContext(harness.source('rest.js'), rctx);
+  const cctx = vm.createContext({});
+  vm.runInContext(harness.source('counter.js'), cctx);
+  const bctx = vm.createContext({});
+  vm.runInContext(harness.source('rebuild.js'), bctx);
+  const escF = (t) => String(t === undefined || t === null ? '' : t)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const fightCore = harness.coreStub({
+    R: R, SR: C,
+    feedback: fbCtx.SheetFeedback({ say: () => {} }),
+    counter: cctx.SheetCounter(),
+    rest: rctx.SheetRest(cctx.SheetCounter()),
+    library: {
+      data: () => Promise.resolve(true),
+      bestiary: { creatures: all, byName: byName },
+      book: { spells: [] }, bookByName: {}, featureByKey: {}, features: { features: [] }
+    },
+    chrome: {
+      esc: escF,
+      markup: (t) => String(t || ''),
+      field: () => '',
+      dieIcon: () => '<svg class="die20"></svg>',
+      renderBlocks: () => '',
+      sectionHead: (label, opts) => '<div class="cshead"><span>' + label + '</span>' +
+        (opts && opts.action ? '<button type="button" id="' + opts.action.id + '">+</button>' : '') + '</div>'
+    }
+  });
+  const creatureCtx2 = vm.createContext({});
+  vm.runInContext(harness.source('creature.js'), creatureCtx2);
+  fightCore.creature = creatureCtx2.SheetCreature(function () { return fightCore; });
+  const cardCtx2 = vm.createContext({});
+  vm.runInContext(harness.source('card.js'), cardCtx2);
+  const layers = [];
+  fightCore.card = cardCtx2.SheetCard({ open: (layer) => layers.push(layer) }, escF);
+  const castCtx2 = vm.createContext({});
+  vm.runInContext(harness.source('cast.js'), castCtx2);
+  fightCore.cast = castCtx2.SheetCast();
+  const hpCtx2 = vm.createContext({});
+  vm.runInContext(harness.source('hpbox.js'), hpCtx2);
+  fightCore.hpBox = hpCtx2.SheetHpBox(function () { return fightCore; });
+  const atkCtx2 = vm.createContext({});
+  vm.runInContext(harness.source('attackbox.js'), atkCtx2);
+  const fightBoxes = atkCtx2.SheetAttackBox({
+    dieBig: () => '<svg></svg>', dieIcon: () => '<svg></svg>', esc: escF, roll: rollBlock()
+  });
+  fightCore.horizontalAttackBox = fightBoxes.horizontal;
+
+  const spec = harness.page('fight', { core: fightCore });
+  check('the fight page registers with its slice', [spec.id, spec.slice, spec.order > 0].join('/'), 'fight/fight/true');
+  check('a new fight is empty and waits at the top', spec.seed(null), { list: [], counter: 100 });
+  check('and a saved one keeps its creatures and its turn',
+    spec.seed({ list: [{ id: 'a' }], counter: 12 }), { list: [{ id: 'a' }], counter: 12 });
+
+  const fightRec = {
+    char: { name: 'Yngwie', level: 11, classes: [{ name: 'Sorcerer', level: 8 }], abilities: { dex: 14, cha: 20 }, hp: { current: 43, max: 43 } },
+    fight: {
+      list: [
+        { id: 'f1', key: 'goblin|mm', name: 'Goblin', init: 18, rolled: true, hp: 7, hpMax: 7, ac: 15, open: false, rolls: {}, saves: {}, edit: {} },
+        { id: 'f2', key: 'goblin boss|xmm', name: 'Goblin Boss', init: 12, rolled: true, hp: 21, hpMax: 21, ac: 17, open: false, rolls: {}, saves: {}, edit: {} },
+        { id: 'f3', key: 'hobgoblin|mm', name: 'Hobgoblin', init: 100, rolled: false, hp: 11, hpMax: 11, ac: 18, open: false, rolls: {}, saves: {}, edit: {} }
+      ],
+      counter: 100
+    }
+  };
+  const fake = () => {
+    const el = {
+      innerHTML: '', textContent: '', value: '', hidden: false, dataset: {}, listeners: {}, children: [],
+      style: { setProperty: () => {} },
+      classList: { add: () => {}, remove: () => {}, toggle: () => {}, contains: () => false },
+      addEventListener: (kind, fn) => { (el.listeners[kind] = el.listeners[kind] || []).push(fn); },
+      fire: (kind, ev) => { (el.listeners[kind] || []).forEach((fn) => fn(ev)); },
+      querySelector: () => fake(),
+      querySelectorAll: () => [],
+      closest: () => null,
+      appendChild: (c) => { el.children.push(c); },
+      click: () => { el.fire('click', { target: el }); }
+    };
+    return el;
+  };
+  const elsF = {};
+  const rootF = fake();
+  rootF.querySelector = (sel) => (elsF[sel] ? elsF[sel] : (elsF[sel] = fake()));
+  let editing = false;
+  const rebuildF = bctx.SheetRebuild();
+  const apiF = {
+    character: () => fightRec,
+    characters: () => ({ c1: fightRec }),
+    state: { current: 'c1', ui: {} },
+    save: () => {}, refresh: () => {}, toast: () => {},
+    editing: () => editing,
+    wrench: () => fake(),
+    paint: (parts, fns) => rebuildF.paint('fight', parts, fns),
+    markDirty: (key) => rebuildF.markDirty('fight', key),
+    sheet: { open: () => {}, search: () => '', close: () => {}, closeAll: () => {} },
+    core: fightCore
+  };
+  spec.mount(rootF, apiF);
+  spec.render(apiF);
+  const rowsHtml = () => elsF['#fightList'].innerHTML;
+  const orderOf = (html) => [...html.matchAll(/class="ininame"[^>]*>([^<]*)</g)].map((m) => m[1]);
+  check('the rows are the order they act in, the unrolled first', orderOf(rowsHtml()), ['Hobgoblin', 'Goblin', 'Goblin Boss']);
+  check('the creature that has not rolled shows the die', /class="iniinit waiting"/.test(rowsHtml()), true);
+  check('and the one at the counter is lit', (rowsHtml().match(/class="inirow lit"/g) || []).length, 1);
+  check('a row carries the armour class and the hit points', /AC 15/.test(rowsHtml()) && /7 \/ 7/.test(rowsHtml()), true);
+
+  /* The two arrows move the counter to the next creature, not by a number. */
+  const clickRole = (role, id) => {
+    const target = {
+      closest: (sel) => (sel === '[data-role]' ? { dataset: { role: role } }
+        : (sel === '.inirow' ? { dataset: { id: id } } : null))
+    };
+    rootF.fire('click', { target: target });
+  };
+  elsF['#fightNext'].click();
+  check('the next turn drops the counter to the next initiative', fightRec.fight.counter, 18);
+  elsF['#fightNext'].click();
+  check('and to the one after it', fightRec.fight.counter, 12);
+  elsF['#fightNext'].click();
+  check('at the end of the round it starts again', fightRec.fight.counter, 100);
+  elsF['#fightPrev'].click();
+  check('the other arrow goes back to the creature before', fightRec.fight.counter, 12);
+
+  /* The initiative is one d20 and the bonus of the block. */
+  check('a d20 and the bonus of the creature', R.rollInitiative(4, maxRoll), { die: 20, bonus: 4, total: 24 });
+  check('and the dexterity when the book says nothing', fightCore.creature.initBonus(all['goblin|mm']), 2);
+
+  /* A creature joins from the bestiary with its block numbers. */
+  apiF.sheet.search = () => 'goblin';
+  elsF['#fightAdd'].click();
+  check('the plus opens the bestiary', layers.length > 0 && layers[layers.length - 1].title, 'The bestiary');
+  const rows = layers[layers.length - 1].list;
+  check('with a row for the creature searched', rows.indexOf('data-key="goblin|mm"') >= 0, true);
+  const pick = layers[layers.length - 1];
+  pick.onList({ target: { closest: (sel) => (sel === '.row' ? { dataset: { key: 'bugbear|mm' } } : null) } });
+  const added = fightRec.fight.list[fightRec.fight.list.length - 1];
+  check('a picked creature comes with its hit points and its armour class',
+    [added.name, added.hp, added.hpMax, added.ac, added.init].join('/'), 'Bugbear/27/27/16/100');
+
+  /* The remove is a step of the history, so the back key brings it back. */
+  editing = true;
+  spec.render(apiF);
+  check('the edit mode writes the initiative and shows the remove',
+    [/class="iniinit ininum"/.test(rowsHtml()), /class="inix"/.test(rowsHtml())].join('/'), 'true/true');
+  const before = fightRec.fight.list.length;
+  clickRole('remove', 'f1');
+  check('the cross takes the creature out', fightRec.fight.list.length, before - 1);
+  check('and the step is on the history', fightRec.char.history.length > 0, true);
+  check('which brings it back whole', fightRec.char.history[0].slices.fight.list.length, before);
 }
 console.log('the card of a list');
 {
@@ -3172,7 +3348,7 @@ console.log('the style of a page lives with the page');
      page's rule is anchored on a class that page writes. That is what keeps
      a page from styling another page's element by accident. */
   const read = (f) => harness.source(f);
-  const ids = ['character', 'volley', 'spells', 'features', 'summons', 'equipment', 'image', 'backstory', 'attack', 'settings'];
+  const ids = ['character', 'volley', 'spells', 'features', 'summons', 'equipment', 'image', 'backstory', 'attack', 'settings', 'fight'];
 
   /* The pages are loaded the way the app loads them, so what is checked is
      the style each one registers and not the text of its file. The cast block
@@ -3192,9 +3368,9 @@ console.log('the style of a page lives with the page');
   });
   const specs = {};
   ids.forEach((id) => { specs[id] = harness.page(id, { core: styleCore }); });
-  check('every page registers', ids.filter((id) => !!specs[id]).length, 10);
+  check('every page registers', ids.filter((id) => !!specs[id]).length, 11);
   check('and each one carries its own style',
-    ids.filter((id) => specs[id] && typeof specs[id].css === 'string' && specs[id].css.length > 0).length, 10);
+    ids.filter((id) => specs[id] && typeof specs[id].css === 'string' && specs[id].css.length > 0).length, 11);
 
   const rulesOf = (css) => {
     const out = [];
@@ -3271,7 +3447,7 @@ console.log('the style of a page lives with the page');
   check('the shell styles no class of one page, save the settings rows', [...new Set(strays)].join(' | '), '');
 
   /* The blocks more than one page paints stay with the shell. */
-  const shared = ['.f{', '.f .k{', '.mini{', '.empty{', '.row', '.crow{', '.sheet-search{', '.cshead{', '.srcline{', '.castbar{', '.castbtn{', '.lvlrow{', '.lvlrange{', '.sblock{', '.satkgrid{', '.chiprow{'];
+  const shared = ['.f{', '.f .k{', '.mini{', '.empty{', '.row', '.crow{', '.sheet-search{', '.cshead{', '.srcline{', '.castbar{', '.castbtn{', '.lvlrow{', '.lvlrange{', '.sblock{', '.satkgrid{', '.chiprow{', '.sabil{', '.sabrow{', '.savetog{', '.statmeta .f{', '.snoteblock{', '.sgroup{', '.suses{', '.hpk{'];
   check('the shell keeps the blocks more than one page paints', shared.filter((s) => shellCss.indexOf(s) < 0), []);
   /* And the rules a page owns are in that page, not in the shell. */
   const moved = ['.hpstrip{', '.slotstrip{', '.fcard{', '.updblock{', '.csname{', '.cname-btn'];
@@ -3769,8 +3945,8 @@ console.log('the page and the core');
 
   /* The core is the modules and the three boxes, and nothing else. */
   check('the core carries the modules and the three boxes, nothing else',
-    carried.slice().sort(), ['R', 'SR', 'attackCard', 'card', 'cast', 'chrome', 'classes', 'counter', 'exchange', 'fairy',
-      'feedback', 'horizontalAttackBox', 'images', 'library', 'origin', 'own', 'rest', 'rng', 'roll', 'slider', 'toggle', 'verticalAttackBox']);
+    carried.slice().sort(), ['R', 'SR', 'attackCard', 'card', 'cast', 'chrome', 'classes', 'counter', 'creature', 'exchange', 'fairy',
+      'feedback', 'horizontalAttackBox', 'hpBox', 'images', 'library', 'origin', 'own', 'rest', 'rng', 'roll', 'slider', 'toggle', 'verticalAttackBox']);
 
   /* The shelf is one door on the exchange box, and the sign in behind it is
      the module's: none of the names the page used before is a door of the

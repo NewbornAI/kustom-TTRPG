@@ -29,6 +29,8 @@ The README is the human entry point; this file is the agent one.
 | `src/cast.js` | the cast block: the button at the bottom of a page that casts, and the row that holds it |
 | `src/slider.js` | the level slider: the level to cast a spell or smite at, and the preview of what it does |
 | `src/attackbox.js` | the attack box: one swing of an attack, its die, its roll and its damage |
+| `src/creature.js` | a creature of the bestiary as a page holds it: the block by name and book, its numbers at a slot, its stat block, its attack boxes and one roll of one swing; the summons and the fight both read it |
+| `src/hpbox.js` | the keypad that changes the hit points of one thing, docked at the bottom: the character sheet and a creature of a fight answer the same question with it |
 | `src/toggle.js` | the toggle: a chip that turns one thing on or off |
 | `src/shelf.js` | the shelf: the sign in, the token, and the folder of characters on GitHub |
 | `src/images.js` | the pictures, kept in IndexedDB beside the store so the store keeps its room; in memory a record holds its picture as before |
@@ -126,6 +128,7 @@ private commit it came from.
 | open a list on top of a page | `src/card.js` | `list({id, title, rows, onPick})` | the layer opens, scrolls and picks |
 | draw a row of a list | `src/card.js` | `row(...)` for the two-line card, `line(...)` for the one-line row | the markup, and the dataset `onPick` gets |
 | read a data file | `src/block.js`, `data/` | `C.library.data(name, shape)`, and the file dropped in `data/` | the page that asks for it |
+| put a creature of the bestiary in front of the table, or read its block | `src/pages/summons.js`, `src/pages/fight.js`, `src/creature.js` | `C.creature.block(key)`, `derive(card, api)`, `openStat(card, api)`, `attackGroup(...)`, `roll(...)` | the page that shows it, and `test/rules.test.mjs` |
 | read a monster, or add one to the corpus | `data/bestiary.json`, `src/pages/summons.js` (`blockOf`), `tools/bestiary.mjs` | `C.library.bestiary.creatures[key]` with the key `name\|book`, and `C.library.bestiary.byName[name]` for the preferred book; `node tools/fetch-5e-data.mjs` writes the file from the cache | `test/rules.test.mjs`, the bestiary block, and the page that reads it |
 | change a sign in or a shelf call | `src/shelf.js`, `src/github.js` | `SheetShelf` for the jobs, `SheetGit` for the calls | `test/github.test.mjs` |
 | change the update route | `src/pages/settings.js`, `src/shell.js` (`installUpdate`) | the update block | the toast answers |
@@ -262,6 +265,7 @@ is a bag of slices, and each slice belongs to the page that reads it:
 | `spells` | the spells page | the slots, the sorcery points, the lists, the toggles |
 | `volley` | the volley page | the spell and the toggles; a beam is a hit until a tap says it missed |
 | `summons` | the summons page | the creatures at the table and the settings each was called with |
+| `fight` | the fight page | the creatures of a battle, their initiative and their hit points, and the counter that says whose turn it is |
 | `equipment` | the equipment page | the items the character carries, the effect each has when worn, and its mastery |
 | `image` | the image page | the picture of the character, a data URL downscaled to 720 px on the long side |
 | `backstory` | the Background page | the story of the character as plain text, about 100 words, and the page turns itself on for a character that has one |
