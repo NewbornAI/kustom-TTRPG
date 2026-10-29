@@ -393,7 +393,9 @@
     E.charLevelBox.style.display = rows.length ? 'none' : '';
     if (rows.length && document.activeElement !== E.charLevel) E.charLevel.value = String(SR.classLevels(rows));
     /* The next level is offered where the level is read, and not at 20. */
-    if (E.charLevelUp) E.charLevelUp.hidden = !api.editing('character') || !rows.length || SR.classLevels(rows) >= 20;
+    /* The + keeps its place outside the edit mode, so nothing moves when the
+       wrench shows it: only its pixels go. */
+    if (E.charLevelUp) E.charLevelUp.classList.toggle('off', !api.editing('character') || !rows.length || SR.classLevels(rows) >= 20);
     if (E.charLevelHead) E.charLevelHead.hidden = !rows.length;
     E.charClassSum.hidden = !rows.length;
     E.charClassSum.textContent = rows.map(function (r) {
@@ -933,9 +935,12 @@
          + the Features and Spells pages use to add, in edit mode. */
       '.lvhead{margin-top:2px}',
       '.lvhead .clsum{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9.5px;letter-spacing:.16em;color:var(--ink)}',
-      '.csadd{flex:0 0 auto;width:26px;height:26px;display:flex;align-items:center;justify-content:center;padding:0;border:1px solid rgba(var(--arcane-rgb),.5);border-radius:7px;background:rgba(var(--arcane-rgb),.14);color:var(--ink);font-family:var(--sans);font-size:18px;line-height:1;cursor:pointer}',
-      '.csadd:active{background:rgba(var(--arcane-rgb),.28)}',
-      '.csadd[hidden]{display:none}',
+      /* The badge of the app's add buttons, the one a row of Features and the
+         grimoire carry: 24 pixels, so it fits a header line and does not push
+         the page down when the edit mode shows it. */
+      '.csadd{flex:0 0 auto;width:24px;height:24px;display:flex;align-items:center;justify-content:center;padding:0;border:1px solid var(--edge);border-radius:6px;background:rgba(255,255,255,.03);color:var(--arcane);font-family:var(--sans);font-size:15px;line-height:1;cursor:pointer}',
+      '.csadd:active{background:rgba(var(--arcane-rgb),.22)}',
+      '.csadd.off{visibility:hidden;pointer-events:none}',
       '.lvhead[hidden]{display:none}',
       /* One row, always: the tiles share what the hit dice leave them. */
       '.ctop{display:flex;flex-wrap:nowrap;gap:6px;flex:0 0 auto}',
