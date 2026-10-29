@@ -163,6 +163,7 @@
       hp: hp,
       hpMax: hp,
       ac: C.creature.acOf(block, out),
+      status: [],
       open: false,
       rolls: {},
       saves: {},
@@ -181,6 +182,159 @@
     api.markDirty('rows');
     commit();
     api.toast(c.name + ' leaves the fight');
+  }
+
+  /* ---- the statuses of a creature ---- */
+
+  /* The conditions of the book, each with the colour it wears and a glyph
+     that says what it does at 14 pixels: the eye it cannot use, the heart it
+     follows, the lock of a body that will not move. A status the book does
+     not name is the player's own words, kept as a chip. */
+  var STATUS = [
+    { key: 'blinded', label: 'Blinded', colour: '#8f8aa8', path: 'M3 12s3.5-5 9-5 9 5 9 5-3.5 5-9 5-9-5-9-5zM4.5 19.5l15-15' },
+    { key: 'charmed', label: 'Charmed', colour: '#ff7ab6', path: 'M12 20s-7-4.4-7-9a3.8 3.8 0 0 1 7-2.3A3.8 3.8 0 0 1 19 11c0 4.6-7 9-7 9z' },
+    { key: 'deafened', label: 'Deafened', colour: '#7fb3d5', path: 'M4 9v6h4l5 4V5L8 9zM16.5 9.5l5 5M21.5 9.5l-5 5' },
+    { key: 'exhaustion', label: 'Exhaustion', colour: '#e0a63a', path: 'M3 8h15v8H3zM21 11v2M6.5 11v2' },
+    { key: 'frightened', label: 'Frightened', colour: '#b48cff', path: 'M12 4v9.5M12 17.5v.5' },
+    { key: 'grappled', label: 'Grappled', colour: '#e08b4a', path: 'M7 12V9a1.7 1.7 0 0 1 3.4 0v3M10.4 12V6.5a1.7 1.7 0 0 1 3.4 0V12M13.8 12V8a1.7 1.7 0 0 1 3.4 0v6.5a5.5 5.5 0 0 1-5.5 5.5h-1a5.5 5.5 0 0 1-5.5-5.5V13a1.7 1.7 0 0 1 3.4 0' },
+    { key: 'incapacitated', label: 'Incapacitated', colour: '#d9534f', path: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM6 18L18 6' },
+    { key: 'invisible', label: 'Invisible', colour: '#7fd8ff', path: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4z', dash: '2 2.6' },
+    { key: 'paralyzed', label: 'Paralyzed', colour: '#6f8cff', path: 'M6.5 11h11v9.5h-11zM9 11V8a3 3 0 0 1 6 0v3' },
+    { key: 'petrified', label: 'Petrified', colour: '#9aa0a6', path: 'M4.5 9.5l4-4.5 6 1 5 5-2 7.5-7 1.5-5-4z' },
+    { key: 'poisoned', label: 'Poisoned', colour: '#7ad86f', path: 'M12 3.5s6 6.4 6 10.8a6 6 0 0 1-12 0c0-4.4 6-10.8 6-10.8z' },
+    { key: 'prone', label: 'Prone', colour: '#c9a27a', path: 'M3 17h11M17.5 17H21M4.5 13.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z' },
+    { key: 'restrained', label: 'Restrained', colour: '#8fa3bf', path: 'M10 14l4-4M8 16l-1.4 1.4a3.6 3.6 0 0 1-5.1-5.1L4.6 9.2a3.6 3.6 0 0 1 5.1 0M16 8l1.4-1.4a3.6 3.6 0 0 1 5.1 5.1L19.4 14.8a3.6 3.6 0 0 1-5.1 0' },
+    { key: 'stunned', label: 'Stunned', colour: '#ffc44d', path: 'M12 3l2 6.5 6.5 2-6.5 2-2 6.5-2-6.5L3.5 11.5 10 9.5z' },
+    { key: 'unconscious', label: 'Unconscious', colour: '#6f6a8d', path: 'M5 6h8l-8 8h8M15 14h4l-4 4h4' }
+  ];
+
+  var STATUS_BY_KEY = {};
+  STATUS.forEach(function (s) { STATUS_BY_KEY[s.key] = s; });
+
+  /* The statuses of a creature: the key of a condition, or the words of one
+     the book does not name. */
+  function statuses(c) {
+    if (!Array.isArray(c.status)) c.status = [];
+    return c.status;
+  }
+
+  function hasStatus(c, key) {
+    var found = false;
+    statuses(c).forEach(function (s) { if (s.key === key) found = true; });
+    return found;
+  }
+
+  function toggleStatus(c, key) {
+    var list = statuses(c);
+    var at = -1;
+    list.forEach(function (s, i) { if (s.key === key) at = i; });
+    if (at >= 0) list.splice(at, 1);
+    else list.push({ key: key });
+    api.markDirty('rows');
+    commit();
+  }
+
+  function addCustomStatus(c, text) {
+    var words = String(text || '').trim().slice(0, 24);
+    if (!words) return;
+    statuses(c).push({ text: words });
+    api.markDirty('rows');
+    commit();
+    api.toast(words + ' on ' + c.name);
+  }
+
+  function dropCustomStatus(c, text) {
+    c.status = statuses(c).filter(function (s) { return s.text !== text; });
+    api.markDirty('rows');
+    commit();
+  }
+
+  /* The glyph of a status, in the disc of its colour. */
+  function statusIcon(s, cls) {
+    var known = STATUS_BY_KEY[s.key];
+    var colour = known ? known.colour : '#9b93c9';
+    var path = known ? known.path : 'M12 4.5a7.5 7.5 0 1 0 0 15 7.5 7.5 0 0 0 0-15zM12 8v5M12 16v.5';
+    var dash = known && known.dash ? ' stroke-dasharray="' + known.dash + '"' : '';
+    return '<span class="' + cls + '" style="--st:' + colour + '" title="' + esc(known ? known.label : s.text) + '" ' +
+      'aria-label="' + esc(known ? known.label : s.text) + '">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" ' +
+      'stroke-linejoin="round" aria-hidden="true" focusable="false"' + dash + '><path d="' + path + '"/></svg></span>';
+  }
+
+  /* The statuses on the row, at most three, and the number of the rest. */
+  function statusRow(c) {
+    var list = statuses(c);
+    var out = '<span class="inists">';
+    list.slice(0, 3).forEach(function (s) {
+      out += s.text
+        ? '<span class="inisttxt" title="' + esc(s.text) + '">' + esc(s.text) + '</span>'
+        : statusIcon(s, 'inist');
+    });
+    if (list.length > 3) {
+      var rest = list.slice(3).map(function (s) {
+        var known = STATUS_BY_KEY[s.key];
+        return known ? known.label : s.text;
+      }).join(', ');
+      out += '<span class="inistmore" title="' + esc(rest) + '" aria-label="' + esc(rest) + '">+' +
+        (list.length - 3) + '</span>';
+    }
+    out += '</span>';
+    return out;
+  }
+
+  /* The layer of the statuses: every condition as a button with its icon and
+     its name, on or off for this creature, and a field for a status of the
+     player's own. Tapping a condition adds it or takes it away. */
+  function openStatus(c) {
+    var out = '<div class="fstgrid">';
+    STATUS.forEach(function (s) {
+      var on = hasStatus(c, s.key);
+      out += '<button type="button" class="fstog' + (on ? ' on' : '') + '" data-status="' + s.key + '" ' +
+        'aria-pressed="' + (on ? 'true' : 'false') + '">' + statusIcon(s, 'fsticon') +
+        '<span>' + esc(s.label) + '</span></button>';
+    });
+    out += '</div>';
+    var mine = statuses(c).filter(function (s) { return s.text; });
+    if (mine.length) {
+      out += '<div class="fstmine">' + mine.map(function (s) {
+        return '<button type="button" class="fstchip" data-drop="' + esc(s.text) + '" ' +
+          'aria-label="Remove ' + esc(s.text) + '">' + esc(s.text) + ' &times;</button>';
+      }).join('') + '</div>';
+    }
+    out += '<div class="fstnew">' +
+      '<input type="text" id="fstatNew" class="fstfield" placeholder="A status of your own" ' +
+        'aria-label="A status of your own" maxlength="24">' +
+      '<button type="button" class="fstadd" data-custom="add" aria-label="Add the status">Add</button>' +
+      '</div>';
+    api.sheet.open({
+      id: 'fightstatus:' + c.id,
+      title: c.name,
+      dock: true,
+      list: out,
+      onList: function (ev) {
+        var root = ev.currentTarget || document;
+        var pick = ev.target.closest ? ev.target.closest('[data-status]') : null;
+        if (pick) {
+          toggleStatus(c, pick.dataset.status);
+          C.feedback.tap(pick);
+          openStatus(c);
+          return;
+        }
+        var chip = ev.target.closest ? ev.target.closest('[data-drop]') : null;
+        if (chip) {
+          dropCustomStatus(c, chip.dataset.drop);
+          openStatus(c);
+          return;
+        }
+        var add = ev.target.closest ? ev.target.closest('[data-custom]') : null;
+        if (!add) return;
+        var field = root.querySelector('#fstatNew');
+        if (!field) return;
+        addCustomStatus(c, field.value);
+        field.value = '';
+        openStatus(c);
+      }
+    });
   }
 
   /* ---- the rows ---- */
@@ -237,6 +391,8 @@
         '<span class="iniac">AC ' + esc(c.ac) + '</span>' +
         '<button type="button" class="inihp" data-role="hp" aria-label="The hit points of ' + esc(c.name) + '">' +
           (Number(c.hp) || 0) + ' / ' + (Number(c.hpMax) || 0) + '</button>' +
+        statusRow(c) +
+        '<button type="button" class="inistadd" data-role="status" aria-label="Add a status to ' + esc(c.name) + '">+</button>' +
       '</div>' +
     '</div>';
     html += '<button type="button" class="iniexp' + (c.open ? ' on' : '') + '" data-role="open" ' +
@@ -403,6 +559,36 @@
       '.inihp{background:none;border:0;padding:0;font:inherit;font-size:11px;color:var(--ink);cursor:pointer;' +
         'font-variant-numeric:tabular-nums}',
       '.inihp:active{color:var(--gold)}',
+      '.inists{display:flex;align-items:center;gap:3px;min-width:0}',
+      '.inist{flex:0 0 auto;width:18px;height:18px;display:flex;align-items:center;justify-content:center;' +
+        'border-radius:50%;color:var(--st);background:color-mix(in srgb, var(--st) 16%, transparent);' +
+        'border:1px solid color-mix(in srgb, var(--st) 55%, transparent)}',
+      '.inist svg{width:12px;height:12px;display:block}',
+      '.inisttxt{flex:0 0 auto;max-width:74px;height:18px;display:flex;align-items:center;padding:0 6px;' +
+        'border:1px solid var(--edge);border-radius:9px;font-size:9.5px;color:var(--ink);' +
+        'white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+      '.inistmore{flex:0 0 auto;font-size:9.5px;color:var(--muted);font-variant-numeric:tabular-nums}',
+      '.inistadd{flex:0 0 auto;width:20px;height:20px;display:flex;align-items:center;justify-content:center;' +
+        'border:1px dashed var(--edge);border-radius:50%;background:none;color:var(--muted);' +
+        'font-size:12px;line-height:1;padding:0;cursor:pointer}',
+      '.inistadd:active{color:var(--arcane);border-color:rgba(var(--arcane-rgb),.6)}',
+      /* the layer of the statuses */
+      '.fstgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}',
+      '.fstog{display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 8px;border:1px solid var(--edge);' +
+        'border-radius:8px;background:none;color:var(--ink);font:inherit;font-size:12px;cursor:pointer;text-align:left}',
+      '.fstog.on{border-color:rgba(var(--arcane-rgb),.55);background:rgba(var(--arcane-rgb),.1)}',
+      '.fsticon{flex:0 0 auto;width:26px;height:26px;display:flex;align-items:center;justify-content:center;' +
+        'border-radius:50%;color:var(--st);background:color-mix(in srgb, var(--st) 16%, transparent);' +
+        'border:1px solid color-mix(in srgb, var(--st) 55%, transparent)}',
+      '.fsticon svg{width:17px;height:17px;display:block}',
+      '.fstmine{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}',
+      '.fstchip{display:flex;align-items:center;gap:5px;min-height:30px;padding:0 10px;border:1px solid var(--edge);' +
+        'border-radius:999px;background:rgba(255,255,255,.03);color:var(--ink);font:inherit;font-size:12px;cursor:pointer}',
+      '.fstnew{display:flex;gap:6px;margin-top:10px}',
+      '.fstfield{flex:1 1 auto;min-width:0;min-height:38px;padding:0 10px;border:1px solid var(--edge);border-radius:8px;' +
+        'background:rgba(255,255,255,.03);color:var(--ink);font-family:var(--sans);font-size:13px}',
+      '.fstadd{flex:0 0 auto;min-height:38px;padding:0 14px;border:1px solid rgba(var(--arcane-rgb),.5);border-radius:8px;' +
+        'background:rgba(var(--arcane-rgb),.14);color:var(--ink);font-family:var(--sans);font-size:13px;cursor:pointer}',
       '.iniexp{flex:0 0 auto;width:34px;height:34px;display:flex;align-items:center;justify-content:center;' +
         'border:0;border-radius:6px;background:none;color:var(--muted);cursor:pointer;padding:0}',
       '.iniexp svg{width:16px;height:16px;display:block;transition:transform .16s}',
@@ -490,6 +676,7 @@
           if (role === 'roll') return;
           if (role === 'stat') { C.creature.openStat(c, api); return; }
           if (role === 'hp') { openHp(c); return; }
+          if (role === 'status') { openStatus(c); return; }
           if (role === 'open') {
             c.open = !c.open;
             api.markDirty('rows');

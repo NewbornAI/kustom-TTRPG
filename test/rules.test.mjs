@@ -3097,6 +3097,43 @@ console.log('the fight');
   elsF['#fightPrev'].click();
   check('the other arrow goes back to the creature before', fightRec.fight.counter, 12);
 
+  /* The statuses of a creature: the conditions of the book as icons on the
+     row, a layer that toggles them, and the player's own words. */
+  const openedStatus = [];
+  apiF.sheet.open = (layer) => openedStatus.push(layer);
+  const first = () => fightRec.fight.list.filter((c) => c.id === 'f1')[0];
+  first().status = [{ key: 'prone' }];
+  spec.render(apiF);
+  check('a status is an icon on the row and a plus opens the rest',
+    [/class="inist"/.test(rowsHtml()), /data-role="status"/.test(rowsHtml())].join('/'), 'true/true');
+  rootF.fire('click', { target: { closest: (sel) => (sel === '[data-role]' ? { dataset: { role: 'status' } }
+    : (sel === '[data-id]' ? { dataset: { id: 'f1' } } : null)) } });
+  const statusLayer = openedStatus[openedStatus.length - 1];
+  check('the layer holds every condition of the book with its icon',
+    [(statusLayer.list.match(/class="fstog/g) || []).length, /class="fsticon"/.test(statusLayer.list),
+      /id="fstatNew"/.test(statusLayer.list)].join('/'), '15/true/true');
+  statusLayer.onList({
+    currentTarget: { querySelector: () => null },
+    target: { closest: (sel) => (sel === '[data-status]' ? { dataset: { status: 'poisoned' } } : null) }
+  });
+  check('a tap adds the condition to the creature', first().status.map((s) => s.key || s.text).join(','), 'prone,poisoned');
+  const customField = { value: 'Blessed' };
+  statusLayer.onList({
+    currentTarget: { querySelector: (sel) => (sel === '#fstatNew' ? customField : null) },
+    target: { closest: (sel) => (sel === '[data-custom]' ? { dataset: { custom: 'add' } } : null) }
+  });
+  check('and the field adds a status of the player', first().status.map((s) => s.key || s.text).join(','), 'prone,poisoned,Blessed');
+  statusLayer.onList({
+    currentTarget: { querySelector: () => null },
+    target: { closest: (sel) => (sel === '[data-drop]' ? { dataset: { drop: 'Blessed' } } : null) }
+  });
+  check('and a chip of the player comes off again', first().status.map((s) => s.key || s.text).join(','), 'prone,poisoned');
+  statusLayer.onList({
+    currentTarget: { querySelector: () => null },
+    target: { closest: (sel) => (sel === '[data-status]' ? { dataset: { status: 'prone' } } : null) }
+  });
+  check('a condition tapped again is taken away', first().status.map((s) => s.key || s.text).join(','), 'poisoned');
+
   /* The initiative is one d20 and the bonus of the block. */
   check('a d20 and the bonus of the creature', R.rollInitiative(4, maxRoll), { die: 20, bonus: 4, total: 24 });
   check('a handful of dice is rolled and added', R.rollDice(2, 6, maxRoll), { rolls: [6, 6], total: 12 });
