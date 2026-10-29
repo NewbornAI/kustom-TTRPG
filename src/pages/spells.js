@@ -43,6 +43,9 @@
        nothing either way. */
     sources: {},
     sourcesTouched: false,
+    /* How many scrolls of a spell the character holds, by name: only the
+       spells whose source is Scroll carry one, and one with none here is one. */
+    qty: {},
     pick: '',
     classes: {},
     levelFilter: true,
@@ -145,6 +148,14 @@
       Object.keys(saved.prepared).forEach(function (n) { if (saved.prepared[n]) s.prepared[n] = true; });
     }
 
+    s.qty = {};
+    if (saved && saved.qty && typeof saved.qty === 'object') {
+      Object.keys(saved.qty).forEach(function (n) {
+        var q = Math.floor(Number(saved.qty[n]));
+        if (isFinite(q) && q >= 0) s.qty[n] = Math.min(99, q);
+      });
+    }
+
     var named = saved && saved.sources && typeof saved.sources === 'object' &&
       (Object.keys(saved.sources).length > 0 || saved.sourcesTouched);
     s.sources = {};
@@ -154,7 +165,12 @@
       Object.keys(saved.sources).forEach(function (n) {
         if (!saved.sources[n]) return;
         if (C.library.book.spells.length && !C.library.bookByName[n]) return;
-        s.sources[n] = String(saved.sources[n]);
+        var one = saved.sources[n];
+        if (Array.isArray(one)) {
+          one = one.map(function (x) { return String(x || '').trim(); }).filter(function (x, i, l) { return x && l.indexOf(x) === i; });
+          if (!one.length) return;
+          s.sources[n] = one.length === 1 ? one[0] : one;
+        } else s.sources[n] = String(one);
       });
     } else if (!fresh) {
       LEVELS.forEach(function (lv) {
@@ -400,6 +416,34 @@
     });
   }
 
+  /* The sources of a spell, as a list: a spell learned from a class and
+     held as a scroll has both. One source is kept as a plain string. */
+  function srcList(name) {
+    var v = S.sources[name];
+    if (!v) return [];
+    return (Array.isArray(v) ? v : [v]).map(function (x) { return C.library.canonSource(x); }).filter(Boolean);
+  }
+
+  function setSrcList(name, list) {
+    if (!list.length) delete S.sources[name];
+    else S.sources[name] = list.length === 1 ? list[0] : list;
+  }
+
+  function tagsOf(name, fallback) {
+    var l = srcList(name);
+    if (!l.length) return fallback ? C.library.sourceTag(fallback) : '';
+    return l.map(function (x) { return C.library.sourceTag(x); }).join('');
+  }
+
+  /* A scroll is a spell one of whose sources is Scroll; it carries a count. */
+  function isScroll(name) {
+    return srcList(name).some(function (x) { return x.toLowerCase() === 'scroll'; });
+  }
+
+  function scrolls(name) {
+    return S.qty[name] === undefined ? 1 : S.qty[name];
+  }
+
   function renderSpellList() {
     var list = S.lists[S.selected] || [];
     E.spellList.innerHTML = '';
@@ -434,8 +478,13 @@
          card, the height of both its lines. */
       card.classList.toggle('haspre', !!prep);
       card.classList.toggle('unprepared', !!prep && !S.prepared[name]);
+      var scroll = isScroll(name);
+      card.classList.toggle('outof', scroll && scrolls(name) === 0);
       var body = '<div class="top"><span class="t">' + C.chrome.esc(spell.name) + '</span>' +
-        C.library.sourceTag(S.sources[name] || (prep ? 'Wizard' : '')) + '</div><div class="sub">' + spellLine(spell) + '</div>';
+        tagsOf(name, prep ? 'Wizard' : '') +
+        (scroll ? '<span class="qty"><button type="button" data-qty="-1" aria-label="One scroll less of ' + C.chrome.esc(spell.name) + '">&minus;</button>' +
+          '<b>' + scrolls(name) + '</b><button type="button" data-qty="1" aria-label="One scroll more of ' + C.chrome.esc(spell.name) + '">+</button></span>' : '') +
+        '</div><div class="sub">' + spellLine(spell) + '</div>';
       card.innerHTML = prep ? prep + '<div class="cbody">' + body + '</div>' : body;
       E.spellList.appendChild(card);
     });
@@ -504,6 +553,7 @@
     LEVELS.forEach(function (lv) {
       (S.lists[lv] || []).forEach(function (n) {
         var now = S.sources[n];
+        if (Array.isArray(now)) return;
         if (now ? !foreignSource(now) : !fill) return;
         var to = sourceFor(n);
         if (to && to !== now) { S.sources[n] = to; moved = true; }
@@ -524,8 +574,10 @@
   /* The source a spell counts under: the one it names, or, when it names
      none, the character's class whose list holds it. Never the book's. */
   function ownSource(name) {
-    var src = S.sources[name];
-    return src ? C.library.canonSource(src) : sourceFor(name);
+    var l = srcList(name);
+    /* the class it was learned with, not the scroll it is also held as */
+    var own = l.filter(function (x) { return x.toLowerCase() !== 'scroll'; })[0];
+    return own || (l.length ? l[0] : sourceFor(name));
   }
 
   /* The save DC is the character's, until the player moves it here. */
@@ -619,13 +671,15 @@
       if (out.indexOf(name) < 0) out.push(name);
     }
     (ch.classes || []).forEach(function (c) { add(c.name); });
+    add('Scroll');
     (ch.features || []).forEach(function (f) { add(C.library.canonSource(f.source)); });
     /* A source in use that the player wrote in stays a choice; one that
        names a class of the books the character does not have does not. */
     var own = out.slice();
     Object.keys(S.sources || {}).forEach(function (n) {
-      var canon = C.library.canonSource(S.sources[n]);
-      if (own.indexOf(canon) >= 0 || !isBookSource(canon)) add(canon);
+      srcList(n).forEach(function (canon) {
+        if (own.indexOf(canon) >= 0 || !isBookSource(canon)) add(canon);
+      });
     });
     return out;
   }
@@ -639,16 +693,18 @@
   }
 
   /* The row that declares it. */
-  function sourceRow() {
-    var chosen = pickValue();
+  function sourceRow(own) {
+    /* own: the sources of one spell, several allowed; none: the one the
+       next spell learns with. */
+    var chosen = own ? own : (pickValue() ? [pickValue()] : []);
     var html = '<div class="srcpick" id="srcpick"><span class="k">SOURCE</span>';
     sourceChoices().forEach(function (name) {
-      var on = name === chosen;
+      var on = chosen.indexOf(name) >= 0;
       html += '<button type="button" class="spick' + (on ? ' on' : '') + '" data-src="' + C.chrome.esc(name) + '" ' +
         'aria-pressed="' + (on ? 'true' : 'false') + '">' + C.chrome.esc(name) + '</button>';
     });
-    html += '<button type="button" class="spick' + (chosen ? '' : ' on') + '" data-src="none" ' +
-      'aria-pressed="' + (chosen ? 'false' : 'true') + '">None</button></div>';
+    html += '<button type="button" class="spick' + (chosen.length ? '' : ' on') + '" data-src="none" ' +
+      'aria-pressed="' + (chosen.length ? 'false' : 'true') + '">None</button></div>';
     return html;
   }
 
@@ -789,16 +845,23 @@
     api.sheet.open({
       id: 'spell:' + name,
       title: spell.name,
-      meta: C.chrome.field('Level', spell.level) + spellFields(spell, true) + C.library.sourceTag(S.sources[name]),
-      text: (learned ? castRow(spell) : '') + sourceRow() + C.chrome.renderBlocks(spell.blocks) + C.chrome.sourceLine(spell.ref),
+      meta: C.chrome.field('Level', spell.level) + spellFields(spell, true) + tagsOf(name, ''),
+      text: (learned ? castRow(spell) : '') + sourceRow(srcList(name)) + C.chrome.renderBlocks(spell.blocks) + C.chrome.sourceLine(spell.ref),
       actions: actions,
       onPaint: function (root) {
         if (learned) wireCast(root, spell, range, function (at) { picked = at; });
-        pickOn(root, function (source) {
+        /* A tap adds a source or takes it away, so a spell can be a class
+           spell and a scroll at once; None clears them. */
+        var row = root.querySelector('#srcpick');
+        if (row) row.addEventListener('click', function (ev) {
+          var b = ev.target.closest('.spick');
+          if (!b) return;
+          var l = srcList(name);
+          if (b.dataset.src === 'none') l = [];
+          else if (l.indexOf(b.dataset.src) >= 0) l = l.filter(function (x) { return x !== b.dataset.src; });
+          else l.push(b.dataset.src);
           S.sourcesTouched = true;
-          if (source) S.sources[name] = source;
-          else delete S.sources[name];
-        }, function () {
+          setSrcList(name, l);
           api.save();
           openSpell(name);
           renderSpellList();
@@ -872,29 +935,44 @@
     }).join('');
   }
 
+  /* The level of the list, one slider: 0 to 9, and All at the end. The
+     rows follow when it is let go; while it moves, only its ticks do. */
+  function levelSlider(lv) {
+    var all = S.levelFilter === false;
+    var v = all ? 10 : lv;
+    var ticks = '';
+    for (var i = 0; i <= 10; i++) ticks += '<span' + (i === v ? ' class="on"' : '') + '>' + (i === 10 ? 'All' : i) + '</span>';
+    return '<div class="glvl"><input class="lvlrange glrange" id="glRange" type="range" min="0" max="10" step="1" value="' + v + '" aria-label="Level of the spells, 0 to 9 or all">' +
+      '<div class="glticks" id="glTicks">' + ticks + '</div></div>';
+  }
+
   function openGrimoire(lv) {
     S.selected = lv;
     C.card.list({
       id: 'grimoire',
       title: grimoireTitle(lv),
       metaClass: 'sheet-meta one',
-      meta: sourceRow(),
+      meta: sourceRow() + levelSlider(lv),
       rows: grimoireList(lv, (api.sheet.search() || '').toLowerCase()),
       search: true,
-      level: true,
-      levelLabel: S.levelFilter !== false ? 'Level ' + lv : 'All levels',
-      levelOn: S.levelFilter !== false,
       /* The source picker sits above the list, so it is wired once the layer
          is on screen. */
       onPaint: function (root) {
         pickOn(root, function () {}, function () { api.save(); openGrimoire(lv); });
+        var range = root.querySelector('#glRange');
+        if (range) {
+          range.addEventListener('input', function () {
+            Array.prototype.forEach.call(root.querySelectorAll('#glTicks span'), function (t, i) { t.classList.toggle('on', i === Number(range.value)); });
+          });
+          range.addEventListener('change', function () {
+            var n = Number(range.value);
+            S.levelFilter = n !== 10;
+            api.save();
+            openGrimoire(n === 10 ? lv : n);
+          });
+        }
       },
       onSearch: function () { openGrimoire(lv); },
-      onLevel: function () {
-        S.levelFilter = S.levelFilter === false;
-        api.save();
-        openGrimoire(lv);
-      },
       onPick: function (picked) {
         if (picked.cls !== undefined) {
           S.classes[picked.cls] = !S.classes[picked.cls];
@@ -910,7 +988,11 @@
             if (ix >= 0) list.splice(ix, 1);
             delete S.sources[picked.add];
           } else {
-            var target = S.lists[S.selected] || (S.lists[S.selected] = []);
+            /* a spell goes to the level it has, whatever tab or filter the
+               grimoire was opened from */
+            var book = C.library.bookByName[picked.add];
+            var at = book && book.level !== undefined ? Number(book.level) : S.selected;
+            var target = S.lists[at] || (S.lists[at] = []);
             if (target.indexOf(picked.add) < 0) target.push(picked.add);
             /* the spell takes the source declared above the list */
             if (pickValue()) {
@@ -1059,6 +1141,14 @@
       '.card .prep.on i{background:rgb(var(--arcane-rgb));border-color:rgb(var(--arcane-rgb))}',
       '.card .prep.on i::after{content:"";position:absolute;left:5.5px;top:1.5px;width:5px;height:10px;border:solid var(--void);border-width:0 2px 2px 0;transform:rotate(45deg)}',
       '.card.unprepared .t{color:var(--muted)}',
+      '.glvl{margin-top:6px}',
+      '.glrange{width:100%;display:block}',
+      '.glticks{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));margin-top:2px;font-size:11px;color:var(--muted);text-align:center}',
+      '.glticks .on{color:var(--arcane);font-weight:700}',
+      '.card.outof .t{color:var(--muted);text-decoration:line-through}',
+      '.card .qty{flex:0 0 auto;display:flex;align-items:center;gap:2px;margin:-4px -4px -4px 0}',
+      '.card .qty button{width:34px;height:34px;border:1px solid var(--edge);border-radius:var(--r-control);background:rgba(255,255,255,.04);color:var(--ink);font-size:17px;line-height:1;padding:0;cursor:pointer;touch-action:manipulation}',
+      '.card .qty b{min-width:1.7em;text-align:center;font-family:var(--display);font-size:15px;font-variant-numeric:tabular-nums}',
       '.card .t{flex:1 1 auto;min-width:0;font-size:12.5px;color:var(--ink);line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
       '.card .sub{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:6px;margin-top:3px;font-size:11px;line-height:1.35;color:var(--muted)}',
       '.card .sub > *{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
@@ -1233,6 +1323,15 @@
         var retry = ev.target.closest('[data-retry]');
         if (retry) { C.library.data(retry.dataset.retry); return; }
         if (drag.wasDragged()) return;
+        var q = ev.target.closest('[data-qty]');
+        if (q) {
+          var nm = q.closest('.card').dataset.name;
+          C.rest.push(api.character());
+          S.qty[nm] = Math.max(0, Math.min(99, scrolls(nm) + Number(q.dataset.qty)));
+          api.save();
+          api.refresh();
+          return;
+        }
         var box = ev.target.closest('[data-prep]');
         if (box) {
           var at = box.closest('.card').dataset.name;

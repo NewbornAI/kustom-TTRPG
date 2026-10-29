@@ -126,6 +126,7 @@ private commit it came from.
 | open a list on top of a page | `src/card.js` | `list({id, title, rows, onPick})` | the layer opens, scrolls and picks |
 | draw a row of a list | `src/card.js` | `row(...)` for the two-line card, `line(...)` for the one-line row | the markup, and the dataset `onPick` gets |
 | read a data file | `src/block.js`, `data/` | `C.library.data(name, shape)`, and the file dropped in `data/` | the page that asks for it |
+| read a monster, or add one to the corpus | `data/bestiary.json`, `src/pages/summons.js` (`blockOf`), `tools/bestiary.mjs` | `C.library.bestiary.creatures[key]` with the key `name\|book`, and `C.library.bestiary.byName[name]` for the preferred book; `node tools/fetch-5e-data.mjs` writes the file from the cache | `test/rules.test.mjs`, the bestiary block, and the page that reads it |
 | change a sign in or a shelf call | `src/shelf.js`, `src/github.js` | `SheetShelf` for the jobs, `SheetGit` for the calls | `test/github.test.mjs` |
 | change the update route | `src/pages/settings.js`, `src/shell.js` (`installUpdate`) | the update block | the toast answers |
 | add a colour or an icon | `src/block.js` | the `themes` and `icons` a page carries | the gallery in the edit mode |
@@ -301,6 +302,14 @@ already holds:
 ```js
 C.library.data('probes', function (json) { PROBES.length = 0; json.forEach(push); });
 ```
+
+The bestiary is the one file the shell declares rather than a page, because
+more than one page reads it: the summons calls a creature, the fight tracks
+one. Its blocks are keyed by the name and the book (`goblin|mm`), since the
+2014 and the 2024 printing of one monster share a name and share nothing
+else, and `C.library.bestiary.byName` maps a name to the block of the first
+book of that name, which is the one the app prefers. A page reads it with
+`blockOf(key)` and never registers a shape for it.
 
 The declaration is the whole seam: the loader no longer names a file, so a page
 that brings a fifth one writes no shell code. A file no page declared is read

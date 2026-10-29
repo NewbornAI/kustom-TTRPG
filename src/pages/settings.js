@@ -18,6 +18,10 @@
   /* The exchange: the file and the link, each with its own icon and the two
      directions, in and out. */
   var ICON_UP = ICON_PUSH;
+  /* The app to download: a tray with an arrow into it. */
+  var ICON_APP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
+    '<path d="M12 4v10M8 10.5l4 4 4-4M5 19h14"/></svg>';
+  var APK_URL = 'https://github.com/NewbornAI/kustom-TTRPG/releases/latest/download/custom-sheet.apk';
   var ICON_DOWN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
     '<path d="M12 5v14"/><path d="m5 12 7 7 7-7"/></svg>';
   var ICON_FILE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
@@ -179,12 +183,25 @@
     acts.className = 'updacts';
     block.appendChild(acts);
 
-    var go = document.createElement('button');
-    go.type = 'button';
+    /* In a browser there is no build to replace: the same place offers the
+       app itself, the latest package of the public repository. */
+    var inApp = !!(window.SheetShell || window.SheetNet);
+    var go = document.createElement(inApp ? 'button' : 'a');
     go.className = 'updact';
-    go.innerHTML = ICON_UPDATE;
-    go.setAttribute('aria-label', 'Look for a newer build and put it in place');
+    if (inApp) {
+      go.type = 'button';
+      go.innerHTML = ICON_UPDATE;
+      go.setAttribute('aria-label', 'Look for a newer build and put it in place');
+    } else {
+      go.href = APK_URL;
+      go.setAttribute('download', 'custom-sheet.apk');
+      go.innerHTML = ICON_APP;
+      go.setAttribute('aria-label', 'Download the app for Android');
+      go.title = 'Download the app';
+    }
     acts.appendChild(go);
+    var head = E.update.previousElementSibling;
+    if (head && head.firstElementChild) head.firstElementChild.textContent = inApp ? 'Update' : 'App';
 
     var push = document.createElement('button');
     push.type = 'button';
@@ -208,7 +225,7 @@
        build is there it fetches it and hands it to the installer of the
        phone. Nothing else ever appears beside it, and no second window opens
        on the file. */
-    go.addEventListener('click', function () {
+    if (inApp) go.addEventListener('click', function () {
       if (go.disabled) return;
       go.disabled = true;
       api.toast('checking the machine');

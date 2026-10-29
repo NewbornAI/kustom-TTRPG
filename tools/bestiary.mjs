@@ -171,16 +171,23 @@ function skillsOf(entry) {
   return out.length ? out : null;
 }
 
-/* A list the book writes: the names, and the note that goes with them. */
+/* A list the book writes: the names, and the note that goes with them. The
+   names and the notes carry tags like any other text (a sense says the
+   darkness is magical, a vulnerability names a spell), so they are read
+   through the same reader. */
 function listOf(value, key) {
   if (!value) return null;
   const out = [];
   [].concat(value).forEach((item) => {
-    if (typeof item === 'string') { if (item.trim()) out.push({ text: item.trim(), note: '' }); return; }
+    if (typeof item === 'string') {
+      const text = creatureText(item.trim());
+      if (text) out.push({ text: text, note: '' });
+      return;
+    }
     if (!item || typeof item !== 'object') return;
-    const names = [].concat(item[key] || []).map((x) => String(x).trim()).filter(Boolean);
+    const names = [].concat(item[key] || []).map((x) => creatureText(String(x))).filter(Boolean);
     if (!names.length) return;
-    out.push({ text: names.join(', '), note: item.note ? String(item.note) : '' });
+    out.push({ text: names.join(', '), note: item.note ? creatureText(String(item.note)) : '' });
   });
   return out.length ? out : null;
 }
@@ -231,7 +238,7 @@ function spellcastingOf(value) {
       daily.push(times + ': ' + spells);
     });
     const body = [will ? 'At will: ' + will : '', daily.join('. ')].filter(Boolean).join('. ');
-    out.push({ name: s.name || 'Spellcasting', header: creatureText(header), text: creatureText(body) });
+    out.push({ name: creatureText(s.name || 'Spellcasting'), header: creatureText(header), text: creatureText(body) });
   });
   return out.length ? out : null;
 }
@@ -432,7 +439,9 @@ function shapeActions(list) {
        is cleaned and the bonus cannot come back empty. */
     const read = actionOf(raw);
     const out = {
-      name: a.name || '',
+      /* A name carries tags too: an action that recharges is written with
+         one, and the block says the recharge in its name. */
+      name: creatureText(a.name || ''),
       bonus: read.bonus,
       damage: read.damage,
       damageParts: read.damageParts,
@@ -453,7 +462,7 @@ function shapeTraits(list) {
     const raw = entriesText(t.entries);
     const text = creatureText(raw);
     if (!text) return;
-    out.push({ name: t.name || '', text: text });
+    out.push({ name: creatureText(t.name || ''), text: text });
   });
   return out;
 }

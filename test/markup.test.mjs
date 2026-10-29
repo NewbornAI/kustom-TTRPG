@@ -40,6 +40,12 @@ check('a saving throw of the creature', creatureText('{@actSave con}'), '[[s:Con
 check('the dice of a creature', creatureText('{@dice 1d6}'), '1d6');
 check('a spell attack modifier is named', creatureText('{@hitYourSpellAttack}'), 'your spell attack modifier');
 check('a condition of the creature', creatureText('{@condition grappled}'), '[[c:grappled]]');
+check('an attack that is either kind reads as one', creatureText('{@atk m,r}'), 'Melee or Ranged attack:');
+check('and both of its weapons', creatureText('{@atk mw,rw}'), 'Melee weapon or Ranged weapon attack:');
+check('a bare recharge is the 5-6 the book prints', creatureText('Cold Breath {@recharge}'), 'Cold Breath (Recharge 5-6)');
+check('a spoken recharge keeps its number', creatureText('{@recharge 5}'), 'recharges on a 5');
+/* The 2014 blocks print the hit tag and then the words "to hit" again. */
+check('to hit is not said twice', creatureText('{@atk mw} {@hit 4} to hit, reach 5 ft.'), 'Melee weapon attack: +4 to hit, reach 5 ft.');
 
 console.log('the action is read in one order');
 const RAW = '{@atk mw} {@hit 5}, reach 5 ft., one target. {@damage 2d6 + 3} Fire damage.';

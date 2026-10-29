@@ -1,7 +1,7 @@
 {
   "edition": "2024 Player's Handbook, every spell the classes can learn, the character's own sheet, and the grimoire's spells from the books outside it",
   "source": "https://5e.tools/spells.html",
-  "fetched": "2026-10-27",
+  "fetched": "2026-10-29",
   "spells": [
     {
       "name": "Acid Splash",

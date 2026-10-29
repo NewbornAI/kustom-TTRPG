@@ -71,11 +71,11 @@ Two repositories hold this app. [`kustom-TTRPG`](https://github.com/NewbornAI/ku
 | `classes.json` | the twelve classes of the 2024 handbook and their 123 archetypes |
 | `features.json` | the features of those classes and archetypes, with their text |
 | `spellbook.json` | the spells, with the classes that can learn each one |
-| `bestiary.json` | the stat blocks the spells and the features name, with their actions |
+| `bestiary.json` | every monster of the books the app carries, about 1 650 of them, keyed by name and book, with the whole stat block: the actions, the traits, the senses, the saves and the initiative |
 | `wild-magic-surge-xphb.json` | the surge table; the public build carries an empty one, since the table is not SRD |
 | `spell-sheet.csv` | the spells of the sheet of the table, one line each; private only |
 
-`tools/fetch-5e-data.mjs` pulls them from 5e.tools, and the build writes them beside the page so the page itself stays small.
+`tools/fetch-5e-data.mjs` pulls them from 5e.tools, and the build writes them beside the page so the page itself stays small. The bestiary is the one the app reads from the shell: the summons calls a creature out of it, and the fight page tracks one. In the public tree the filter keeps the 656 monsters the SRD carries and leaves the rest behind.
 
 ## The characters
 

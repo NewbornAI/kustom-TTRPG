@@ -17,7 +17,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { clean, textOf, cellText, blocksFrom, references } from './markup.mjs';
-import { BOOKS, loadBestiary, resolveCreature, creatureRecord } from './bestiary.mjs';
+import { BOOKS, loadBestiary, creatureRecord } from './bestiary.mjs';
 import { writeSpecies } from './species.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -284,9 +284,7 @@ for (const src of SOURCES) {
   }
 }
 
-/* The creatures a piece of upstream text names, and the book each
-   block is in, which the bestiary needs to find it. */
-const creatureSources = {};
+/* The creatures a piece of upstream text names. */
 function creatureNames(node) {
   /* The same creature is named twice in a text, once in each case, and the
      name is kept as it was written the first time. */
@@ -297,7 +295,6 @@ function creatureNames(node) {
     if (seen[key]) return;
     seen[key] = true;
     names.push(r.name);
-    if (!creatureSources[r.name]) creatureSources[r.name] = r.source;
   });
   return names;
 }
@@ -814,43 +811,53 @@ console.log('wrote ' + spells.length + ' spells, ' + seed.length + ' of them on 
 
 /* ---------- the bestiary ---------- */
 
-/* The books of monsters come down with the rest of the data. The app only
-   carries the blocks its own text names, and the machine that serves it
-   holds the rest. */
+/* The books of monsters come down with the rest of the data, and every
+   creature of every book travels with the app: a fight is not one
+   character's summons, and the machine that serves the page is not always
+   there. The key of a creature is its name and its book, because the 2014
+   and the 2024 printings of one monster share a name and share nothing
+   else. The names are sorted, and the books of one name stay in the order
+   the app prefers them, so the first block of a name is the one a lookup by
+   name finds. */
 for (const book of BOOKS) download(BASE + 'bestiary/bestiary-' + book + '.json', 'bestiary-' + book + '.json');
 
 const all = loadBestiary(cache);
 
-/* Every creature the app names: the spells of the book and the features of
-   the library. */
-const wanted = {};
-const wantedBy = (name) => {
-  const key = String(name).toLowerCase();
-  if (!wanted[key]) wanted[key] = { name: name, source: creatureSources[name] || '' };
-};
-spells.forEach((s) => (s.creatures || []).forEach(wantedBy));
-featureList.forEach((f) => (f.creatures || []).forEach(wantedBy));
+/* The key of a block: the name and the book, lowercased. */
+function creatureKey(name, source) {
+  return String(name).toLowerCase() + '|' + String(source || '').toLowerCase();
+}
 
 const creatures = {};
-const missing = [];
-Object.keys(wanted).forEach((key) => {
-  const want = wanted[key];
-  const item = resolveCreature(all, want.name, want.source);
-  if (!item) { missing.push(want.name); return; }
-  creatures[key] = creatureRecord(item);
+Object.keys(all).sort().forEach((name) => {
+  all[name].forEach((item) => {
+    const record = creatureRecord(item);
+    const key = creatureKey(record.name, record.source);
+    if (key !== '|' && !creatures[key]) creatures[key] = record;
+  });
 });
 
+/* Every creature the app names must be there: a spell or a feature that
+   calls one and finds nothing is a path the app cannot walk. */
+const named = {};
+spells.forEach((s) => (s.creatures || []).forEach((n) => { named[String(n).toLowerCase()] = n; }));
+featureList.forEach((f) => (f.creatures || []).forEach((n) => { named[String(n).toLowerCase()] = n; }));
+const keys = Object.keys(creatures);
+const missing = Object.keys(named).filter((n) => !keys.some((k) => k.indexOf(n + '|') === 0));
+
+/* The file is one line: four megabytes of pretty printing is a diff nobody
+   reads, and the build writes it into the page as one line either way. */
 writeFileSync(
   resolve(root, 'data', 'bestiary.json'),
   JSON.stringify({
-    edition: "The stat blocks the app names, from the bestiary of 5e.tools",
+    edition: "The bestiary, every monster of the books the app carries, from 5e.tools",
     source: 'https://5e.tools/bestiary.html',
     fetched: new Date().toISOString().slice(0, 10),
     creatures: creatures
-  }, null, 2) + '\n',
+  }) + '\n',
   'utf8'
 );
-console.log('wrote ' + Object.keys(creatures).length + ' creatures' + (missing.length ? ', and missed ' + missing.join(', ') : ''));
+console.log('wrote ' + keys.length + ' creatures' + (missing.length ? ', and missed ' + missing.join(', ') : ''));
 
 /* ---------- the catalogue of feats ---------- */
 

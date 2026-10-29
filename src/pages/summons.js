@@ -18,11 +18,6 @@
   var machine = null;   /* the creatures the machine holds, once it answered */
   var hpOpened = null;  /* the hit points the open box was opened on */
   var hpMaxOpened = ''; /* the maximum the open box was opened on */
-  /* The bestiary is a file beside the page, and this is what it fills. */
-  C.library.data('bestiary', function (value) {
-    C.library.bestiary.creatures = value.creatures || {};
-  });
-
   /* ---- the slice of the character ---- */
 
   function slice() {
@@ -46,6 +41,17 @@
     return s.picks;
   }
 
+  /* What a creature was called with, under the key it is called by now. A
+     key written before the corpus held every book is the name alone, so the
+     name finds the pick again rather than losing it. */
+  function pickOf(sourceId, key) {
+    var all = picks();
+    var one = all[String(sourceId) + '|' + key];
+    if (one) return one;
+    var bare = String(key).split('|')[0];
+    return all[String(sourceId) + '|' + bare] || null;
+  }
+
   function rememberPick(card) {
     if (!card || !card.source || !card.key) return;
     var one = { form: card.form || '' };
@@ -65,6 +71,21 @@
 
   function library() { return (C.library.bestiary && C.library.bestiary.creatures) || {}; }
 
+  /* The blocks are keyed by the name and the book, because the 2014 and the
+     2024 printing of one monster share a name and share nothing else. The
+     shell fills the index from name to the block the app prefers, which is
+     the first book of the name. A card keeps the key it was called with, and
+     a card written before the corpus held every book keeps only the name, so
+     the lookup falls back to the index. */
+  function blockOf(key) {
+    if (!key) return null;
+    var block = library()[key];
+    if (block) return block;
+    var index = (C.library.bestiary && C.library.bestiary.byName) || {};
+    if (index[key]) return library()[index[key]] || null;
+    return creatureByName(key);
+  }
+
   /* A creature is found by the name the data carries, which is the lowercased
      name. The name of a creature may carry its size, as the animated objects
      do, so a name that is not there is looked for without it. */
@@ -72,9 +93,10 @@
     if (!name) return null;
     var all = library();
     var key = String(name).toLowerCase();
-    if (all[key]) return all[key];
+    var index = (C.library.bestiary && C.library.bestiary.byName) || {};
+    if (index[key] && all[index[key]]) return all[index[key]];
     var bare = key.replace(/\s*\([^)]*\)\s*$/, '');
-    if (all[bare]) return all[bare];
+    if (index[bare] && all[index[bare]]) return all[index[bare]];
     var keys = Object.keys(all);
     for (var i = 0; i < keys.length; i++) {
       if (String(all[keys[i]].name || '').toLowerCase() === key) return all[keys[i]];
@@ -83,6 +105,9 @@
   }
 
   function keyOf(block) {
+    if (!block) return '';
+    var out = String(block.name || '').toLowerCase() + '|' + String(block.source || '').toLowerCase();
+    if (library()[out]) return out;
     var all = library();
     var keys = Object.keys(all);
     for (var i = 0; i < keys.length; i++) {
@@ -249,7 +274,7 @@
   /* Everything the card of a summon shows, worked out of its block, the form
      it took and the slot that paid for it. */
   function derive(card) {
-    var block = library()[card.key];
+    var block = blockOf(card.key);
     if (!block) return null;
     var form = null;
     if (block.forms) {
@@ -273,7 +298,7 @@
         damage: deriveDamage(a.damageParts, ctx) || a.damage || '',
         count: deriveCount(a.count, ctx),
         type: a.type || '',
-        attack: /^(Melee|Ranged) (weapon |spell )?attack:/i.test(a.text || ''),
+        attack: /^(Melee|Ranged)( or (Melee|Ranged))? (weapon |spell )?attack:/i.test(a.text || ''),
         multi: a.count ? null : multi
       };
     });
@@ -484,7 +509,7 @@
 
   /* The stat block of the creature, in the overlay of the app. */
   function openStat(card) {
-    var block = library()[card.key];
+    var block = blockOf(card.key);
     if (!block) { api.toast('the app does not carry its block'); return; }
     var out = derive(card);
     api.sheet.open({
@@ -639,7 +664,7 @@
   }
 
   function cardHtml(s) {
-    var block = library()[s.key];
+    var block = blockOf(s.key);
     var out = derive(s);
     var forms = block && block.forms && block.forms.length ? block.forms : null;
     var actions = out ? out.actions : [];
@@ -860,7 +885,7 @@
         var key = keyOf(block);
         /* What the creature was called with last time, if it was called at
            all, and the form is dropped when the book no longer has it. */
-        var last = picks()[pickKey({ source: src.id, key: key })] || null;
+        var last = pickOf(src.id, key);
         var want = src.level === null || src.level === undefined ? -1 : src.level;
         if (last && last.slot !== undefined) want = last.slot;
         var form = '';
@@ -974,7 +999,7 @@
         if (picked.far !== undefined) { fetchCreature(picked.far, source); return; }
         if (picked.machine !== undefined) { fetchIndex(source); return; }
         if (picked.key === undefined) return;
-        var block = library()[picked.key];
+        var block = blockOf(picked.key);
         if (!block) return;
         addSummon(source, block, picked.key);
         api.sheet.closeAll();
@@ -1320,7 +1345,7 @@
           /* The big plus of the call page is the summon itself. */
           if (role === 'call') {
             var src = sourceById(s.source);
-            var blk = library()[s.key];
+            var blk = blockOf(s.key);
             if (!src || !blk) return;
             addSummon(src, blk, s.key, s);
             return;

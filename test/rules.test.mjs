@@ -2286,7 +2286,7 @@ console.log('the page the phone opens at launch');
   const distClasses = harness.built().data('classes');
   check('the classes sit beside it too', distClasses.classes.length, 12);
   /* The page carries the character and the rules, never the libraries. What
-     it must not carry is the book and the bestiary, which are 1.8 MB between
+     it must not carry is the book and the bestiary, which are 4.6 MB between
      them, and the two markers below are a sentence of each. The number is a
      coarse tripwire far above the page, not a budget, so no slice has to trim
      prose to fit a number: it was 600000 and the page reached it, then 640000
@@ -2298,7 +2298,7 @@ console.log('the page the phone opens at launch');
      900000 and the spell book alone over half a megabyte. */
   check('the page is small without them', built.length < 1100000, true);
   const bookMarker = JSON.parse(readFileSync(resolve(root, 'data', 'spellbook.json'), 'utf8')).spells[0].blocks[0].text;
-  const beastMarker = JSON.parse(readFileSync(resolve(root, 'data', 'bestiary.json'), 'utf8')).creatures.ghast.traits[0].text;
+  const beastMarker = JSON.parse(readFileSync(resolve(root, 'data', 'bestiary.json'), 'utf8')).creatures['ghast|xmm'].traits[0].text;
   check('the book did not come inside the page', bookMarker.length > 40 && built.indexOf(bookMarker) < 0, true);
   check('nor did the bestiary', beastMarker.length > 20 && built.indexOf(beastMarker) < 0, true);
   check('no character travels inside the page', /<script id="character-data"/.test(built), false);
@@ -2444,48 +2444,69 @@ console.log('the bestiary');
   const bestiary = JSON.parse(readFileSync(resolve(root, 'data', 'bestiary.json'), 'utf8'));
   const creatures = bestiary.creatures || {};
   const keys = Object.keys(creatures);
-  check('the bestiary travels with the app', keys.length > 20, true);
-  check('the battle familiar is one of them', !!creatures['battle familiar'], true);
-  check('and the dancing item of the bard', !!creatures['dancing item'], true);
-  check('a block whose armour class is a formula says so', creatures['battle familiar'].acText, "11 + the spell's level + 2 (Brute only)");
-  check('and holds no number for it', creatures['battle familiar'].ac, 0);
-  check('a block with numbers holds them', creatures['skeleton'].ac, 14);
-  check('and its hit points', creatures['skeleton'].hp, 13);
-  check('an attack carries its bonus', creatures['skeleton'].actions[0].bonus, '5');
-  check('and its damage', creatures['skeleton'].actions[0].damage, '1d6 + 3');
-  check('the type of a creature is its kind', creatures['skeleton'].type, 'undead');
+  /* A block is keyed by its name and its book: the 2014 and the 2024
+     printing of one monster share a name and share nothing else, and a fight
+     has to be able to tell them apart. */
+  const of = (name, book) => creatures[name + '|' + book];
+  check('the whole bestiary travels with the app', keys.length > 1500, true);
+  check('every block is keyed by its name and its book', keys.every((k) => {
+    const block = creatures[k];
+    return k === String(block.name).toLowerCase() + '|' + String(block.source).toLowerCase();
+  }), true);
+  check('the books of the app are all there', ['xmm', 'mm', 'mpmm', 'vgm', 'ftd', 'skt', 'tce', 'xphb'].every((b) => keys.some((k) => k.slice(-b.length - 1) === '|' + b)), true);
+  check('a name may carry a block per book', [!!of('skeleton', 'xmm'), !!of('skeleton', 'mm')].join('/'), 'true/true');
+  check('the battle familiar is one of them', !!of('battle familiar', 'au'), true);
+  check('and the dancing item of the bard', !!of('dancing item', 'tce'), true);
+  check('a block whose armour class is a formula says so', of('battle familiar', 'au').acText, "11 + the spell's level + 2 (Brute only)");
+  check('and holds no number for it', of('battle familiar', 'au').ac, 0);
+  check('a block with numbers holds them', of('skeleton', 'xmm').ac, 14);
+  check('and its hit points', of('skeleton', 'xmm').hp, 13);
+  check('an attack carries its bonus', of('skeleton', 'xmm').actions[0].bonus, '5');
+  check('and its damage', of('skeleton', 'xmm').actions[0].damage, '1d6 + 3');
+  check('the type of a creature is its kind', of('skeleton', 'xmm').type, 'undead');
   /* The whole stat block travels with the creature. */
-  check('a block carries the resistances', creatures['celestial spirit'].resist[0].text, 'radiant');
-  check('and the condition immunities', creatures['celestial spirit'].conditionImmune.length, 2);
-  check('and the senses', creatures['celestial spirit'].senses[0].text, 'Darkvision 60 ft.');
-  check('and the six abilities', creatures['celestial spirit'].ability.length, 6);
-  check('and the languages', creatures['celestial spirit'].languages, 'Celestial, understands the languages you know');
-  check('and the size in words', creatures['celestial spirit'].size, 'Large');
-  check('and the alignment', creatures['celestial spirit'].alignment, 'Neutral');
-  check('and the traits of a monster', creatures['cat'].traits[0].name, 'Jumper');
-  check('and the experience of the challenge', creatures['ghast'].xp, 450);
-  check('and the saving throws with their key', creatures['ghast'].saves[0].key, 'wis');
-  check('and the bonus the book writes for them', creatures['ghast'].saves[0].value, '+2');
+  check('a block carries the resistances', of('celestial spirit', 'xphb').resist[0].text, 'radiant');
+  check('and the condition immunities', of('celestial spirit', 'xphb').conditionImmune.length, 2);
+  check('and the senses', of('celestial spirit', 'xphb').senses[0].text, 'Darkvision 60 ft.');
+  check('and the six abilities', of('celestial spirit', 'xphb').ability.length, 6);
+  check('and the languages', of('celestial spirit', 'xphb').languages, 'Celestial, understands the languages you know');
+  check('and the size in words', of('celestial spirit', 'xphb').size, 'Large');
+  check('and the alignment', of('celestial spirit', 'xphb').alignment, 'Neutral');
+  check('and the traits of a monster', of('cat', 'xmm').traits[0].name, 'Jumper');
+  check('and the experience of the challenge', of('ghast', 'xmm').xp, 450);
+  check('and the saving throws with their key', of('ghast', 'xmm').saves[0].key, 'wis');
+  check('and the bonus the book writes for them', of('ghast', 'xmm').saves[0].value, '+2');
   /* The initiative of a monster is the dexterity, unless the book says
      otherwise: a monster may be proficient in initiative. */
-  check('a creature with no initiative keeps the dexterity', creatures['ghast'].initiative, null);
-  check('and one that is proficient carries it', creatures['wight'].initiative.proficiency, 1);
-  check('the initiative is the dexterity and the proficiency', creatures['wight'].initiative.value, 4);
-  check('the challenge of a monster is its text', creatures['ghast'].cr, '2');
+  check('a creature with no initiative keeps the dexterity', of('ghast', 'xmm').initiative, null);
+  check('and one that is proficient carries it', of('wight', 'xmm').initiative.proficiency, 1);
+  check('the initiative is the dexterity and the proficiency', of('wight', 'xmm').initiative.value, 4);
+  check('the challenge of a monster is its text', of('ghast', 'xmm').cr, '2');
   /* The block keeps what the source says: the kind the caster chooses, the
      passive Perception that is a sense on its own, and, on a form, the speed
      and the sections the version patches. */
-  check('the kind a creature chooses is named', creatures['battle familiar'].type, 'Celestial, Fey, or Fiend');
-  check('and the other creatures that choose too', creatures['vestige companion'].type, 'Celestial, Fiend, or Undead');
-  check('a creature with no other sense keeps its passive Perception', creatures['hawk'].senses[0].text, 'passive Perception 16');
-  check('a form carries its own speed', creatures['battle familiar'].forms[0].speed, 'walk 40 ft., swim 30 ft.');
-  check('and the flyer the one it flies at', creatures['battle familiar'].forms[1].speed, 'walk 40 ft., fly 30 ft. (hover), swim 30 ft.');
-  check('a form keeps only the bonus action of its kind', creatures['otherworldly steed'].forms[0].bonusActions.length, 1);
-  check('and it is the one of that kind', creatures['otherworldly steed'].forms[0].bonusActions[0].name, 'Healing Touch (Recharges after a Long Rest)');
-  check('a version that clears the reactions is read', creatures['construct spirit'].forms.filter((f) => f.id === 'metal')[0].reactions.length, 0);
-  check('and the one that renames it keeps its own', creatures['construct spirit'].forms.filter((f) => f.id === 'clay')[0].reactions[0].name, 'Berserk Lashing');
-  check('the fey spirit keeps the mood of its form', creatures['fey spirit'].forms[0].bonusActions[0].text.indexOf('Advantage') >= 0, true);
-  check('a template is no form the player can pick', (creatures['draconic spirit'].forms || []).length, 0);
+  check('the kind a creature chooses is named', of('battle familiar', 'au').type, 'Celestial, Fey, or Fiend');
+  check('and the other creatures that choose too', of('vestige companion', 'au').type, 'Celestial, Fiend, or Undead');
+  check('a creature with no other sense keeps its passive Perception', of('hawk', 'xmm').senses[0].text, 'passive Perception 16');
+  check('a form carries its own speed', of('battle familiar', 'au').forms[0].speed, 'walk 40 ft., swim 30 ft.');
+  check('and the flyer the one it flies at', of('battle familiar', 'au').forms[1].speed, 'walk 40 ft., fly 30 ft. (hover), swim 30 ft.');
+  check('a form keeps only the bonus action of its kind', of('otherworldly steed', 'xphb').forms[0].bonusActions.length, 1);
+  check('and it is the one of that kind', of('otherworldly steed', 'xphb').forms[0].bonusActions[0].name, 'Healing Touch (Recharges after a Long Rest)');
+  check('a version that clears the reactions is read', of('construct spirit', 'xphb').forms.filter((f) => f.id === 'metal')[0].reactions.length, 0);
+  check('and the one that renames it keeps its own', of('construct spirit', 'xphb').forms.filter((f) => f.id === 'clay')[0].reactions[0].name, 'Berserk Lashing');
+  check('the fey spirit keeps the mood of its form', of('fey spirit', 'xphb').forms[0].bonusActions[0].text.indexOf('Advantage') >= 0, true);
+  check('a template is no form the player can pick', (of('draconic spirit', 'xphb').forms || []).length, 0);
+  /* The text of the corpus is read, not carried: no block keeps a tag of the
+     upstream markup, an attack of the 2014 books does not say "to hit"
+     twice, a recharging action carries its recharge in its name, and an
+     attack that is either melee or ranged says so once. */
+  check('no block carries a tag of the upstream text', keys.filter((k) => /\{@/.test(JSON.stringify(creatures[k]))).length, 0);
+  check('an attack says to hit once', [
+    of('goblin', 'mm').actions[0].text.indexOf('+4 to hit') >= 0,
+    of('goblin', 'mm').actions[0].text.indexOf('to hit to hit') < 0
+  ].join('/'), 'true/true');
+  check('a recharging action says when it recharges', of('abominable yeti', 'xmm').actions.filter((a) => a.name.indexOf('Cold Breath') === 0)[0].name, 'Cold Breath (Recharge 5-6)');
+  check('an attack of two kinds reads as one', of('vestige companion', 'au').actions[0].text.slice(0, 36), 'Melee or Ranged attack: your spell a');
 
   const book = JSON.parse(readFileSync(resolve(root, 'data', 'spellbook.json'), 'utf8'));
   const summoning = book.spells.filter((s) => s.summons);
@@ -2670,7 +2691,7 @@ console.log('the bestiary');
 
   /* The numbers the book writes as words, and the forms a creature comes
      in. */
-  const celestial = creatures['celestial spirit'];
+  const celestial = creatures['celestial spirit|xphb'];
   check('the celestial spirit comes in two forms', (celestial.forms || []).length, 2);
   const avenger = (celestial.forms || []).filter((f) => f.id === 'avenger')[0];
   const defender = (celestial.forms || []).filter((f) => f.id === 'defender')[0];
@@ -2685,7 +2706,7 @@ console.log('the bestiary');
   check('the armour class grows with the slot too', avenger.acTerms.branches[0].terms[1].level, 1);
   check('the damage of the bow is two dice of six', avenger.actions[1].damageParts.dice.count, 2);
   check('and the slot is added to it', avenger.actions[1].damageParts.flat[1].level, 1);
-  check('the dancing item takes the proficiency of the caster', creatures['dancing item'].actions[0].damageParts.flat[0].prof, 1);
+  check('the dancing item takes the proficiency of the caster', creatures['dancing item|tce'].actions[0].damageParts.flat[0].prof, 1);
 
   /* The attack of a creature: one roll per attack, the hit roll in its die,
      and nothing about the target, because the player does not know it. */
@@ -2870,7 +2891,7 @@ console.log('the bestiary');
   page3.fire('click', { target: onCall(cardId) });
   check('the plus of a card brings the creature to the table', wizard.summons.list.length, 1);
   check('and it comes with its hit points full', wizard.summons.list[0].hp, 40);
-  check('which are the hit points of the block', creatures['celestial spirit'].hpTerms.branches[0].terms[0].const, 40);
+  check('which are the hit points of the block', creatures['celestial spirit|xphb'].hpTerms.branches[0].terms[0].const, 40);
   check('and the call page is closed again', els3['#callPanel'].hidden, true);
 
   /* The stat block of a creature at the table shows the form it was called
@@ -3412,7 +3433,10 @@ console.log('what a page may contribute');
   check('the character page declares the classes, the species and the rules of making one', declared.character.map((c) => c.join(' ')), ['species function', 'rules function', 'classes function']);
   check('the spells page declares the book', declared.spells.map((c) => c.join(' ')), ['spellbook function']);
   check('the features page declares the library and the feats', declared.features.map((c) => c.join(' ')), ['features function', 'feats function']);
-  check('the summons page declares the bestiary', declared.summons.map((c) => c.join(' ')), ['bestiary function']);
+  /* The bestiary is the shell's: more than one page reads the whole corpus,
+     so no page declares it and the loader fills it from the shell. */
+  check('no page declares the bestiary', declared.summons.map((c) => c.join(' ')), []);
+  check('the shell declares it', harness.source('shell.js').indexOf("BLOCK.data('bestiary'") >= 0, true);
 
   /* What the loader reads and what the shell holds are the checks above and
      the record's pagesOn checks. A theme a page brings is the block section's

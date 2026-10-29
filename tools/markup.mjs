@@ -70,17 +70,26 @@ export function clean(text) {
 /* The range of an attack: the tags m, mw, r, rw, ms and rs. */
 const RANGES = { m: 'Melee attack:', mw: 'Melee weapon attack:', ms: 'Melee spell attack:', r: 'Ranged attack:', rw: 'Ranged weapon attack:', rs: 'Ranged spell attack:' };
 
+/* The kinds of attack a creature may choose between when the tag carries
+   more than one, {@atk m,r}. The book reads it as either, so the words are
+   joined rather than dropped. */
+const KIND_WORDS = {
+  m: 'Melee', mw: 'Melee weapon', ms: 'Melee spell',
+  r: 'Ranged', rw: 'Ranged weapon', rs: 'Ranged spell'
+};
+
 /* The tags of a creature's block, as the book writes them. */
 export function creatureText(text) {
   if (typeof text !== 'string') return '';
-  return readTags(text, (tag, body) => {
+  const out = readTags(text, (tag, body) => {
     if (tag === 'atk' || tag === 'atkr') {
-      /* The book writes one tag for a choice, {@atk m,r}. The first kind is
-         read and the rest stays where the old reader left it, so the tracked
-         data does not move with this refactor; a data commit can fix it. */
+      /* The book writes one tag for a choice, {@atk m,r}, and both kinds are
+         the same attack, so they read as one line. */
       const kinds = body.split(',');
-      if (kinds.length > 1) return (RANGES[kinds[0]] || kinds[0]) + ',' + kinds.slice(1).join(',') + '}';
-      return RANGES[body] || body;
+      if (kinds.length > 1) {
+        return kinds.map((k) => KIND_WORDS[k] || k).join(' or ') + ' attack:';
+      }
+      return RANGES[body] || (KIND_WORDS[body] ? KIND_WORDS[body] + ' attack:' : body);
     }
     if (tag === 'hit') return '+' + body + ' to hit';
     if (tag === 'hitYourSpellAttack') return 'your spell attack modifier';
@@ -88,10 +97,14 @@ export function creatureText(text) {
     if (tag === 'condition') return '[[c:' + body + ']]';
     if (tag === 'actSave') return saveAbility(body) + ' saving throw';
     if (tag === 'dc') return 'DC ' + body;
-    if (tag === 'recharge') return 'recharges on a ' + body;
+    /* A bare {@recharge} is the 5-6 the book prints after an action's name. */
+    if (tag === 'recharge') return body ? 'recharges on a ' + body : '(Recharge 5-6)';
     if (tag === 'note') return 'Note: ' + body;
     return body;
   });
+  /* The 2014 blocks print their hit tag and then the words "to hit" again,
+     so the reader would say it twice. */
+  return out.replace(/to hit to hit/g, 'to hit');
 }
 
 /* ---- the numbers the book writes as words ---- */

@@ -126,7 +126,23 @@
   var CLASSDATA = [];
   /* The class plugins read what the book says of a class from the same rows. */
   if (window.SheetClasses) window.SheetClasses.book(CLASSDATA);
-  var BESTIARY = { creatures: {} };
+  var BESTIARY = { creatures: {}, byName: {} };
+  /* The bestiary is the whole corpus of the books, and more than one page
+     reads it: the summons calls a creature, a fight tracks one. So the shell
+     owns its shape rather than a page, and no page declares the file. The
+     blocks are keyed by the name and the book; the index from a name to its
+     block keeps the first book of the name, which is the one the app
+     prefers, so a lookup by name has one answer. */
+  BLOCK.data('bestiary', function (value) {
+    var all = (value && value.creatures) || {};
+    var index = {};
+    Object.keys(all).forEach(function (key) {
+      var name = String(all[key].name || '').toLowerCase();
+      if (name && !index[name]) index[name] = key;
+    });
+    BESTIARY.creatures = all;
+    BESTIARY.byName = index;
+  });
   var SPELL_BY_NAME = {};
   var FEATURE_BY_KEY = {};
   var LOADING = {};
