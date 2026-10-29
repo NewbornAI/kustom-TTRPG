@@ -2290,7 +2290,7 @@ console.log('the page the phone opens at launch');
   const distClasses = harness.built().data('classes');
   check('the classes sit beside it too', distClasses.classes.length, 12);
   /* The page carries the character and the rules, never the libraries. What
-     it must not carry is the book and the bestiary, which are 4.6 MB between
+     it must not carry is the book and the bestiary, which are 3.4 MB between
      them, and the two markers below are a sentence of each. The number is a
      coarse tripwire far above the page, not a budget, so no slice has to trim
      prose to fit a number: it was 600000 and the page reached it, then 640000
@@ -2452,13 +2452,27 @@ console.log('the bestiary');
      printing of one monster share a name and share nothing else, and a fight
      has to be able to tell them apart. */
   const of = (name, book) => creatures[name + '|' + book];
-  check('the whole bestiary travels with the app', keys.length > 1500, true);
+  check('the whole bestiary travels with the app', keys.length > 1000, true);
   check('every block is keyed by its name and its book', keys.every((k) => {
     const block = creatures[k];
     return k === String(block.name).toLowerCase() + '|' + String(block.source).toLowerCase();
   }), true);
   check('the books of the app are all there', ['xmm', 'mm', 'mpmm', 'vgm', 'ftd', 'skt', 'tce', 'xphb'].every((b) => keys.some((k) => k.slice(-b.length - 1) === '|' + b)), true);
-  check('a name may carry a block per book', [!!of('skeleton', 'xmm'), !!of('skeleton', 'mm')].join('/'), 'true/true');
+  /* A monster printed twice is one monster: a name keeps the newest
+     printing, so the 2014 skeleton is not there beside the 2024 one, and the
+     Multiverse printing of a Volo monster is. */
+  check('a name keeps one block, the newest printing',
+    [!!of('skeleton', 'xmm'), !!of('skeleton', 'mm'), !!of('alhoon', 'mpmm'), !!of('alhoon', 'vgm')].join('/'),
+    'true/false/true/false');
+  check('and no two blocks share a name', (() => {
+    const seen = {};
+    return keys.filter((k) => {
+      const name = String(creatures[k].name).toLowerCase();
+      if (seen[name]) return true;
+      seen[name] = true;
+      return false;
+    }).length;
+  })(), 0);
   check('the battle familiar is one of them', !!of('battle familiar', 'au'), true);
   check('and the dancing item of the bard', !!of('dancing item', 'tce'), true);
   check('a block whose armour class is a formula says so', of('battle familiar', 'au').acText, "11 + the spell's level + 2 (Brute only)");
@@ -3086,6 +3100,11 @@ console.log('the fight');
   /* The initiative is one d20 and the bonus of the block. */
   check('a d20 and the bonus of the creature', R.rollInitiative(4, maxRoll), { die: 20, bonus: 4, total: 24 });
   check('and the dexterity when the book says nothing', fightCore.creature.initBonus(all['goblin|mm']), 2);
+  /* A creature saved against a printing the corpus no longer holds finds its
+     block by name, which is the one the corpus keeps. */
+  check('a card of an older printing finds its block by name',
+    [(fightCore.creature.block('skeleton|mm') || {}).source, (fightCore.creature.block('skeleton|mm') || {}).name].join('/'),
+    'XMM/Skeleton');
 
   /* A creature joins from the bestiary with its block numbers. */
   apiF.sheet.search = () => 'goblin';

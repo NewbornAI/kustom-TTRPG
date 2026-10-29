@@ -17,7 +17,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { clean, textOf, cellText, blocksFrom, references } from './markup.mjs';
-import { BOOKS, loadBestiary, creatureRecord } from './bestiary.mjs';
+import { BOOKS, BOOK_YEARS, newerBook, loadBestiary, creatureRecord } from './bestiary.mjs';
 import { writeSpecies } from './species.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -814,11 +814,11 @@ console.log('wrote ' + spells.length + ' spells, ' + seed.length + ' of them on 
 /* The books of monsters come down with the rest of the data, and every
    creature of every book travels with the app: a fight is not one
    character's summons, and the machine that serves the page is not always
-   there. The key of a creature is its name and its book, because the 2014
-   and the 2024 printings of one monster share a name and share nothing
-   else. The names are sorted, and the books of one name stay in the order
-   the app prefers them, so the first block of a name is the one a lookup by
-   name finds. */
+   there. A monster printed twice is one monster, so a name keeps one block:
+   the newest printing. A fight names a creature once, and two printings of
+   one name are two answers to the same question. The key of a block is its
+   name and its book, and the names are sorted, so the file reads in the
+   order a game master searches it. */
 for (const book of BOOKS) download(BASE + 'bestiary/bestiary-' + book + '.json', 'bestiary-' + book + '.json');
 
 const all = loadBestiary(cache);
@@ -828,13 +828,25 @@ function creatureKey(name, source) {
   return String(name).toLowerCase() + '|' + String(source || '').toLowerCase();
 }
 
-const creatures = {};
-Object.keys(all).sort().forEach((name) => {
+/* One printing per name, the newest, and the count of the ones that left. */
+const newest = {};
+let printed = 0;
+Object.keys(all).forEach((name) => {
   all[name].forEach((item) => {
     const record = creatureRecord(item);
-    const key = creatureKey(record.name, record.source);
-    if (key !== '|' && !creatures[key]) creatures[key] = record;
+    if (!String(record.name || '').trim()) return;
+    printed++;
+    const key = String(record.name).toLowerCase();
+    const have = newest[key];
+    if (!have || newerBook(record.source, have.source)) newest[key] = record;
   });
+});
+
+const creatures = {};
+Object.keys(newest).sort().forEach((name) => {
+  const record = newest[name];
+  const key = creatureKey(record.name, record.source);
+  if (key !== '|') creatures[key] = record;
 });
 
 /* Every creature the app names must be there: a spell or a feature that
@@ -845,19 +857,20 @@ featureList.forEach((f) => (f.creatures || []).forEach((n) => { named[String(n).
 const keys = Object.keys(creatures);
 const missing = Object.keys(named).filter((n) => !keys.some((k) => k.indexOf(n + '|') === 0));
 
-/* The file is one line: four megabytes of pretty printing is a diff nobody
+/* The file is one line: a few megabytes of pretty printing is a diff nobody
    reads, and the build writes it into the page as one line either way. */
 writeFileSync(
   resolve(root, 'data', 'bestiary.json'),
   JSON.stringify({
-    edition: "The bestiary, every monster of the books the app carries, from 5e.tools",
+    edition: "The bestiary, every monster of the books the app carries, the newest printing of each name, from 5e.tools",
     source: 'https://5e.tools/bestiary.html',
     fetched: new Date().toISOString().slice(0, 10),
     creatures: creatures
   }) + '\n',
   'utf8'
 );
-console.log('wrote ' + keys.length + ' creatures' + (missing.length ? ', and missed ' + missing.join(', ') : ''));
+console.log('wrote ' + keys.length + ' creatures, ' + (printed - keys.length) + ' older printings dropped' +
+  (missing.length ? ', and missed ' + missing.join(', ') : ''));
 
 /* ---------- the catalogue of feats ---------- */
 

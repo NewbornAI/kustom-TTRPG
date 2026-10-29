@@ -23,6 +23,29 @@ import { creatureText, actionOf, termOf } from './markup.mjs';
    handbook comes first, then the 2024 monsters, then the old ones. */
 export const BOOKS = ['xphb', 'xmm', 'mm', 'au', 'tce', 'phb', 'xge', 'ftd', 'skt', 'mpmm', 'vgm', 'scc'];
 
+/* The year each book was published. A monster printed twice is one monster,
+   and the corpus keeps the newest printing: a fight names a creature once,
+   and two printings of one name are two answers to the same question. The
+   year decides, and the order of BOOKS decides between two books of the same
+   year, so the preference is written down rather than inherited from an
+   alphabetical accident. */
+export const BOOK_YEARS = {
+  xphb: 2024, xmm: 2024, mpmm: 2022, scc: 2021, ftd: 2021, tce: 2020,
+  au: 2019, xge: 2017, skt: 2016, vgm: 2016, mm: 2014, phb: 2014
+};
+
+/* Whether a book is the newer printing of a monster than another. */
+export function newerBook(a, b) {
+  const ka = String(a || '').toLowerCase();
+  const kb = String(b || '').toLowerCase();
+  const ya = BOOK_YEARS[ka] || 0;
+  const yb = BOOK_YEARS[kb] || 0;
+  if (ya !== yb) return ya > yb;
+  const ia = BOOKS.indexOf(ka);
+  const ib = BOOKS.indexOf(kb);
+  return (ia < 0 ? 99 : ia) < (ib < 0 ? 99 : ib);
+}
+
 /* Every monster of every book, by the lowercased name. A name can sit in
    more than one book, so the entry holds them all. */
 export function loadBestiary(cacheDir) {

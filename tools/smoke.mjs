@@ -358,7 +358,7 @@ try {
       ['bandit|xmm', 'Bandit', 12, 11, 12], ['ogre|xmm', 'Ogre', 9, 68, 11],
       ['giant rat|xmm', 'Giant Rat', 9, 7, 13], ['cultist|xmm', 'Cultist', 6, 9, 12],
       ['stirge|xmm', 'Stirge', 4, 5, 13], ['goblin warrior|xmm', 'Goblin Warrior', 3, 10, 15],
-      ['skeleton|mm', 'Skeleton (2014)', 100, 13, 13], ['wolf|mm', 'Wolf (2014)', 100, 11, 12]
+      ['hobgoblin|mm', 'Hobgoblin', 100, 11, 18], ['bugbear|mm', 'Bugbear', 100, 27, 16]
     ];
     rec.fight = {
       list: rows.map((r, i) => ({ id: 'f' + i, key: r[0], name: r[1], init: r[2], rolled: r[2] !== 100,

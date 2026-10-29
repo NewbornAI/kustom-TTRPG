@@ -26,10 +26,11 @@
       return (core.library.bestiary && core.library.bestiary.byName) || {};
     }
 
-    /* The block of a key. The blocks are keyed by the name and the book,
-       because the 2014 and the 2024 printing of one monster share a name and
-       share nothing else; a card written before the corpus held every book
-       keeps only the name, so the index answers for that too. */
+    /* The block of a key. The blocks are keyed by the name and the book, and a
+       name keeps one block, the newest printing. A card written against a
+       printing the corpus no longer holds (the 2014 skeleton, or a key from
+       before the corpus held every book) finds its creature by name, since the
+       name is the part of the key before the book. */
     function block(key) {
       if (!key) return null;
       var all = library();
@@ -37,7 +38,7 @@
       if (found) return found;
       var byKey = index()[key];
       if (byKey && all[byKey]) return all[byKey];
-      return byName(key);
+      return byName(String(key).split('|')[0]);
     }
 
     /* A creature is found by the name the data carries, which is the

@@ -309,10 +309,11 @@ C.library.data('probes', function (json) { PROBES.length = 0; json.forEach(push)
 
 The bestiary is the one file the shell declares rather than a page, because
 more than one page reads it: the summons calls a creature, the fight tracks
-one. Its blocks are keyed by the name and the book (`goblin|mm`), since the
-2014 and the 2024 printing of one monster share a name and share nothing
-else, and `C.library.bestiary.byName` maps a name to the block of the first
-book of that name, which is the one the app prefers. A page reads it with
+one. Its blocks are keyed by the name and the book (`goblin|mm`), and a name
+keeps one block: the newest printing, since two editions of one monster are
+two answers to the same question (`tools/bestiary.mjs` holds the year of each
+book and decides). `C.library.bestiary.byName` maps a name to its block, and a
+card saved against an older printing finds the block by name. A page reads it with
 `blockOf(key)` and never registers a shape for it.
 
 The declaration is the whole seam: the loader no longer names a file, so a page

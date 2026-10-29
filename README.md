@@ -72,7 +72,7 @@ Two repositories hold this app. [`kustom-TTRPG`](https://github.com/NewbornAI/ku
 | `classes.json` | the twelve classes of the 2024 handbook and their 123 archetypes |
 | `features.json` | the features of those classes and archetypes, with their text |
 | `spellbook.json` | the spells, with the classes that can learn each one |
-| `bestiary.json` | every monster of the books the app carries, about 1 650 of them, keyed by name and book, with the whole stat block: the actions, the traits, the senses, the saves and the initiative |
+| `bestiary.json` | every monster of the books the app carries, 1 164 of them, one printing per name and the newest (the 2024 book over the 2014 one, the Multiverse over Volo), keyed by name and book, with the whole stat block: the actions, the traits, the senses, the saves and the initiative |
 | `wild-magic-surge-xphb.json` | the surge table; the public build carries an empty one, since the table is not SRD |
 | `spell-sheet.csv` | the spells of the sheet of the table, one line each; private only |
 
