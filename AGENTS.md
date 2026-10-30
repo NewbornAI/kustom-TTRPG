@@ -89,6 +89,11 @@ corpus and the characters. This working tree is the private one.
 ```
 node tools/srd-filter.mjs --out build/srd-data  # the SRD-only corpus, from data/ and the 5e.tools cache
 node tools/publish-public.mjs                   # assemble, check, commit and push the public tree
+
+The publish takes `build/srd-data` as it finds it, so a corpus change needs the
+filter run first: a publish without it republishes the corpus before the change
+and says the tree is up to date. It also reads `HEAD`, so the private commit
+comes before the publish, never after.
 ```
 
 The publish drops `characters/`, `tasks/`, `STATUS.md` and the seeded features, swaps
