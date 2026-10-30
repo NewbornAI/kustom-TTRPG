@@ -412,6 +412,32 @@
     return html;
   }
 
+  /* The colour of the hit points at a glance: green while they are full,
+     yellow over half, orange while the creature still stands, red down. */
+  function hpTone(hp, max) {
+    if (hp <= 0) return 'inihpdown';
+    if (max > 0 && hp >= max) return 'inihpfull';
+    if (max > 0 && hp > max / 2) return 'inihphigh';
+    return 'inihplow';
+  }
+
+  /* The hit points, at the right of the row before the chevron and as tall as
+     the row: the colour says what is left, the numbers say how much. The edit
+     mode keeps the maximum a field, the current hit points the keypad's. */
+  function hpCell(c, editing) {
+    var hp = Number(c.hp) || 0;
+    var max = Number(c.hpMax) || 0;
+    var tone = hpTone(hp, max);
+    if (editing) {
+      return '<span class="inihp ' + tone + '"><span class="inihpnow">' + hp + ' /</span>' +
+        '<input class="inihpmax" data-role="hpmax" type="number" inputmode="numeric" value="' + max +
+        '" aria-label="Hit point maximum of ' + esc(c.name) + '"></span>';
+    }
+    return '<button type="button" class="inihp ' + tone + '" data-role="hp" ' +
+      'aria-label="The hit points of ' + esc(c.name) + ': ' + hp + ' of ' + max + '">' +
+      hp + ' / ' + max + '</button>';
+  }
+
   function rowHtml(c) {
     var on = lit(c);
     var editing = api.editing('fight');
@@ -439,19 +465,11 @@
           ? '<input class="iniacfield" data-role="ac" type="number" inputmode="numeric" value="' +
             (Number(c.ac) || 0) + '" aria-label="Armour class of ' + esc(c.name) + '">'
           : '<span class="iniac">AC ' + esc(c.ac) + '</span>') +
-        (editing
-          /* The maximum is the number a creature of the player's own needs,
-             and a block's is never beyond correction; the current hit points
-             stay the keypad's. */
-          ? '<span class="inihpnow">' + (Number(c.hp) || 0) + ' /</span>' +
-            '<input class="inihpmax" data-role="hpmax" type="number" inputmode="numeric" value="' +
-            (Number(c.hpMax) || 0) + '" aria-label="Hit point maximum of ' + esc(c.name) + '">'
-          : '<button type="button" class="inihp" data-role="hp" aria-label="The hit points of ' + esc(c.name) + '">' +
-            (Number(c.hp) || 0) + ' / ' + (Number(c.hpMax) || 0) + '</button>') +
         statusRow(c) +
         '<button type="button" class="inistadd" data-role="status" aria-label="Add a status to ' + esc(c.name) + '">+</button>' +
       '</div>' +
     '</div>';
+    html += hpCell(c, editing);
     html += '<button type="button" class="iniexp' + (c.open ? ' on' : '') + '" data-role="open" ' +
       'aria-expanded="' + (c.open ? 'true' : 'false') + '" aria-label="The attacks of ' + esc(c.name) + '">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" ' +
@@ -614,13 +632,21 @@
       '.ininamefield:focus{outline:none;border-bottom-color:var(--arcane);color:var(--arcane)}',
       '.inimeta{display:flex;align-items:center;gap:10px;font-size:10.5px;color:var(--muted)}',
       '.iniac{letter-spacing:.04em;font-variant-numeric:tabular-nums}',
-      '.inihp{background:none;border:0;padding:0;font:inherit;font-size:11px;color:var(--ink);cursor:pointer;' +
-        'font-variant-numeric:tabular-nums}',
-      '.inihp:active{color:var(--gold)}',
+      /* The hit points, right of the name and as tall as the row, before the
+         chevron: the colour says what is left before the number is read. */
+      '.inihp{flex:0 0 auto;align-self:stretch;display:flex;align-items:center;justify-content:flex-end;gap:4px;' +
+        'padding:0 8px;border:1px solid color-mix(in srgb, var(--hp) 45%, transparent);border-radius:6px;' +
+        'background:color-mix(in srgb, var(--hp) 13%, transparent);color:var(--hp);font-family:var(--sans);' +
+        'font-size:12px;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap;cursor:pointer}',
+      '.inihpfull{--hp:#4ad98a}',
+      '.inihphigh{--hp:#ffc44d}',
+      '.inihplow{--hp:#ff8a45}',
+      '.inihpdown{--hp:#ff5a5f}',
+      '.inihp:active{filter:brightness(1.35)}',
       '.iniacfield,.inihpmax{width:36px;min-height:20px;padding:0 2px;border:1px solid var(--edge);border-radius:4px;' +
         'background:none;color:var(--ink);font-family:var(--sans);font-size:10.5px;text-align:center;' +
         'font-variant-numeric:tabular-nums}',
-      '.inihpnow{font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}',
+      '.inihpnow{font-size:11px;color:inherit;font-variant-numeric:tabular-nums}',
       '.inists{display:flex;align-items:center;gap:3px;min-width:0}',
       '.inist{flex:0 0 auto;width:18px;height:18px;display:flex;align-items:center;justify-content:center;' +
         'border-radius:50%;color:var(--st);background:color-mix(in srgb, var(--st) 16%, transparent);' +

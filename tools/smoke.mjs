@@ -404,6 +404,14 @@ try {
   }, id);
   const top = await rowId();
   check('a tap on the die rolls the swing and keeps it on the creature', (await cardNow(top)).rolls, 1);
+  const hpBox = await page.evaluate(() => {
+    const row = document.querySelector('.inirow');
+    const hp = row.querySelector('.inihp').getBoundingClientRect();
+    const chev = row.querySelector('.iniexp').getBoundingClientRect();
+    return { height: Math.round(hp.height), before: hp.right <= chev.left + 1, tone: row.querySelector('.inihp').className };
+  });
+  check('the hit points fill the height of the row, before the chevron, green while full',
+    [hpBox.height >= 40, hpBox.before, hpBox.tone], [true, true, 'inihp inihpfull']);
   const full = (await cardNow(top)).hp;
   await page.click('.inirow:nth-child(1) .inihp');
   await wait(300);
@@ -411,6 +419,8 @@ try {
   await page.click('.hpka[data-do="damage"]');
   await wait(400);
   check('the keypad of the sheet takes the hit points of the creature', (await cardNow(top)).hp, full - 5);
+  check('and the row turns yellow over half',
+    await page.evaluate(() => document.querySelector('.inirow .inihp').className), 'inihp inihphigh');
   await page.evaluate(() => window.__sheetBack());
   await wait(300);
   check('and back brings them back', (await cardNow(top)).hp, full);

@@ -3104,6 +3104,20 @@ console.log('the fight');
   check('the creature that has not rolled shows the die', /class="iniinit waiting"/.test(rowsHtml()), true);
   check('and the one at the counter is lit', (rowsHtml().match(/class="inirow lit"/g) || []).length, 1);
   check('a row carries the armour class and the hit points', /AC 15/.test(rowsHtml()) && /7 \/ 7/.test(rowsHtml()), true);
+  /* The hit points stand right of the name and before the chevron, and their
+     colour says what is left: full, over half, still standing, down. */
+  const goblinRow = () => fightRec.fight.list.filter((c) => c.id === 'f1')[0];
+  check('the hit points stand before the chevron, coloured by what is left',
+    [rowsHtml().indexOf('class="inihp inihpfull"') >= 0,
+      rowsHtml().indexOf('class="inihp inihpfull"') < rowsHtml().indexOf('class="iniexp')].join('/'),
+    'true/true');
+  goblinRow().hp = 4; spec.render(apiF);
+  check('over half of them are yellow', /class="inihp inihphigh"/.test(rowsHtml()), true);
+  goblinRow().hp = 3; spec.render(apiF);
+  check('half or under, orange', /class="inihp inihplow"/.test(rowsHtml()), true);
+  goblinRow().hp = 0; spec.render(apiF);
+  check('and at nothing, red', /class="inihp inihpdown"/.test(rowsHtml()), true);
+  goblinRow().hp = 7; spec.render(apiF);
 
   /* The two arrows move the counter to the next creature, not by a number. */
   const clickRole = (role, id) => {
