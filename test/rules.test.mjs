@@ -225,13 +225,15 @@ console.log('the level slider, the attack box and the toggle');
   check('a blow of one kind takes a row for the attack and one for its damage',
     [(oneBox.match(/class="scell-formula"/g) || []).length,
       (oneBox.match(/class="scell-dmgres"/g) || []).length,
-      oneBox.indexOf('class="scell-dmgtot"') >= 0].join('/'), '1/1/true');
+      oneBox.indexOf('class="scell-dmgtot"') >= 0].join('/'), '1/1/false');
   const twoBox = box.swing({ name: 'Mercurial Trident', bonus: '+7', bonusOf: 7, damage: '1d8+4 + 3d6',
     damages: [{ formula: '1d8+4', type: 'piercing' }, { formula: '3d6', type: 'force' }],
     groups: R.diceIn('1d8+4 + 3d6'), flat: 4 });
   check('and a blow of two kinds one row for each, the attack first',
     [(twoBox.match(/class="scell-formula"/g) || []).length,
-      (twoBox.match(/class="scell-dmgres"/g) || []).length].join('/'), '2/2');
+      (twoBox.match(/class="scell-dmgres"/g) || []).length,
+      twoBox.indexOf('class="scell-dmgtot"') >= 0].join('/'), '2/2/true');
+  check('and the damage rows carry no dice of their own', twoBox.indexOf('sgres') < 0, true);
   check('the box of a critical hit keeps its outline class',
     box.swing({ name: 'Longbow', res: { total: 20, roll: 20, damage: 9, crit: true } }).indexOf('class="sblock crit"') >= 0,
     true);

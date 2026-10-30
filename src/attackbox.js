@@ -84,19 +84,6 @@
       return res.crit ? 'crit' : 'hit';
     }
 
-    /* The dice of a damage: the shape of the die, then what it rolled, drawn
-       by the one rendering of a roll the sheet has. A group may carry a
-       colour of its own, for a smite that rides on it. */
-    function diceShapes(groups, rolled, base) {
-      return roll.groups((groups || []).map(function (g) {
-        return {
-          sides: sidesOf(g.label),
-          rolls: rolled ? (g.rolls || []) : null,
-          colour: g.colour || colour(g.type) || base
-        };
-      }), {});
-    }
-
     /* ---- the across box ---- */
 
     /* The tap a swing answers: the die in the box, or the box itself, with the
@@ -183,8 +170,12 @@
         '<div class="scell-hit" style="grid-row:1 / span ' + rows + '"><span class="sdmini">' + dieIcon(20) + '</span>' +
         '<span class="snum2">' + (res ? res.roll : '--') + '</span>' +
         (others(res) ? '<span class="sother">' + others(res) + '</span>' : '') + '</div>' +
-        '<div class="scell-dmgtot"><span class="snum2"' + (col ? ' style="color:' + col + '"' : '') + '>' +
-          (res ? res.damage : '--') + '</span></div>';
+        (parts.length > 1
+          ? '<div class="scell-dmgtot"><span class="snum2"' + (col ? ' style="color:' + col + '"' : '') + '>' +
+            (res ? res.damage : '--') + '</span></div>'
+          /* One kind says its damage once, on its own row, so the attack row
+             keeps no second copy of the same number. */
+          : '');
       var at = 0;
       parts.forEach(function (p, i) {
         var specs = String(p.formula || '').match(/\d*d\d+/gi) || [];
@@ -200,9 +191,8 @@
           '<div class="scell-formula" style="grid-row:' + (i + 2) + '">' +
             '<span class="sformula"' + (c ? ' style="color:' + c + '"' : '') + '>' + esc(p.formula || '') + '</span></div>' +
           '<div class="scell-dmgres" style="grid-row:' + (i + 2) + '">' +
-            (st === 'miss' ? '' : diceShapes(mine, !!res) +
-              (parts.length > 1 ? '<span class="snum2"' + (c ? ' style="color:' + c + '"' : '') + '>' +
-                (res ? (rolled + flatOf(p.formula)) : '--') + '</span>' : '') +
+            (st === 'miss' ? '' : '<span class="snum2"' + (c ? ' style="color:' + c + '"' : '') + '>' +
+              (res ? (rolled + flatOf(p.formula)) : '--') + '</span>' +
               (p.type ? '<em class="stype"' + (c ? ' style="color:' + c + '"' : '') + '>' + esc(p.type) + '</em>' : '')) +
           '</div>';
       });

@@ -449,11 +449,12 @@ try {
     return {
       formulas: [...grid.querySelectorAll('.scell-formula')].map((s) => s.textContent),
       rolls: grid.querySelectorAll('.scell-dmgres').length,
+      dice: grid.querySelectorAll('.sgres').length,
       total: !!grid.querySelector('.scell-dmgtot')
     };
   });
   check('a blow of two kinds gives each kind a row, the attack in the first',
-    [multi.formulas.join(' / '), multi.rolls, multi.total], ['2d6+3 / 3d6', 2, true]);
+    [multi.formulas.join(' / '), multi.rolls, multi.dice, multi.total], ['2d6+3 / 3d6', 2, 0, true]);
 
   /* One row is open at a time. */
   await page.locator('.inirow').nth(1).locator('.iniexp').click();
