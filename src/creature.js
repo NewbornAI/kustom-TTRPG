@@ -398,7 +398,7 @@
       return abilityRow(card, found, api) +
         core.chrome.field('Speed', speed) +
         core.chrome.field('Initiative', initText) +
-        core.chrome.field('Resistance', listText(found.resist)) +
+        core.chrome.field('Resist.', listText(found.resist)) +
         core.chrome.field('Vuln.', listText(found.vulnerable)) +
         core.chrome.field('Immune', listText(found.immune)) +
         core.chrome.field('Cond.Imm', listText(found.conditionImmune)) +
@@ -406,11 +406,10 @@
         core.chrome.field('Senses', listText(found.senses), '', true) +
         core.chrome.field('Skills', listText(found.skills), '', true) +
         '<div class="sspace"></div>' +
-        core.chrome.field('AC', acText ? ac + ' (' + acText + ')' : String(ac || ''), '', true) +
-        core.chrome.field('HP', hpText ? hp + ' (' + hpText + ')' : String(hp || ''), '', true) +
-        '<div class="sspace"></div>' +
         core.chrome.field('Lang.', found.languages, '', true) +
         core.chrome.field('Align', found.alignment) +
+        core.chrome.field('AC', acText ? ac + ' (' + acText + ')' : String(ac || ''), '', true) +
+        core.chrome.field('HP', hpText ? hp + ' (' + hpText + ')' : String(hp || ''), '', true) +
         core.chrome.field('CR', cr);
     }
 
