@@ -780,6 +780,30 @@ body{
 .hpka.tmp{border:1px solid rgba(var(--temp-rgb),.45);background:none;color:rgb(var(--temp-rgb))}
 .hpka:disabled{opacity:.45;cursor:default}
 
+/* ---- the uses of a trait or an action: the tick, the name, its recharge
+   or its count, and the die that rolls a recharge back. ---- */
+.usehead{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--muted)}
+
+.usekey{letter-spacing:.1em;text-transform:uppercase;color:#6f6a8d}
+
+.userow{display:flex;align-items:center;gap:8px;min-height:34px;border:1px solid var(--edge);border-radius:6px;background:rgba(255,255,255,.02);padding:3px 8px}
+
+.usetick{flex:0 0 auto;width:24px;height:24px;padding:0;border:0;background:none;color:#6f6a8d;cursor:pointer}
+
+.usetick svg{width:20px;height:20px;display:block}
+
+.usetick.on{color:var(--arcane)}
+
+.usename{flex:1 1 auto;min-width:0;font-size:12px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.usenote{flex:0 0 auto;font-size:10px;color:var(--muted)}
+
+.usecount{flex:0 0 auto;font-size:11px;color:var(--ink);font-variant-numeric:tabular-nums}
+
+.usecount.out{color:rgb(var(--miss-rgb))}
+
+.usedie{flex:0 0 auto;height:26px;padding:0 8px;border:1px solid rgba(var(--arcane-rgb),.5);border-radius:6px;background:rgba(var(--arcane-rgb),.1);color:var(--arcane);font-family:var(--sans);font-size:11px;line-height:1;cursor:pointer}
+
 /* ---- the stacked attack box: one column of a page that lays its attacks
    out in a row, the hit in a die, the beam, the damage. The volley's look,
    shared, so a page that stands one up does not write it again. ---- */

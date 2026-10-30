@@ -355,6 +355,9 @@
         '<span class="inimult">\u00d7' + multi.count + '</span>' : '') + '</div>';
     html += '<div class="satk">' + actions.map(function (a) {
       if (a.count) return '';
+      /* An action that comes back on a recharge or with the day is read in
+         the uses under the attacks, with its tick, so it is not said twice. */
+      if (C.creature.usesOf(a.name)) return '';
       /* An action that rolls on a table, the eye rays of a beholder, is rolled
          rather than swung: one die picks the ray, and the damage of that ray
          is rolled with it. */
@@ -362,6 +365,8 @@
       if (!a.attack) return C.creature.noteRow(a, null, null, false, true);
       return C.creature.attackGroup(a, null, C.creature.rollsOf(c, a.name), false);
     }).join('') + '</div>';
+    /* The traits and actions that come back on a recharge or with the day. */
+    html += C.creature.useRows(c, out, false);
     return html;
   }
 
@@ -671,6 +676,14 @@
           var role = roleEl.dataset.role;
           if (role === 'init-roll') { rollInit(c, roleEl); return; }
           if (role === 'table') { C.creature.rollTable(c, roleEl.dataset.name, api, { mark: 'rows', root: root }); return; }
+          if (role === 'use' || role === 'recharge') {
+            var holder = roleEl.closest ? roleEl.closest('[data-name]') : null;
+            var ability = holder ? holder.dataset.name : '';
+            if (!ability) return;
+            if (role === 'use') C.creature.spendUse(c, ability, api, { mark: 'rows' });
+            else C.creature.rollRecharge(c, ability, api, { mark: 'rows' });
+            return;
+          }
           /* The die and the body of a swing are the attack box's own taps,
              which it hands back to the page as a roll. */
           if (role === 'roll') return;

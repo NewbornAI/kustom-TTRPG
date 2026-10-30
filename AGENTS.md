@@ -29,7 +29,7 @@ The README is the human entry point; this file is the agent one.
 | `src/cast.js` | the cast block: the button at the bottom of a page that casts, and the row that holds it |
 | `src/slider.js` | the level slider: the level to cast a spell or smite at, and the preview of what it does |
 | `src/attackbox.js` | the attack box: one swing of an attack, its die, its roll and its damage |
-| `src/creature.js` | a creature of the bestiary as a page holds it: the block by name and book, its numbers at a slot, its stat block, its attack boxes, one roll of one swing, and the table an action rolls on (the eye rays of a beholder: a d10 picks the ray, the damage of that ray is rolled with it); the summons and the fight both read it |
+| `src/creature.js` | a creature of the bestiary as a page holds it: the block by name and book, its numbers at a slot, its stat block, its attack boxes, one roll of one swing, the uses of a trait or an action (the tick, the count, the die a recharge is rolled on), and the table an action rolls on (the eye rays of a beholder: a d10 picks the ray, the damage of that ray is rolled with it); the summons and the fight both read it |
 | `src/hpbox.js` | the keypad that changes the hit points of one thing, docked at the bottom: the character sheet and a creature of a fight answer the same question with it |
 | `src/toggle.js` | the toggle: a chip that turns one thing on or off |
 | `src/shelf.js` | the shelf: the sign in, the token, and the folder of characters on GitHub |

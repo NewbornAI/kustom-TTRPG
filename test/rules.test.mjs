@@ -3134,6 +3134,39 @@ console.log('the fight');
   });
   check('a condition tapped again is taken away', first().status.map((s) => s.key || s.text).join(','), 'poisoned');
 
+  /* The uses of a trait or an action: what the name carries, so the row of a
+     fight can tick it, count it, and roll a recharge back. */
+  check('a recharge is read from the name', fightCore.creature.usesOf('Spores (Recharge 5-6)'),
+    { kind: 'recharge', min: 5, max: 6 });
+  check('a single recharge too', fightCore.creature.usesOf('Cold Breath (Recharge 6)'),
+    { kind: 'recharge', min: 6, max: 6 });
+  check('a day carries its uses', fightCore.creature.usesOf('Legendary Resistance (3/Day)'),
+    { kind: 'day', max: 3 });
+  check('and an ability without uses carries none', fightCore.creature.usesOf('Shred'), null);
+  const useCard = { key: 'vrock|xmm', form: '', slot: null, rolls: {}, saves: {}, uses: {} };
+  const useApi = Object.assign({}, apiF, { markDirty: () => {}, save: () => {}, refresh: () => {} });
+  fightCore.creature.spendUse(useCard, 'Stunning Screech (1/Day)', useApi, {});
+  check('a tap spends a use of the day', useCard.uses['Stunning Screech (1/Day)'].left, 0);
+  fightCore.creature.spendUse(useCard, 'Stunning Screech (1/Day)', useApi, {});
+  check('and a tap with none left gives them back', useCard.uses['Stunning Screech (1/Day)'].left, 1);
+  const realR2 = fightCore.R;
+  fightCore.R = Object.assign({}, realR2, { rollDice: () => ({ rolls: [5], total: 5 }) });
+  fightCore.creature.rollRecharge(useCard, 'Spores (Recharge 5-6)', useApi, {});
+  check('a five brings the spores back', useCard.uses['Spores (Recharge 5-6)'].left, 1);
+  fightCore.R = Object.assign({}, realR2, { rollDice: () => ({ rolls: [3], total: 3 }) });
+  fightCore.creature.rollRecharge(useCard, 'Spores (Recharge 5-6)', useApi, {});
+  check('a three leaves them spent', useCard.uses['Spores (Recharge 5-6)'].left, 0);
+  fightCore.R = realR2;
+  /* The row of a vrock that is open carries both, and the text of the action
+     is not said twice beside its tick. */
+  fightRec.fight.list.push({ id: 'f10', key: 'vrock|xmm', name: 'Vrock', init: 25, rolled: true,
+    hp: 152, hpMax: 152, ac: 17, open: true, rolls: {}, uses: {}, saves: {}, edit: {} });
+  spec.render(apiF);
+  check('an open row lists the uses of its traits and actions',
+    [(rowsHtml().match(/class="userow"/g) || []).length,
+      /data-role="use"/.test(rowsHtml()), /data-role="recharge"/.test(rowsHtml()),
+      /class="snoteblock" data-name="Spores/.test(rowsHtml())].join('/'), '2/true/true/false');
+
   /* The initiative is one d20 and the bonus of the block. */
   check('a d20 and the bonus of the creature', R.rollInitiative(4, maxRoll), { die: 20, bonus: 4, total: 24 });
   check('a handful of dice is rolled and added', R.rollDice(2, 6, maxRoll), { rolls: [6, 6], total: 12 });

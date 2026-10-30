@@ -253,7 +253,18 @@
           table: a.table || null
         };
       });
-      return { ac: ac, hpMax: hp, actions: actions, form: form, block: found };
+      /* The sections of the block, so a page can read the traits and the
+         bonus actions the way it reads the actions. */
+      function section(name) {
+        if (form && form[name]) return form[name];
+        return found[name] || [];
+      }
+      return {
+        ac: ac, hpMax: hp, actions: actions, form: form, block: found,
+        traits: section('traits'),
+        bonusActions: section('bonusActions'),
+        reactions: section('reactions')
+      };
     }
 
     /* ---- the stat block of the creature ---- */
@@ -587,6 +598,127 @@
       return out;
     }
 
+    /* ---- the uses of a trait or an action ---- */
+
+    /* The uses the name of an ability carries: "Spores (Recharge 5-6)" comes
+       back on the roll of a die, "Stunning Screech (1/Day)" comes back with
+       the day, "Legendary Resistance (3/Day)" three times. */
+    function usesOf(name) {
+      var text = String(name || '');
+      var day = text.match(/\(\s*(\d+)\s*\/\s*Day\s*\)/i);
+      if (day) return { kind: 'day', max: Math.max(1, Number(day[1]) || 1) };
+      var re = text.match(/\(\s*Recharge\s+(\d)(?:\s*[-\u2013]\s*(\d))?\s*\)/i);
+      if (re) {
+        var lo = Math.max(2, Number(re[1]) || 6);
+        return { kind: 'recharge', min: lo, max: re[2] ? Math.max(lo, Number(re[2])) : lo };
+      }
+      return null;
+    }
+
+    /* The name of an ability without the uses it carries. */
+    function useLabel(name) {
+      return String(name || '').replace(/\s*\([^)]*\)\s*$/, '');
+    }
+
+    /* What is left of an ability: the card keeps one state per name, and an
+       ability that has never been touched is full. */
+    function usesState(card, name, uses) {
+      if (!card.uses) card.uses = {};
+      var st = card.uses[name];
+      /* A recharge is one thing: it is available or it is spent, and the die
+         is what brings it back. A day counts its uses. */
+      var full = uses.kind === 'recharge' ? 1 : uses.max;
+      if (!st || typeof st !== 'object') st = card.uses[name] = { left: full, max: full };
+      if (typeof st.left !== 'number') st.left = full;
+      if (typeof st.max !== 'number' || st.max > full) st.max = full;
+      return st;
+    }
+
+    /* Every trait and action of the block that carries a recharge or a day:
+       the row of a tick, the name, the words of its uses and, for a recharge,
+       the die that rolls it back. */
+    function useRows(card, out, editing) {
+      var core = C();
+      var list = [];
+      ['actions', 'traits', 'bonusActions', 'reactions'].forEach(function (key) {
+        ((out && out[key]) || []).forEach(function (a) {
+          var uses = usesOf(a.name);
+          if (uses) list.push({ name: a.name, uses: uses });
+        });
+      });
+      if (!list.length) return '';
+      var html = '<div class="usehead"><span class="usekey">Uses</span></div>';
+      html += list.map(function (item) {
+        var uses = item.uses;
+        var st = usesState(card, item.name, uses);
+        var on = st.left > 0;
+        var note = uses.kind === 'recharge' ? 'Recharge ' + uses.min + '\u2013' + uses.max
+          : uses.max + '/day';
+        var label = useLabel(item.name);
+        var row = '<div class="userow" data-name="' + core.chrome.esc(item.name) + '">' +
+          '<button type="button" class="usetick' + (on ? ' on' : '') + '" data-role="use" ' +
+            'aria-pressed="' + (on ? 'true' : 'false') + '" ' +
+            'aria-label="' + core.chrome.esc(label) + ', ' + (on ? 'available' : 'used') + '">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" ' +
+            'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
+            '<rect x="3" y="3" width="18" height="18" rx="4"/>' +
+            (on ? '<path d="M7.5 12.5l3 3 6-6.5"/>' : '') + '</svg></button>' +
+          '<span class="usename">' + core.chrome.esc(label) + '</span>' +
+          '<span class="usenote">' + core.chrome.esc(note) + '</span>' +
+          (uses.kind === 'day' ? '<span class="usecount' + (on ? '' : ' out') + '">' + st.left + '/' + st.max + '</span>' : '') +
+          (uses.kind === 'recharge' && !editing
+            ? '<button type="button" class="usedie" data-role="recharge" aria-label="Roll the recharge of ' +
+              core.chrome.esc(label) + '">d6</button>'
+            : '') +
+          '</div>';
+        return row;
+      }).join('');
+      return html;
+    }
+
+    /* One tap on the tick: a day spends one of its uses, and a day with none
+       left gives them all back, the way the sheet refills a counter; a
+       recharge is used or it is not. */
+    function spendUse(card, name, api, opts) {
+      var o = opts || {};
+      var core = C();
+      var uses = usesOf(name);
+      if (!uses) return false;
+      var st = usesState(card, name, uses);
+      if (uses.kind === 'day') {
+        st.left = st.left > 0 ? st.left - 1 : st.max;
+      } else {
+        st.left = st.left > 0 ? 0 : 1;
+      }
+      api.markDirty(o.mark || 'cards');
+      api.save();
+      api.refresh();
+      if (uses.kind === 'day' && st.left === st.max && st.max > 1) {
+        core.feedback.back('use of ' + useLabel(name), st.max, st.left);
+      } else {
+        core.feedback.spent('use of ' + useLabel(name), 1, Math.max(0, st.left));
+      }
+      return true;
+    }
+
+    /* The die of a recharge: a d6 against the number the book prints, and the
+       ability comes back on it or stays spent. */
+    function rollRecharge(card, name, api, opts) {
+      var o = opts || {};
+      var core = C();
+      var uses = usesOf(name);
+      if (!uses || uses.kind !== 'recharge') return false;
+      var st = usesState(card, name, uses);
+      var die = core.R.rollDice(1, 6);
+      var back = die.total >= uses.min;
+      st.left = back ? 1 : 0;
+      api.markDirty(o.mark || 'cards');
+      api.save();
+      api.refresh();
+      core.feedback.pick(useLabel(name), die.total, back ? 'recharged' : 'still spent');
+      return true;
+    }
+
     /* ---- the table an action rolls on ---- */
 
     /* An action that rolls on a table, the eye rays of a beholder: its name,
@@ -706,6 +838,11 @@
       attackGroup: attackGroup,
       noteRow: noteRow,
       tableGroup: tableGroup,
+      usesOf: usesOf,
+      useLabel: useLabel,
+      useRows: useRows,
+      spendUse: spendUse,
+      rollRecharge: rollRecharge,
       limitedOf: limitedOf,
       rollsOf: rollsOf,
       roll: roll,
