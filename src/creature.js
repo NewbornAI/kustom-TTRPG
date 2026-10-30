@@ -60,6 +60,18 @@
       return null;
     }
 
+    /* An empty block, for a creature the player writes rather than one the
+       books carry: its name, and every number at nothing until the player
+       gives it one. The card keeps it, and the fight fills its numbers. */
+    function blank(name) {
+      return {
+        name: String(name || ''), source: '', cr: '', ac: 0, acText: '', acTerms: null,
+        hp: 0, hpText: '', hpTerms: null, ability: [], saves: [], skills: null, senses: [],
+        languages: '', alignment: '', resist: [], immune: [], vulnerable: [], conditionImmune: [],
+        actions: [], traits: [], bonusActions: [], reactions: [], legendary: [], spellcasting: null
+      };
+    }
+
     /* The key of a block, which is its name and its book. */
     function keyOf(block) {
       if (!block) return '';
@@ -222,7 +234,9 @@
     /* Everything a page shows of a creature, worked out of its block, the
        form it took and the slot that paid for it. */
     function derive(card, api) {
-      var found = block(card.key);
+      /* A card may carry its own block, a creature the player wrote rather
+         than one of the books: the page keeps it on the card. */
+      var found = card.block || block(card.key);
       if (!found) return null;
       var form = null;
       if (found.forms) {
@@ -539,7 +553,7 @@
     /* The stat block of the creature, in the overlay of the app. A tap on the
        dot of a saving throw turns the proficiency, the way the sheet does. */
     function openStat(card, api) {
-      var found = block(card.key);
+      var found = card.block || block(card.key);
       if (!found) { api.toast('the app does not carry its block'); return; }
       var out = derive(card, api);
       var core = C();
@@ -962,6 +976,7 @@
 
     return {
       block: block,
+      blank: blank,
       byName: byName,
       keyOf: keyOf,
       dexOf: dexOf,

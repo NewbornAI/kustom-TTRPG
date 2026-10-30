@@ -29,7 +29,7 @@ The README is the human entry point; this file is the agent one.
 | `src/cast.js` | the cast block: the button at the bottom of a page that casts, and the row that holds it |
 | `src/slider.js` | the level slider: the level to cast a spell or smite at, and the preview of what it does |
 | `src/attackbox.js` | the attack box: one swing of an attack, its die, its roll and its damage |
-| `src/creature.js` | a creature of the bestiary as a page holds it: the block by name and book, its numbers at a slot, its stat block, its attack boxes, one roll of one swing, the uses of a trait or an action (the tick, the count, the die a recharge is rolled on), the table an action rolls on (the eye rays of a beholder: a d10 picks the ray, the damage of that ray is rolled with it), and the spellcasting of a caster (its save DC, and the spells it lists, each a link to its card); the summons and the fight both read it |
+| `src/creature.js` | a creature of the bestiary as a page holds it: the block by name and book, its numbers at a slot, its stat block, its attack boxes, one roll of one swing, the uses of a trait or an action (the tick, the count, the die a recharge is rolled on), the table an action rolls on (the eye rays of a beholder: a d10 picks the ray, the damage of that ray is rolled with it), and the spellcasting of a caster (its save DC, and the spells it lists, each a link to its card); a card may carry its own block (`card.block`, the empty `blank(name)` of a creature the player wrote); the summons and the fight both read it |
 | `src/spellcard.js` | the card of a spell: its level, range, duration, concentration, ritual and its words, opened by the summons, by the stat block of a caster and by the fight, so a spell reads the same wherever its name is tapped |
 | `src/hpbox.js` | the keypad that changes the hit points of one thing, docked at the bottom: the character sheet and a creature of a fight answer the same question with it |
 | `src/toggle.js` | the toggle: a chip that turns one thing on or off |
@@ -336,8 +336,10 @@ itself, the surge table and the conditions, are the exceptions it names.
 them: `row({name, badge, note, chips, data})` is the two-line card of the book
 and of the summons, `line({name, meta, mark, data, pick, action})` is the
 one-line row of the characters, the shelf and the choosers, and
-`list({id, title, rows, meta, search, actions, onPick})` opens the layer and
-hands the picked row back as its dataset, so no page walks the markup it wrote.
+`list({id, title, rows, meta, search, searchAction, actions, onPick})` opens
+the layer and hands the picked row back as its dataset, so no page walks the
+markup it wrote. `searchAction` is one button beside the search field (the
+fight's + writes a creature of the player's own from the words typed).
 A one-line row is either the control or it holds one, never both: with `pick`
 the row is the button, with `action` the name is the button and a delete sits
 beside it. That is what keeps a button out of a button. What a row means, which

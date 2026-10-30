@@ -23,6 +23,10 @@
   var api = null;
   var E = {};
 
+  /* The fields the edit mode writes: the initiative, the name, and the two
+     numbers of a creature the player wrote. */
+  var FIELDS = '[data-role="init"], [data-role="name"], [data-role="ac"], [data-role="hpmax"]';
+
   /* Above any initiative a table rolls, and the place a creature waits at
      before its initiative is rolled: an empty initiative is the top of the
      order, so the creatures still to roll stand above the ones that did. */
@@ -120,8 +124,11 @@
       if (needle && name.toLowerCase().indexOf(needle) < 0) continue;
       found++;
       if (rows.length >= 80) continue;
+      /* The row reads the creature and the badge adds it, so the same list
+         answers both questions: what is this, and put it in the fight. */
       rows.push(C.card.row({
-        name: { text: name, aria: 'Add ' + name + ' to the fight' },
+        name: { text: name },
+        badge: { text: '+', aria: 'Add ' + name + ' to the fight', data: { add: keys[i] } },
         note: 'CR ' + (block.cr || '0') + ' \u00b7 ' + String(block.source || ''),
         data: { key: keys[i] }
       }));
@@ -133,21 +140,33 @@
     C.card.list({
       id: 'fightbestiary',
       title: 'The bestiary',
-      metaClass: 'sheet-meta one',
-      meta: '<span>' + Object.keys(all).length + ' creatures</span>',
       rows: rows,
       search: true,
       placeholder: 'Search a creature',
+      /* The + beside the search writes a creature of the player's own, named
+         after what was typed. */
+      searchAction: {
+        label: '+',
+        aria: 'Add a creature of your own, named after the search',
+        onClick: function () { addCustom(api.sheet.search()); }
+      },
       onSearch: function () { openBestiary(); },
       onPick: function (picked) {
-        if (!picked.key) return;
-        addCreature(picked.key);
+        if (picked.add) { addCreature(picked.add); return; }
+        if (picked.key) openBlock(picked.key);
       }
     });
   }
 
+  /* The stat block of a creature of the bestiary, read before it joins: the
+     card the summons opens, with no form and no slot. */
+  function openBlock(key) {
+    C.creature.openStat({ key: key, form: '', slot: null, rolls: {}, saves: {}, edit: {} }, api);
+  }
+
   /* A creature comes to the fight at full hit points, with the initiative of
-     the block as its bonus and no roll yet. */
+     the block as its bonus and no roll yet. The bestiary stays open, so a
+     second creature may follow the first. */
   function addCreature(key) {
     var block = C.creature.block(key);
     if (!block) return;
@@ -173,7 +192,25 @@
     api.markDirty('rows');
     commit();
     api.toast(c.name + ' joins the fight');
-    api.sheet.closeAll();
+  }
+
+  /* A creature of the player's own: the name typed in the search, and nothing
+     else, for a monster the books do not carry. The card keeps its block, so
+     the stat block and the actions read it like any other. */
+  function addCustom(name) {
+    var label = String(name || '').trim().slice(0, 40) || 'New creature';
+    var block = C.creature.blank(label);
+    var c = {
+      id: 'f' + Date.now() + Math.floor(Math.random() * 1000),
+      key: '', name: label, block: block,
+      init: null, rolled: false, hp: 0, hpMax: 0, ac: 0,
+      status: [], open: false, rolls: {}, saves: {},
+      edit: { ac: '', hpMax: '', attacks: {} }
+    };
+    combatants().push(c);
+    api.markDirty('rows');
+    commit();
+    api.toast(label + ' joins the fight');
   }
 
   function remove(c) {
@@ -398,9 +435,19 @@
         : '<button type="button" class="ininame" data-role="stat" aria-label="The stat block of ' + esc(c.name) + '">' +
           esc(c.name) + '</button>') +
       '<div class="inimeta">' +
-        '<span class="iniac">AC ' + esc(c.ac) + '</span>' +
-        '<button type="button" class="inihp" data-role="hp" aria-label="The hit points of ' + esc(c.name) + '">' +
-          (Number(c.hp) || 0) + ' / ' + (Number(c.hpMax) || 0) + '</button>' +
+        (editing
+          ? '<input class="iniacfield" data-role="ac" type="number" inputmode="numeric" value="' +
+            (Number(c.ac) || 0) + '" aria-label="Armour class of ' + esc(c.name) + '">'
+          : '<span class="iniac">AC ' + esc(c.ac) + '</span>') +
+        (editing
+          /* The maximum is the number a creature of the player's own needs,
+             and a block's is never beyond correction; the current hit points
+             stay the keypad's. */
+          ? '<span class="inihpnow">' + (Number(c.hp) || 0) + ' /</span>' +
+            '<input class="inihpmax" data-role="hpmax" type="number" inputmode="numeric" value="' +
+            (Number(c.hpMax) || 0) + '" aria-label="Hit point maximum of ' + esc(c.name) + '">'
+          : '<button type="button" class="inihp" data-role="hp" aria-label="The hit points of ' + esc(c.name) + '">' +
+            (Number(c.hp) || 0) + ' / ' + (Number(c.hpMax) || 0) + '</button>') +
         statusRow(c) +
         '<button type="button" class="inistadd" data-role="status" aria-label="Add a status to ' + esc(c.name) + '">+</button>' +
       '</div>' +
@@ -570,6 +617,10 @@
       '.inihp{background:none;border:0;padding:0;font:inherit;font-size:11px;color:var(--ink);cursor:pointer;' +
         'font-variant-numeric:tabular-nums}',
       '.inihp:active{color:var(--gold)}',
+      '.iniacfield,.inihpmax{width:36px;min-height:20px;padding:0 2px;border:1px solid var(--edge);border-radius:4px;' +
+        'background:none;color:var(--ink);font-family:var(--sans);font-size:10.5px;text-align:center;' +
+        'font-variant-numeric:tabular-nums}',
+      '.inihpnow{font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}',
       '.inists{display:flex;align-items:center;gap:3px;min-width:0}',
       '.inist{flex:0 0 auto;width:18px;height:18px;display:flex;align-items:center;justify-content:center;' +
         'border-radius:50%;color:var(--st);background:color-mix(in srgb, var(--st) 16%, transparent);' +
@@ -652,13 +703,24 @@
          initiative emptied by hand puts the creature back among the ones
          still to roll. */
       root.addEventListener('input', function (ev) {
-        var field = ev.target.closest ? ev.target.closest('[data-role="init"], [data-role="name"]') : null;
+        var field = ev.target.closest ? ev.target.closest(FIELDS) : null;
         if (!field) return;
         var row = field.closest('.inirow');
         var c = row ? byId(row.dataset.id) : null;
         if (!c) return;
-        if (field.dataset.role === 'name') {
+        var role = field.dataset.role;
+        if (role === 'name') {
           c.name = field.value;
+          /* A creature of the player's own carries its block: its name is
+             the block's name too, or its stat block would keep the old one. */
+          if (c.block) c.block.name = field.value;
+          api.save();
+          return;
+        }
+        if (role === 'ac') { c.ac = Number(field.value) || 0; api.save(); return; }
+        if (role === 'hpmax') {
+          c.hpMax = Number(field.value) || 0;
+          if ((Number(c.hp) || 0) > c.hpMax) c.hp = c.hpMax;
           api.save();
           return;
         }
@@ -670,7 +732,7 @@
         api.save();
       });
       root.addEventListener('change', function (ev) {
-        var field = ev.target.closest ? ev.target.closest('[data-role="init"], [data-role="name"]') : null;
+        var field = ev.target.closest ? ev.target.closest(FIELDS) : null;
         if (!field) return;
         api.markDirty('rows');
         commit();
@@ -720,7 +782,7 @@
           if (role === 'remove') { remove(c); return; }
           /* A field of the edit mode works itself, and the row under it is
              not a tap. */
-          if (role === 'init' || role === 'name') return;
+          if (role === 'init' || role === 'name' || role === 'ac' || role === 'hpmax') return;
           return;
         }
         /* A tap on the box of a swing is the box's own. */

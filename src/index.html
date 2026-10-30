@@ -1265,6 +1265,13 @@ body{
 
 .gsbar .sheet-search{flex:1 1 auto;min-width:0}
 
+/* The one button a layer may carry beside its search field: the thing the
+   field is searched for, added. */
+.sheet-add{flex:0 0 auto;width:38px;height:38px;display:flex;align-items:center;justify-content:center;padding:0;
+  border:1px solid rgba(var(--arcane-rgb),.5);border-radius:8px;background:rgba(var(--arcane-rgb),.14);
+  color:var(--ink);font-family:var(--sans);font-size:19px;line-height:1;cursor:pointer}
+.sheet-add:active{color:var(--gold);border-color:rgba(var(--gold-rgb),.6)}
+
 .gtog{
   flex:0 0 auto;
   border:1px solid var(--edge);
@@ -1518,6 +1525,7 @@ body{
         <div class="gsbar">
           <button class="gtog" id="grimoireLevel" type="button" aria-pressed="true" hidden>Level 1</button>
           <input class="sheet-search" id="sheetSearch" type="search" placeholder="Search the grimoire" hidden>
+          <button class="sheet-add" id="sheetSearchAdd" type="button" aria-label="Add" hidden>+</button>
         </div>
         <div class="sheet-text" id="sheetText"></div>
         <div class="sheet-list" id="sheetList" hidden></div>

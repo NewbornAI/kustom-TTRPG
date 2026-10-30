@@ -3278,10 +3278,31 @@ console.log('the fight');
   const rows = layers[layers.length - 1].list;
   check('with a row for the creature searched', rows.indexOf('data-key="goblin|mm"') >= 0, true);
   const pick = layers[layers.length - 1];
+  /* The count of the corpus is not on the layer, and the row carries the
+     button that adds it: the row itself reads the block. */
+  check('the layer carries no count of the corpus', pick.meta, undefined);
+  check('and a row carries the button that adds it', /class="gadd"[^>]*data-add="goblin\|mm"/.test(rows), true);
+  const openedStats = [];
+  apiF.sheet.open = (layer) => openedStats.push(layer);
   pick.onList({ target: { closest: (sel) => (sel === '.row' ? { dataset: { key: 'bugbear|mm' } } : null) } });
+  check('a tap on a row reads its stat block', openedStats[openedStats.length - 1].id, 'stat:bugbear|mm');
+  const beforeAdd = fightRec.fight.list.length;
+  pick.onList({ target: { closest: (sel) => (sel === '.gadd' ? { dataset: { add: 'bugbear|mm' } } : null) } });
   const added = fightRec.fight.list[fightRec.fight.list.length - 1];
   check('a picked creature comes with its hit points and its armour class',
     [added.name, added.hp, added.hpMax, added.ac, added.init, added.rolled].join('/'), 'Bugbear/27/27/16//false');
+  check('the button adds it and the bestiary stays open',
+    [fightRec.fight.list.length - beforeAdd, layers.length], [1, 1]);
+  /* The + beside the search writes a creature of the player's own, named
+     after what was typed, with nothing else. */
+  apiF.sheet.search = () => 'Ghost';
+  pick.searchAction.onClick();
+  const ghost = fightRec.fight.list[fightRec.fight.list.length - 1];
+  check('the button beside the search adds a creature of the player',
+    [ghost.name, ghost.ac, ghost.hpMax, !!ghost.block, ghost.init].join('/'), 'Ghost/0/0/true/');
+  const ghostStat = {};
+  fightCore.creature.openStat(ghost, Object.assign({}, apiF, { sheet: { open: (l) => Object.assign(ghostStat, l) } }));
+  check('and its stat block is the empty one, with its name', ghostStat.title, 'Ghost');
   /* A creature that has not rolled waits with no initiative at all, at the
      top of the order, and the edit mode gives its name and its initiative a
      field. */
@@ -3294,12 +3315,14 @@ console.log('the fight');
   check('the edit mode writes the initiative and the name, and shows the remove',
     [/class="iniinit ininum"/.test(rowsHtml()), /class="ininame ininamefield"/.test(rowsHtml()),
       /class="inix"/.test(rowsHtml())].join('/'), 'true/true/true');
+  check('and the two numbers a creature of the player\'s own needs',
+    [/data-role="ac"/.test(rowsHtml()), /data-role="hpmax"/.test(rowsHtml())].join('/'), 'true/true');
   /* A field is written as it is typed, and an initiative emptied by hand puts
      the creature back among the ones that wait. */
   const fieldFor = (role, value, id) => {
     const field = {
       dataset: { role: role }, value: value,
-      closest: (sel) => (sel === '[data-role="init"], [data-role="name"]' ? field
+      closest: (sel) => (sel === '[data-role="init"], [data-role="name"], [data-role="ac"], [data-role="hpmax"]' ? field
         : (sel === '.inirow' ? { dataset: { id: id } } : null))
     };
     return field;
@@ -3309,6 +3332,10 @@ console.log('the fight');
   check('the name is written as it is typed', second().name, 'Worg');
   rootF.fire('input', { target: fieldFor('init', '', 'f2') });
   check('an emptied initiative waits again', [second().init, second().rolled].join('/'), '/false');
+  rootF.fire('input', { target: fieldFor('ac', '13', 'f2') });
+  rootF.fire('input', { target: fieldFor('hpmax', '5', 'f2') });
+  check('the armour class and the maximum are written as they are typed',
+    [second().ac, second().hpMax, second().hp].join('/'), '13/5/5');
   const before = fightRec.fight.list.length;
   clickRole('remove', 'f1');
   check('the cross takes the creature out', fightRec.fight.list.length, before - 1);

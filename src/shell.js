@@ -1051,6 +1051,16 @@
       el.sheetSearch.hidden = !layer.search;
       if (layer.search) el.sheetSearch.value = term;
       el.sheetSearch.placeholder = layer.placeholder || 'Search the grimoire';
+      /* A layer may carry one button beside its search field, for the thing
+         the field is searched for: the fight adds a creature of the player's
+         own, named after what was typed. */
+      var beside = layer.searchAction;
+      el.sheetSearchAdd.hidden = !(layer.search && beside);
+      if (beside) {
+        el.sheetSearchAdd.textContent = beside.label || '+';
+        el.sheetSearchAdd.setAttribute('aria-label', beside.aria || 'Add');
+        el.sheetSearchAdd.onclick = function () { beside.onClick(el.sheet); };
+      }
       el.grimoireLevel.hidden = !layer.level;
       if (layer.level) {
         el.grimoireLevel.textContent = layer.levelLabel || '';
@@ -2347,6 +2357,7 @@
     sheetIn: document.querySelector('.sheet-in'),
     sheetActions: document.getElementById('sheetActions'),
     sheetSearch: document.getElementById('sheetSearch'),
+    sheetSearchAdd: document.getElementById('sheetSearchAdd'),
     sheetClose: document.getElementById('sheetClose'),
     grimoireLevel: document.getElementById('grimoireLevel'),
     condTip: document.getElementById('condTip'),

@@ -461,6 +461,40 @@ try {
   await wait(300);
   check('a second row opened closes the first',
     await page.evaluate(() => document.querySelectorAll('.iniatk').length), 1);
+  /* The bestiary reads a creature before it joins: a row opens its stat
+     block, the + adds it and the layer stays, and the + beside the search
+     writes a creature of the player's own, named after what was typed. */
+  await page.click('#fightAdd');
+  await wait(400);
+  await page.fill('#sheetSearch', 'bugbear');
+  await wait(500);
+  await page.locator('#sheetList .row').first().click();
+  await wait(500);
+  check('a tap on a creature of the bestiary reads its stat block',
+    await page.evaluate(() => document.getElementById('sheetTitle').textContent), 'Bugbear');
+  await page.evaluate(() => window.__sheetBack());
+  await wait(300);
+  const fightList = () => page.evaluate(() => {
+    const s = JSON.parse(localStorage.getItem('customsheet.state.v3'));
+    return s.characters[s.current].fight.list;
+  });
+  const beforeRows = (await fightList()).length;
+  await page.locator('#sheetList .row .gadd').first().click();
+  await wait(500);
+  check('the + adds the creature and the bestiary stays open',
+    [(await fightList()).length - beforeRows, await page.evaluate(() => document.getElementById('sheetTitle').textContent)],
+    [1, 'The bestiary']);
+  await page.click('#sheetSearchAdd');
+  await wait(500);
+  check('the + beside the search writes a creature of the player, named after the field',
+    await page.evaluate(() => {
+      const s = JSON.parse(localStorage.getItem('customsheet.state.v3'));
+      const list = s.characters[s.current].fight.list;
+      const c = list[list.length - 1];
+      return [c.name, c.ac, c.hpMax, !!c.block].join('/');
+    }), 'bugbear/0/0/true');
+  await page.evaluate(() => window.__sheetBack());
+  await wait(300);
   await page.evaluate(() => Sheet.show('character'));
   await wait(200);
 
