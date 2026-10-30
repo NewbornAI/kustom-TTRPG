@@ -253,17 +253,7 @@
   function openSource(card) {
     if (!card.source) return;
     if (card.source.indexOf('spell:') === 0) {
-      var name = card.source.slice(6);
-      var spell = C.library.bookByName[name];
-      if (!spell) { api.toast('the book does not have it'); return; }
-      api.sheet.open({
-        id: 'summonspell:' + name,
-        title: spell.name,
-        meta: C.chrome.field('Level', spell.level) + C.chrome.field('Range', spell.range) +
-          C.chrome.field('Duration', spell.duration) +
-          C.chrome.field('Conc', spell.concentration ? 'Yes' : 'No', spell.concentration ? 'yes' : ''),
-        text: C.chrome.renderBlocks(spell.blocks)
-      });
+      C.spellCard.open(api, card.source.slice(6), { id: 'summonspell:' + card.source.slice(6) });
       return;
     }
     if (card.source.indexOf('feature:') === 0) {

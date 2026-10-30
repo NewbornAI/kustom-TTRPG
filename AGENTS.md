@@ -29,7 +29,8 @@ The README is the human entry point; this file is the agent one.
 | `src/cast.js` | the cast block: the button at the bottom of a page that casts, and the row that holds it |
 | `src/slider.js` | the level slider: the level to cast a spell or smite at, and the preview of what it does |
 | `src/attackbox.js` | the attack box: one swing of an attack, its die, its roll and its damage |
-| `src/creature.js` | a creature of the bestiary as a page holds it: the block by name and book, its numbers at a slot, its stat block, its attack boxes, one roll of one swing, the uses of a trait or an action (the tick, the count, the die a recharge is rolled on), and the table an action rolls on (the eye rays of a beholder: a d10 picks the ray, the damage of that ray is rolled with it); the summons and the fight both read it |
+| `src/creature.js` | a creature of the bestiary as a page holds it: the block by name and book, its numbers at a slot, its stat block, its attack boxes, one roll of one swing, the uses of a trait or an action (the tick, the count, the die a recharge is rolled on), the table an action rolls on (the eye rays of a beholder: a d10 picks the ray, the damage of that ray is rolled with it), and the spellcasting of a caster (its save DC, and the spells it lists, each a link to its card); the summons and the fight both read it |
+| `src/spellcard.js` | the card of a spell: its level, range, duration, concentration, ritual and its words, opened by the summons, by the stat block of a caster and by the fight, so a spell reads the same wherever its name is tapped |
 | `src/hpbox.js` | the keypad that changes the hit points of one thing, docked at the bottom: the character sheet and a creature of a fight answer the same question with it |
 | `src/toggle.js` | the toggle: a chip that turns one thing on or off |
 | `src/shelf.js` | the shelf: the sign in, the token, and the folder of characters on GitHub |
@@ -133,7 +134,8 @@ private commit it came from.
 | open a list on top of a page | `src/card.js` | `list({id, title, rows, onPick})` | the layer opens, scrolls and picks |
 | draw a row of a list | `src/card.js` | `row(...)` for the two-line card, `line(...)` for the one-line row | the markup, and the dataset `onPick` gets |
 | read a data file | `src/block.js`, `data/` | `C.library.data(name, shape)`, and the file dropped in `data/` | the page that asks for it |
-| put a creature of the bestiary in front of the table, or read its block | `src/pages/summons.js`, `src/pages/fight.js`, `src/creature.js` | `C.creature.block(key)`, `derive(card, api)`, `openStat(card, api)`, `attackGroup(...)`, `roll(...)` | the page that shows it, and `test/rules.test.mjs` |
+| put a creature of the bestiary in front of the table, or read its block | `src/pages/summons.js`, `src/pages/fight.js`, `src/creature.js` | `C.creature.block(key)`, `derive(card, api)`, `openStat(card, api)`, `attackGroup(...)`, `roll(...)`, `castingBlocks(list)` | the page that shows it, and `test/rules.test.mjs` |
+| open the card of a spell from a name | `src/spellcard.js` | `C.spellCard.open(api, name, {id})`; a text names its spells as buttons with `data-spell` (`C.creature.castingBlocks`) | the summons, the fight and the stat block, driven |
 | read a monster, or add one to the corpus | `data/bestiary.json`, `src/pages/summons.js` (`blockOf`), `tools/bestiary.mjs` | `C.library.bestiary.creatures[key]` with the key `name\|book`, and `C.library.bestiary.byName[name]` for the preferred book; `node tools/fetch-5e-data.mjs` writes the file from the cache | `test/rules.test.mjs`, the bestiary block, and the page that reads it |
 | change a sign in or a shelf call | `src/shelf.js`, `src/github.js` | `SheetShelf` for the jobs, `SheetGit` for the calls | `test/github.test.mjs` |
 | change the update route | `src/pages/settings.js`, `src/shell.js` (`installUpdate`) | the update block | the toast answers |

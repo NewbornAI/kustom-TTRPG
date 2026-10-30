@@ -135,14 +135,15 @@
       return [{ formula: o.damage || '', type: o.type || '' }];
     }
 
-    /* The kinds written after the total, each in its colour. */
-    function kindsOf(parts) {
-      var types = [];
-      parts.forEach(function (p) { if (p.type && types.indexOf(p.type) < 0) types.push(p.type); });
-      return types.map(function (t) {
-        var c = colour(t);
-        return '<em class="stype"' + (c ? ' style="color:' + c + '"' : '') + '>' + esc(t) + '</em>';
-      }).join('<span class="splus">+</span>');
+    /* The flat a formula carries, "1d8 + 4" giving 4: the number that rides
+       on the dice of one kind. */
+    function flatOf(text) {
+      var rest = String(text || '').replace(/\d*d\d+/gi, '');
+      var total = 0;
+      var m;
+      var re = /([+-]?\s*\d+)/g;
+      while ((m = re.exec(rest)) !== null) total += Number(m[1].replace(/\s+/g, ''));
+      return total;
     }
 
     function swing(opts) {
@@ -166,28 +167,45 @@
         ' data-name="' + esc(o.name || '') + '" data-ix="' + (o.ix || 0) + '" data-tap' + trioStyle + '>';
       out += '<div class="shead"><span class="sname">' + esc(o.name || '') + '</span>' +
         (reachOf(o.range, o.kind) ? '<span class="sreach">' + esc(reachOf(o.range, o.kind)) + '</span>' : '') + '</div>';
+      /* The one template of a monster's attack, whatever it deals: the
+         attack in the first row, its label, its bonus, the die with the total
+         it reaches and what the die rolled, then the damage it deals. Each
+         kind of damage takes a row of its own, with its formula, the dice it
+         rolled and the kind they deal, so the numbers of one kind never
+         collide with another's. */
+      var rows = parts.length + 1;
       out += '<div class="satkgrid">';
-      out += '<div class="scell-atk"><span class="sk">Attack</span>' +
-        '<span class="snum2">' + esc(o.bonus || '') + '</span></div>';
-      out += '<div class="scell-dmg"><span class="sk">Damage</span>' +
-        parts.map(function (p) {
-          var c = colour(p.type);
-          return '<span class="sformula"' + (c ? ' style="color:' + c + '"' : '') + '>' + esc(p.formula || '') + '</span>';
-        }).join('<span class="splus">+</span>') + '</div>';
-      out += '<div class="scell-die"><button type="button" class="sdie" data-role="roll"' +
-        ' data-ix="' + (o.ix || 0) + '" aria-label="Roll the attack">' + die + '</button></div>';
-      out += '<div class="scell-hit"><span class="sdmini">' + dieIcon(20) + '</span>' +
+      out += '<div class="scell-atk"><span class="sk">Attack</span></div>' +
+        '<div class="scell-bonus"><span class="snum2">' + esc(o.bonus || '') + '</span></div>' +
+        '<div class="scell-die" style="grid-row:1 / span ' + rows + '">' +
+          '<button type="button" class="sdie" data-role="roll" data-ix="' + (o.ix || 0) + '" aria-label="Roll the attack">' +
+          die + '</button></div>' +
+        '<div class="scell-hit" style="grid-row:1 / span ' + rows + '"><span class="sdmini">' + dieIcon(20) + '</span>' +
         '<span class="snum2">' + (res ? res.roll : '--') + '</span>' +
-        (others(res) ? '<span class="sother">' + others(res) + '</span>' : '') +
-        (o.bonusOf !== null && o.bonusOf !== undefined ? '<span class="smod">' + sign(o.bonusOf) + '</span>' : '') + '</div>';
-      /* A miss deals nothing, so the damage roll and its total stay off the
-         box; the outline and the attack roll say the rest. */
-      if (st !== 'miss') {
-        out += '<div class="scell-dmgres">' + diceShapes(groups, !!res, col) +
-          (o.flat ? '<span class="smod">' + sign(o.flat) + '</span>' : '') + '</div>';
-        out += '<div class="scell-dmgtot"><span class="snum2"' + (col ? ' style="color:' + col + '"' : '') + '>' +
-          (res ? res.damage : '--') + '</span>' + kindsOf(parts) + '</div>';
-      }
+        (others(res) ? '<span class="sother">' + others(res) + '</span>' : '') + '</div>' +
+        '<div class="scell-dmgtot"><span class="snum2"' + (col ? ' style="color:' + col + '"' : '') + '>' +
+          (res ? res.damage : '--') + '</span></div>';
+      var at = 0;
+      parts.forEach(function (p, i) {
+        var specs = String(p.formula || '').match(/\d*d\d+/gi) || [];
+        var mine = groups.slice(at, at + specs.length);
+        at += specs.length;
+        var c = colour(p.type);
+        var rolled = 0;
+        mine.forEach(function (g) { (g.rolls || []).forEach(function (v) { rolled += v; }); });
+        /* A miss deals nothing, so the dice and the totals stay off the box
+           and the formulas alone say what the blow would deal. */
+        out += '<div class="scell-dmg" style="grid-row:' + (i + 2) + '">' +
+          (i ? '' : '<span class="sk">Damage</span>') + '</div>' +
+          '<div class="scell-formula" style="grid-row:' + (i + 2) + '">' +
+            '<span class="sformula"' + (c ? ' style="color:' + c + '"' : '') + '>' + esc(p.formula || '') + '</span></div>' +
+          '<div class="scell-dmgres" style="grid-row:' + (i + 2) + '">' +
+            (st === 'miss' ? '' : diceShapes(mine, !!res) +
+              (parts.length > 1 ? '<span class="snum2"' + (c ? ' style="color:' + c + '"' : '') + '>' +
+                (res ? (rolled + flatOf(p.formula)) : '--') + '</span>' : '') +
+              (p.type ? '<em class="stype"' + (c ? ' style="color:' + c + '"' : '') + '>' + esc(p.type) + '</em>' : '')) +
+          '</div>';
+      });
       out += '</div>';
       /* A line the page brings rides inside the box, under the swing: the
          smite of the attack page is one, and the summon brings none. */
@@ -202,7 +220,7 @@
       var out = '<div class="sblock" data-name="' + esc(o.name || '') + '">';
       out += '<div class="shead"><span class="sname">' + esc(o.name || '') + '</span>' +
         (reachOf(o.range, o.kind) ? '<span class="sreach">' + esc(reachOf(o.range, o.kind)) + '</span>' : '') + '</div>';
-      out += '<div class="satkgrid">';
+      out += '<div class="satkedit">';
       out += '<div class="scell-atk"><span class="sk">Attack</span>' +
         '<input class="scin satkbonus" data-role="atkbonus" type="text" value="' + esc(o.bonus || '') + '" aria-label="Attack bonus">' + '</div>';
       out += '<div class="scell-dmg"><span class="sk">Damage</span>' +

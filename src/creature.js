@@ -268,7 +268,8 @@
         ac: ac, hpMax: hp, actions: actions, form: form, block: found,
         traits: section('traits'),
         bonusActions: section('bonusActions'),
-        reactions: section('reactions')
+        reactions: section('reactions'),
+        spellcasting: section('spellcasting')
       };
     }
 
@@ -411,7 +412,7 @@
       var bonus = form && form.bonusActions ? form.bonusActions : found.bonusActions;
       var reactions = form && form.reactions ? form.reactions : found.reactions;
       var legendary = form && form.legendary ? form.legendary : found.legendary;
-      var casting = form && form.spellcasting ? form.spellcasting : found.spellcasting;
+      var casting = (out && out.spellcasting) || [];
       var html = '';
       function section(title, list) {
         if (!list || !list.length) return;
@@ -423,12 +424,8 @@
       section('Bonus Actions', bonus);
       section('Reactions', reactions);
       section('Legendary Actions', legendary);
-      if (casting && casting.length) {
-        html += '<h3>Spellcasting</h3>';
-        casting.forEach(function (x) {
-          html += '<p><b>' + core.chrome.esc(x.name) + '.</b> ' + core.chrome.markup(spoken(x.header)) + '</p>';
-          if (x.text) html += '<p>' + core.chrome.markup(spoken(x.text)) + '</p>';
-        });
+      if (casting.length) {
+        html += '<h3>Spellcasting</h3>' + castingBlocks(casting);
       }
       return html;
     }
@@ -441,12 +438,125 @@
       return String(text || '').replace(/summonSpellLevel/gi, "the spell's level");
     }
 
+    /* ---- the spells of a caster ---- */
+
+    /* The spells of the book, by the name a text writes: the longest name
+       first, so "Detect Magic" is read as one spell and not as "Detect" and
+       "Magic". A book that has not been read yet links nothing, and the page
+       paints again when it lands. */
+    function spellNames() {
+      var core = C();
+      var out = [];
+      ((core.library.book && core.library.book.spells) || []).forEach(function (s) {
+        if (s && s.name) out.push(String(s.name));
+      });
+      return out.sort(function (a, b) { return b.length - a.length; });
+    }
+
+    function reEsc(text) { return String(text).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+    /* The text of a caster with the spells it names as buttons: a tap opens
+       the spell. A name the book does not hold stays plain words. */
+    function spellText(text) {
+      var core = C();
+      var src = String(text || '');
+      var names = spellNames();
+      if (!names.length) return core.chrome.markup(src);
+      var lower = {};
+      (core.library.book.spells || []).forEach(function (s) {
+        if (s && s.name) lower[String(s.name).toLowerCase()] = s.name;
+      });
+      var pattern = new RegExp('\\b(' + names.map(reEsc).join('|') + ')\\b', 'gi');
+      var out = '';
+      var at = 0;
+      var m;
+      while ((m = pattern.exec(src)) !== null) {
+        if (m.index > at) out += core.chrome.markup(src.slice(at, m.index));
+        var word = m[1];
+        var name = lower[word.toLowerCase()] || word;
+        out += '<button type="button" class="splink" data-spell="' + core.chrome.esc(name) + '" ' +
+          'aria-label="Open the spell ' + core.chrome.esc(name) + '">' + core.chrome.esc(word) + '</button>';
+        at = m.index + word.length;
+      }
+      if (at < src.length) out += core.chrome.markup(src.slice(at));
+      return out;
+    }
+
+    /* One entry of a caster's spellcasting: the save DC, the attack and the
+       ability of the caster are read from its header and shown once, as the
+       chips of the row, so the header they leave behind does not say them
+       again. */
+    function castingOf(entry) {
+      var header = spoken(entry && entry.header);
+      var dc = header.match(/spell save DC\s*(\d+)/i);
+      var hit = header.match(/([+-]\d+)\s+to hit with spell attacks/i);
+      return {
+        name: String((entry && entry.name) || ''),
+        dc: dc ? Number(dc[1]) : null,
+        hit: hit ? hit[1] : '',
+        header: header.replace(/\s*\(\s*spell save DC[^)]*\)/i, ''),
+        text: spoken(entry && entry.text)
+      };
+    }
+
+    /* The spellcasting of a caster, the way the actions of a fight read it
+       and the way the stat block writes it: the name, the DC of its save, the
+       spells it lists, each one a link to its card. */
+    function castingBlocks(entries) {
+      var core = C();
+      var list = entries || [];
+      if (!list.length) return '';
+      return list.map(function (entry) {
+        var c = castingOf(entry);
+        var out = '<div class="scast" data-name="' + core.chrome.esc(c.name) + '">' +
+          '<div class="scasthead"><span class="scastname">' + core.chrome.esc(c.name) + '</span>';
+        if (c.dc !== null || c.hit) {
+          out += '<span class="scastmeta">';
+          if (c.dc !== null) out += '<span class="scastdc" title="Spell save DC"><em>DC</em>' + c.dc + '</span>';
+          if (c.hit) out += '<span class="scastab" title="To hit with spell attacks">' + core.chrome.esc(c.hit) + '</span>';
+          out += '</span>';
+        }
+        out += '</div>';
+        if (c.header) out += '<p class="scasttext">' + spellText(c.header) + '</p>';
+        if (c.text) out += '<p class="scasttext scastlist">' + spellText(c.text) + '</p>';
+        return out + '</div>';
+      }).join('');
+    }
+
+    /* The links of a caster's spells, wired where the text was painted. The
+       card is the spell card module's, so a name opens the same card from the
+       stat block, from the fight and from the summons. */
+    function wireSpells(root, api, prefix) {
+      var core = C();
+      var links = root.querySelectorAll ? root.querySelectorAll('[data-spell]') : [];
+      Array.prototype.forEach.call(links, function (link) {
+        link.addEventListener('click', function () {
+          core.spellCard.open(api, link.dataset.spell, { id: (prefix || 'statspell:') + link.dataset.spell });
+        });
+      });
+    }
+
     /* The stat block of the creature, in the overlay of the app. A tap on the
        dot of a saving throw turns the proficiency, the way the sheet does. */
     function openStat(card, api) {
       var found = block(card.key);
       if (!found) { api.toast('the app does not carry its block'); return; }
       var out = derive(card, api);
+      var core = C();
+      var casting = (out && out.spellcasting) || [];
+      /* The spells a caster lists are links, so the book is read before the
+         card is shown; a book that cannot be read still shows the words. */
+      if (casting.length && !(core.library.book.spells || []).length) {
+        core.library.data('spellbook').then(function (ok) {
+          if (ok) openStat(card, api);
+          else showStat(found, out, card, api);
+        });
+        return;
+      }
+      showStat(found, out, card, api);
+    }
+
+    function showStat(found, out, card, api) {
       api.sheet.open({
         id: 'stat:' + card.key,
         title: found.name,
@@ -466,6 +576,7 @@
               openStat(card, api);
             });
           });
+          wireSpells(root, api);
         }
       });
     }
@@ -859,6 +970,8 @@
       hpOf: hpOf,
       derive: derive,
       openStat: openStat,
+      castingBlocks: castingBlocks,
+      castingOf: castingOf,
       attackGroup: attackGroup,
       noteRow: noteRow,
       tableGroup: tableGroup,

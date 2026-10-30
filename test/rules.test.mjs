@@ -216,7 +216,22 @@ console.log('the level slider, the attack box and the toggle');
   check('a tap overrules a miss back to a hit', box.state({ total: 9 }, 15, true), 'hit');
   const missedBox = box.swing({ name: 'Longbow', res: { total: 9, roll: 9, damage: 4, crit: false }, state: 'miss' });
   check('the box of a miss carries no damage roll',
-    [missedBox.indexOf('scell-dmgres') < 0, missedBox.indexOf('scell-hit') >= 0].join('/'), 'true/true');
+    [missedBox.indexOf('sgres') < 0, missedBox.indexOf('scell-hit') >= 0,
+      missedBox.indexOf('scell-formula') >= 0].join('/'), 'true/true/true');
+  /* One template for every attack: the attack row, then one row for each
+     kind of damage, its formula and its dice, so no number of one kind lands
+     in another. */
+  const oneBox = box.swing({ name: 'Longbow', bonus: '+5', bonusOf: 5, damage: '1d8+3', type: 'piercing' });
+  check('a blow of one kind takes a row for the attack and one for its damage',
+    [(oneBox.match(/class="scell-formula"/g) || []).length,
+      (oneBox.match(/class="scell-dmgres"/g) || []).length,
+      oneBox.indexOf('class="scell-dmgtot"') >= 0].join('/'), '1/1/true');
+  const twoBox = box.swing({ name: 'Mercurial Trident', bonus: '+7', bonusOf: 7, damage: '1d8+4 + 3d6',
+    damages: [{ formula: '1d8+4', type: 'piercing' }, { formula: '3d6', type: 'force' }],
+    groups: R.diceIn('1d8+4 + 3d6'), flat: 4 });
+  check('and a blow of two kinds one row for each, the attack first',
+    [(twoBox.match(/class="scell-formula"/g) || []).length,
+      (twoBox.match(/class="scell-dmgres"/g) || []).length].join('/'), '2/2');
   check('the box of a critical hit keeps its outline class',
     box.swing({ name: 'Longbow', res: { total: 20, roll: 20, damage: 9, crit: true } }).indexOf('class="sblock crit"') >= 0,
     true);
@@ -2972,6 +2987,9 @@ console.log('the fight');
      creature block, the card of the bestiary, the cast bar and the keypad.
      The bestiary is the corpus itself, so the block added is a real one. */
   const all = JSON.parse(readFileSync(resolve(root, 'data', 'bestiary.json'), 'utf8')).creatures;
+  const spellBook = JSON.parse(readFileSync(resolve(root, 'data', 'spellbook.json'), 'utf8'));
+  const spellByName = {};
+  spellBook.spells.forEach((s) => { spellByName[s.name] = s; });
   const byName = {};
   Object.keys(all).forEach((k) => {
     const name = String(all[k].name || '').toLowerCase();
@@ -2995,7 +3013,7 @@ console.log('the fight');
     library: {
       data: () => Promise.resolve(true),
       bestiary: { creatures: all, byName: byName },
-      book: { spells: [] }, bookByName: {}, featureByKey: {}, features: { features: [] }
+      book: { spells: spellBook.spells }, bookByName: spellByName, featureByKey: {}, features: { features: [] }
     },
     chrome: {
       esc: escF,
@@ -3180,6 +3198,34 @@ console.log('the fight');
   check('a blow of two kinds shows both formulas and both kinds',
     [/1d8\+4/.test(rowsHtml()), /3d6/.test(rowsHtml()), /piercing/.test(rowsHtml()), /force/.test(rowsHtml())].join('/'),
     'true/true/true/true');
+
+  /* The spellcasting of a caster is an action of the block: its save DC and
+     the spells it lists, each one a link to its card. */
+  fightRec.fight.list.push({ id: 'f12', key: 'lich|xmm', name: 'Lich', init: 28, rolled: true,
+    hp: 315, hpMax: 315, ac: 20, open: true, rolls: {}, uses: {}, saves: {}, edit: {} });
+  spec.render(apiF);
+  check('a caster under its actions carries its spellcasting and the DC of its spells',
+    [/class="scast"/.test(rowsHtml()), /Spellcasting/.test(rowsHtml()), /<em>DC<\/em>20/.test(rowsHtml())].join('/'),
+    'true/true/true');
+  check('and the spells it lists are links to their cards',
+    /class="splink" data-spell="Detect Magic"/.test(rowsHtml()), true);
+  const cast = fightCore.creature.castingOf({ name: 'Spellcasting',
+    header: 'The lich casts a spell, using Intelligence as the spellcasting ability (spell save DC 20, +12 to hit with spell attacks):',
+    text: 'At will: Fireball.' });
+  check('the DC and the attack of a caster are read once, out of its header',
+    [cast.dc, cast.hit, /spell save DC/.test(cast.header)].join('/'), '20/+12/false');
+
+  /* One row is open at a time: the attacks under a row take the room of the
+     list, and a second one closes the first. */
+  clickRole('open', 'f1');
+  check('a tap on the chevron opens its row', first().open, true);
+  clickRole('open', 'f2');
+  check('and closes the one that was open',
+    [first().open, fightRec.fight.list.filter((c) => c.id === 'f2')[0].open].join('/'), 'false/true');
+  const openedSpells = [];
+  fightCore.spellCard = { open: (api, name, o) => openedSpells.push([name, o.id]) };
+  rootF.fire('click', { target: { closest: (sel) => (sel === '.splink' ? { dataset: { spell: 'Detect Magic' } } : null) } });
+  check('a spell named in the block opens its card', openedSpells[0], ['Detect Magic', 'fightspell:Detect Magic']);
   const mezzo = fightRec.fight.list.filter((c) => c.id === 'f11')[0];
   fightCore.creature.roll(mezzo, 'Mercurial Trident', 0, apiF, { mark: 'rows', root: null });
   const rolledT = mezzo.rolls['Mercurial Trident'][0];
@@ -4062,7 +4108,7 @@ console.log('the page and the core');
   const coreBlock = coreSrc.match(/var core = \{([\s\S]*?)\n  \};/);
   const carried = [...coreBlock[1].matchAll(/^    ([A-Za-z_][A-Za-z0-9_]*):/gm)].map((m) => m[1])
     .concat([...coreSrc.matchAll(/\bcore\.([A-Za-z_][A-Za-z0-9_]*)\s*=/g)].map((m) => m[1]));
-  const pageNames = ['character', 'volley', 'spells', 'features', 'summons', 'equipment', 'image', 'backstory', 'attack', 'settings', 'agent'];
+  const pageNames = ['character', 'volley', 'spells', 'features', 'summons', 'equipment', 'image', 'backstory', 'attack', 'settings', 'agent', 'fight'];
   const pageSources = {};
   pageNames.forEach((f) => { pageSources[f] = harness.source('pages/' + f + '.js'); });
 
@@ -4103,7 +4149,7 @@ console.log('the page and the core');
   /* The core is the modules and the three boxes, and nothing else. */
   check('the core carries the modules and the three boxes, nothing else',
     carried.slice().sort(), ['R', 'SR', 'attackCard', 'card', 'cast', 'chrome', 'classes', 'counter', 'creature', 'exchange', 'fairy',
-      'feedback', 'horizontalAttackBox', 'hpBox', 'images', 'library', 'origin', 'own', 'rest', 'rng', 'roll', 'slider', 'toggle', 'verticalAttackBox']);
+      'feedback', 'horizontalAttackBox', 'hpBox', 'images', 'library', 'origin', 'own', 'rest', 'rng', 'roll', 'slider', 'spellCard', 'toggle', 'verticalAttackBox']);
 
   /* The shelf is one door on the exchange box, and the sign in behind it is
      the module's: none of the names the page used before is a door of the

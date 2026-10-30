@@ -341,16 +341,18 @@
 
   function esc(text) { return C.chrome.esc(text); }
 
-  /* The attacks of the block, under the chevron: the same boxes the summons
-     rolls, read from the same module. The fight keeps no uses, so an action
-     that is not an attack shows its dice without a counter. */
+  /* The actions of the block, under the chevron: the same boxes the summons
+     rolls, read from the same module, then the spellcasting of a caster with
+     the save DC of its spells. The fight keeps no uses, so an action that is
+     not an attack shows its dice without a counter. */
   function attacksHtml(c) {
     var out = C.creature.derive(c, api);
     var actions = out ? out.actions : [];
-    if (!actions.length) return '<div class="ininote">No attack in the block.</div>';
+    var casting = (out && out.spellcasting) || [];
+    if (!actions.length && !casting.length) return '<div class="ininote">No action in the block.</div>';
     var multi = null;
     actions.forEach(function (a) { if (a.count) multi = a; });
-    var html = '<div class="inihead"><span class="inikey">Attacks</span>' +
+    var html = '<div class="inihead"><span class="inikey">Actions</span>' +
       (multi ? '<span class="inisep">-</span><span class="inikey">' + esc(multi.name) + '</span>' +
         '<span class="inimult">\u00d7' + multi.count + '</span>' : '') + '</div>';
     html += '<div class="satk">' + actions.map(function (a) {
@@ -365,6 +367,9 @@
       if (!a.attack) return C.creature.noteRow(a, null, null, false, true);
       return C.creature.attackGroup(a, null, C.creature.rollsOf(c, a.name), false);
     }).join('') + '</div>';
+    /* The spellcasting of a caster: the name of its entry, the DC of its
+       spells, and the spells it lists, each a link to its card. */
+    html += C.creature.castingBlocks(casting);
     /* The traits and actions that come back on a recharge or with the day. */
     html += C.creature.useRows(c, out, false);
     return html;
@@ -427,6 +432,7 @@
     return [
       a.state.current,
       Object.keys(C.library.bestiary.creatures || {}).length,
+      (C.library.book.spells || []).length,
       combatants().map(function (c) {
         return [c.id, c.init, c.rolled ? 1 : 0, c.hp, c.hpMax, c.ac, c.open ? 1 : 0].join(':');
       }).join('|'),
@@ -610,6 +616,10 @@
 
     mount: function (root, a) {
       C.library.data('bestiary');
+      /* The spell book, so the spells a caster lists under its actions are
+         links to their cards. It is read once and the paint brings the links
+         in when it lands. */
+      C.library.data('spellbook');
       api = a;
       /* The fight slice is one the back key takes back: a creature removed by
          mistake comes back with the step. */
@@ -667,6 +677,13 @@
       });
 
       root.addEventListener('click', function (ev) {
+        /* A spell named under the actions of a caster opens its card, before
+           the row under it reads the creature. */
+        var link = ev.target.closest ? ev.target.closest('.splink') : null;
+        if (link) {
+          C.spellCard.open(api, link.dataset.spell, { id: 'fightspell:' + link.dataset.spell });
+          return;
+        }
         var roleEl = ev.target.closest ? ev.target.closest('[data-role]') : null;
         /* The attacks under a row carry the id of the row, so a die of the
            block reaches the creature it belongs to. */
@@ -691,7 +708,11 @@
           if (role === 'hp') { openHp(c); return; }
           if (role === 'status') { openStatus(c); return; }
           if (role === 'open') {
-            c.open = !c.open;
+            /* One row is open at a time: the attacks under a row take the
+               room of the list, and two of them are a list the eye cannot
+               read. */
+            var opening = !c.open;
+            combatants().forEach(function (x) { x.open = x === c ? opening : false; });
             api.markDirty('rows');
             commit();
             return;

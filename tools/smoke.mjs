@@ -355,9 +355,9 @@ try {
     const rows = [
       ['goblin|mm', 'Goblin', 22, 7, 15], ['goblin boss|xmm', 'Goblin Boss', 18, 21, 17],
       ['wolf|xmm', 'Wolf', 18, 11, 12], ['skeleton|xmm', 'Skeleton', 15, 13, 14],
-      ['bandit|xmm', 'Bandit', 12, 11, 12], ['ogre|xmm', 'Ogre', 9, 68, 11],
+      ['vrock|xmm', 'Vrock', 15, 152, 17], ['ogre|xmm', 'Ogre', 9, 68, 11],
       ['giant rat|xmm', 'Giant Rat', 9, 7, 13], ['cultist|xmm', 'Cultist', 6, 9, 12],
-      ['stirge|xmm', 'Stirge', 4, 5, 13], ['goblin warrior|xmm', 'Goblin Warrior', 3, 10, 15],
+      ['stirge|xmm', 'Stirge', 4, 5, 13], ['lich|xmm', 'Lich', 25, 315, 20],
       ['hobgoblin|mm', 'Hobgoblin', 100, 11, 18], ['bugbear|mm', 'Bugbear', 100, 27, 16]
     ];
     rec.fight = {
@@ -414,6 +414,52 @@ try {
   await page.evaluate(() => window.__sheetBack());
   await wait(300);
   check('and back brings them back', (await cardNow(top)).hp, full);
+
+  /* The spellcasting of a caster is an action of the block: the save DC of its
+     spells and the spells it lists, each a link that opens its card. The
+     lich sits third in the order, under the two creatures that have not
+     rolled. */
+  await page.locator('.inirow').nth(2).locator('.iniexp').click();
+  await wait(400);
+  const casting = await page.evaluate(() => {
+    const box = document.querySelector('.iniatk');
+    return {
+      rows: document.querySelectorAll('.iniatk .scast').length,
+      dc: (document.querySelector('.iniatk .scastdc') || {}).textContent || '',
+      links: document.querySelectorAll('.iniatk .splink').length
+    };
+  });
+  check('the spellcasting of a caster is an action, with the DC of its spells',
+    [casting.rows >= 1, casting.dc.indexOf('20') >= 0, casting.links > 0], [true, true, true]);
+  await page.locator('.iniatk .splink').first().click();
+  await wait(900);
+  check('a spell named in the block opens its card',
+    await page.evaluate(() => [document.getElementById('sheet').hidden, document.getElementById('sheetTitle').textContent]),
+    [false, 'Detect Magic']);
+  await page.evaluate(() => window.__sheetBack());
+  await wait(300);
+
+  /* One template for every attack: the attack row, then one row for each
+     kind of damage, so the numbers of one kind never land in another. */
+  await page.locator('.inirow').filter({ hasText: 'Vrock' }).locator('.iniexp').click();
+  await wait(400);
+  const multi = await page.evaluate(() => {
+    const block = [...document.querySelectorAll('.sblock')].filter((b) => b.dataset.name === 'Shred')[0];
+    const grid = block.querySelector('.satkgrid');
+    return {
+      formulas: [...grid.querySelectorAll('.scell-formula')].map((s) => s.textContent),
+      rolls: grid.querySelectorAll('.scell-dmgres').length,
+      total: !!grid.querySelector('.scell-dmgtot')
+    };
+  });
+  check('a blow of two kinds gives each kind a row, the attack in the first',
+    [multi.formulas.join(' / '), multi.rolls, multi.total], ['2d6+3 / 3d6', 2, true]);
+
+  /* One row is open at a time. */
+  await page.locator('.inirow').nth(1).locator('.iniexp').click();
+  await wait(300);
+  check('a second row opened closes the first',
+    await page.evaluate(() => document.querySelectorAll('.iniatk').length), 1);
   await page.evaluate(() => Sheet.show('character'));
   await wait(200);
 

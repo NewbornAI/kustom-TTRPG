@@ -33,6 +33,9 @@
   /* The keypad that changes the hit points of one thing: a character and a
      creature of a fight answer the same question, so they open the same one. */
   var HPBOX = window.SheetHpBox(function () { return core; });
+  /* The card of a spell: the summons, the stat block of a caster and the fight
+     open the same one, so a spell reads the same wherever its name is tapped. */
+  var SPELLCARD = window.SheetSpellCard(function () { return core; });
 
   /* ---- the registry ---- */
 
@@ -885,6 +888,7 @@
     feedback: FEEDBACK,
     creature: CREATURE,
     hpBox: HPBOX,
+    spellCard: SPELLCARD,
     library: {
       book: BOOK,
       bookByName: SPELL_BY_NAME,
