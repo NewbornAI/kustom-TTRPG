@@ -2298,9 +2298,10 @@ console.log('the page the phone opens at launch');
      then 800000, and the agent's tools reached that too, so it is 900000
      then 900000 when the fairy painted and laid out pages, so it is 1000000
      then 1100000 when the creator took a screen of its own (about 20 KB),
-     now: a book inlined would still cross it, the page being close to
-     900000 and the spell book alone over half a megabyte. */
-  check('the page is small without them', built.length < 1100000, true);
+     then 1200000 when the fight page and its statuses and uses joined, now: a
+     book inlined would still cross it, the page being past a megabyte and the
+     spell book alone over half a megabyte. */
+  check('the page is small without them', built.length < 1200000, true);
   const bookMarker = JSON.parse(readFileSync(resolve(root, 'data', 'spellbook.json'), 'utf8')).spells[0].blocks[0].text;
   const beastMarker = JSON.parse(readFileSync(resolve(root, 'data', 'bestiary.json'), 'utf8')).creatures['ghast|xmm'].traits[0].text;
   check('the book did not come inside the page', bookMarker.length > 40 && built.indexOf(bookMarker) < 0, true);
@@ -2519,6 +2520,10 @@ console.log('the bestiary');
      twice, a recharging action carries its recharge in its name, and an
      attack that is either melee or ranged says so once. */
   check('no block carries a tag of the upstream text', keys.filter((k) => /\{@/.test(JSON.stringify(creatures[k]))).length, 0);
+  /* A blow of several kinds, the trident of a mezzoloth: a d8 of piercing
+     and a 3d6 of force, both kept. */
+  check('a blow of two kinds keeps both', of('mezzoloth', 'xmm').actions.filter((a) => /Trident/.test(a.name))[0].damages
+    .map((d) => d.dice + '/' + d.type).join(' + '), '1d8 + 4/piercing + 3d6/force');
   check('an attack says to hit once', [
     of('goblin', 'mm').actions[0].text.indexOf('+4 to hit') >= 0,
     of('goblin', 'mm').actions[0].text.indexOf('to hit to hit') < 0
@@ -3166,6 +3171,20 @@ console.log('the fight');
     [(rowsHtml().match(/class="userow"/g) || []).length,
       /data-role="use"/.test(rowsHtml()), /data-role="recharge"/.test(rowsHtml()),
       /class="snoteblock" data-name="Spores/.test(rowsHtml())].join('/'), '2/true/true/false');
+
+  /* A blow of two kinds, the trident of a mezzoloth, is read as two, and the
+     roll keeps the kind of each of its dice. */
+  fightRec.fight.list.push({ id: 'f11', key: 'mezzoloth|xmm', name: 'Mezzoloth', init: 22, rolled: true,
+    hp: 75, hpMax: 75, ac: 18, open: true, rolls: {}, uses: {}, saves: {}, edit: {} });
+  spec.render(apiF);
+  check('a blow of two kinds shows both formulas and both kinds',
+    [/1d8\+4/.test(rowsHtml()), /3d6/.test(rowsHtml()), /piercing/.test(rowsHtml()), /force/.test(rowsHtml())].join('/'),
+    'true/true/true/true');
+  const mezzo = fightRec.fight.list.filter((c) => c.id === 'f11')[0];
+  fightCore.creature.roll(mezzo, 'Mercurial Trident', 0, apiF, { mark: 'rows', root: null });
+  const rolledT = mezzo.rolls['Mercurial Trident'][0];
+  check('and the roll keeps the kind of each of its dice',
+    [rolledT.groups.length, rolledT.groups.map((g) => g.type).join(',')].join('/'), '2/piercing,force');
 
   /* The initiative is one d20 and the bonus of the block. */
   check('a d20 and the bonus of the creature', R.rollInitiative(4, maxRoll), { die: 20, bonus: 4, total: 24 });

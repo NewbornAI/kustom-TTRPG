@@ -279,22 +279,33 @@ export function references(node) {
    is the number of the hit tag, the damage the dice of the damage tag, and
    the type the word that follows it. */
 export function attackOf(text) {
-  const out = { bonus: '', damage: '', type: '' };
+  /* Every damage the blow deals, each with the word that types it: the
+     trident of a mezzoloth is a d8 of piercing and a 3d6 of force, and a
+     single damage field would keep only the first of them. */
+  const out = { bonus: '', damage: '', type: '', damages: [] };
   if (typeof text !== 'string') return out;
   const hit = text.match(/\{@hit (-?\d+)\}/);
   if (hit) out.bonus = hit[1];
-  const dmg = text.match(/\{@(?:scaledamage|damage)\s+([^}|]+)/);
-  if (dmg) out.damage = dmg[1].trim();
-  /* an action that heals or restores carries its amount in a dice tag */
-  if (!out.damage) {
-    const dice = text.match(/\{@dice\s+([^}|]+)/);
-    if (dice) out.damage = dice[1].trim();
+  const re = /\{@(?:scaledamage|damage)\s+([^}|]+)[^}]*\}/g;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    const dice = String(m[1]).trim();
+    if (!dice) continue;
+    /* The type is the word after the tag, behind the bracket the book writes
+       it in: "9 (2d4 + 4) Slashing damage". */
+    const tail = text.slice(m.index + m[0].length, m.index + m[0].length + 40);
+    const typed = tail.match(/^\)?\s*([A-Za-z]+)\s+damage/i);
+    out.damages.push({ dice: dice, type: typed ? typed[1].toLowerCase() : '' });
   }
-  const typed = text.match(/\{@(?:scaledamage|damage)\s+[^}]+\}\s*([A-Za-z]+)\s+damage/);
-  if (typed) out.type = typed[1].toLowerCase();
-  else {
-    const after = text.match(/\)\s*([A-Za-z]+)\s+damage/);
-    if (after) out.type = after[1].toLowerCase();
+  /* an action that heals or restores carries its amount in a dice tag */
+  if (!out.damages.length) {
+    const dice = text.match(/\{@dice\s+([^}|]+)/);
+    if (dice) out.damages.push({ dice: dice[1].trim(), type: '' });
+  }
+  if (out.damages.length) {
+    out.damage = out.damages[0].dice;
+    const typed = out.damages.filter((d) => d.type)[0];
+    out.type = typed ? typed.type : '';
   }
   return out;
 }
@@ -311,6 +322,7 @@ export function actionOf(text) {
     damage: atk.damage,
     damageParts: parseDamage(atk.damage),
     type: atk.type,
+    damages: atk.damages,
     text: creatureText(text)
   };
 }

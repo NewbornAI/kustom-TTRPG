@@ -1,7 +1,7 @@
 {
   "edition": "The feats of the books this app reads, the 2024 handbook first: XPHB, AU, BGG, DSotDQ, EFA, ERLW, FRHoF, FTD, LFL, MTF, PHB, PSK, PSX, RHW, SCC, TCE, XGE",
   "source": "https://5e.tools/feats.html",
-  "fetched": "2026-10-29",
+  "fetched": "2026-10-30",
   "feats": [
     {
       "name": "Ability Score Improvement",

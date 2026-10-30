@@ -47,6 +47,13 @@ check('a spoken recharge keeps its number', creatureText('{@recharge 5}'), 'rech
 /* The 2014 blocks print the hit tag and then the words "to hit" again. */
 check('to hit is not said twice', creatureText('{@atk mw} {@hit 4} to hit, reach 5 ft.'), 'Melee weapon attack: +4 to hit, reach 5 ft.');
 
+/* A blow of several kinds keeps every damage with the word that types it. */
+check('a blow of two kinds keeps both',
+  attackOf('{@atkr m,r} {@hit 7}, reach 5 ft. {@h}8 ({@damage 1d8 + 4}) Piercing damage plus 10 ({@damage 3d6}) Force damage.').damages,
+  [{ dice: '1d8 + 4', type: 'piercing' }, { dice: '3d6', type: 'force' }]);
+check('and a blow of one kind keeps one', attackOf('{@atk mw} {@hit 5} {@damage 2d6 + 3} Slashing damage.').damages,
+  [{ dice: '2d6 + 3', type: 'slashing' }]);
+
 console.log('the action is read in one order');
 const RAW = '{@atk mw} {@hit 5}, reach 5 ft., one target. {@damage 2d6 + 3} Fire damage.';
 const action = actionOf(RAW);

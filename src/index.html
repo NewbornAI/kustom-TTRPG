@@ -661,11 +661,13 @@ body{
 
 .sreach{flex:0 0 auto;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#6f6a8d;white-space:nowrap}
 
-.satkgrid{display:grid;grid-template-columns:auto 40px auto minmax(0,1fr);column-gap:8px;row-gap:2px;align-items:center}
+.satkgrid{display:grid;grid-template-columns:minmax(0,auto) 40px auto minmax(0,1fr);column-gap:8px;row-gap:2px;align-items:center}
 
 .scell-atk{grid-column:1;grid-row:1;display:flex;align-items:baseline;gap:5px;white-space:nowrap}
 
-.scell-dmg{grid-column:1;grid-row:2;display:flex;align-items:baseline;gap:5px;white-space:nowrap}
+.scell-dmg{grid-column:1;grid-row:2;display:flex;align-items:baseline;gap:5px;white-space:nowrap;flex-wrap:wrap;min-width:0}
+
+.splus{color:#6f6a8d;font-size:10px;margin:0 2px}
 
 .scell-die{grid-column:2;grid-row:1/3;display:flex;align-items:center;justify-content:center}
 

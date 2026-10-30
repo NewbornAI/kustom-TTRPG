@@ -17,7 +17,7 @@
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { creatureText, actionOf, termOf } from './markup.mjs';
+import { creatureText, actionOf, parseDamage, termOf } from './markup.mjs';
 
 /* The books, in the order a name without a book is looked up. The 2024
    handbook comes first, then the 2024 monsters, then the old ones. */
@@ -517,6 +517,14 @@ function shapeActions(list) {
       type: read.type,
       text: read.text
     };
+    /* A blow of several kinds keeps every part of its damage, each with the
+       kind it deals: the trident of a mezzoloth is a d8 of piercing and a 3d6
+       of force, and one damage field would keep only the first. */
+    if (read.damages && read.damages.length > 1) {
+      out.damages = read.damages.map((d) => ({
+        dice: d.dice, type: d.type, parts: parseDamage(d.dice)
+      }));
+    }
     if (/multiattack/i.test(a.name || '')) {
       const count = parseMultiattack(raw);
       if (count) out.count = count;

@@ -244,6 +244,11 @@
           text: a.text,
           bonus: deriveBonus(a, ctx, api),
           damage: deriveDamage(a.damageParts, ctx) || a.damage || '',
+          /* A blow of several kinds keeps them apart, each with its own
+             formula and the kind it deals. */
+          damages: (a.damages || []).map(function (d) {
+            return { formula: deriveDamage(d.parts, ctx) || d.dice, type: d.type || '' };
+          }),
           count: deriveCount(a.count, ctx),
           type: a.type || '',
           attack: /^(Melee|Ranged)( or (Melee|Ranged))? (weapon |spell )?attack:/i.test(a.text || ''),
@@ -516,17 +521,23 @@
     function swingBlock(a, edit, res, ix) {
       var core = C();
       var bonus = edit && edit.bonus !== undefined && edit.bonus !== '' ? edit.bonus : a.bonus;
-      var damage = edit && edit.damage !== undefined && edit.damage !== '' ? edit.damage : a.damage;
+      var edited = edit && edit.damage !== undefined && edit.damage !== '';
+      var parts = (!edited && a.damages && a.damages.length
+        ? a.damages
+        : [{ formula: edited ? edit.damage : a.damage, type: damageType(a) }]
+      ).map(function (p) { return { formula: compact(p.formula), type: p.type }; });
+      var formula = parts.map(function (p) { return p.formula; }).join('+');
       return core.horizontalAttackBox.swing({
         name: a.name,
         kind: attackKind(a),
         bonus: bonus,
         bonusOf: bonusOf(bonus),
         range: attackRange(a),
-        damage: compact(damage),
-        type: damageType(a),
-        groups: res ? res.groups : (core.R && core.R.diceIn ? core.R.diceIn(damage || '') : []),
-        flat: res ? res.flat : (core.R && core.R.flatIn ? core.R.flatIn(damage || '') : 0),
+        damage: formula,
+        damages: parts,
+        type: parts[0] ? parts[0].type : damageType(a),
+        groups: res ? res.groups : (core.R && core.R.diceIn ? core.R.diceIn(formula) : []),
+        flat: res ? res.flat : (core.R && core.R.flatIn ? core.R.flatIn(formula) : 0),
         res: res,
         ix: ix
       });
@@ -805,8 +816,21 @@
       if (!action || !action.attack) return false;
       var edit = (card.edit && card.edit.attacks && card.edit.attacks[name]) || {};
       var bonus = edit.bonus !== undefined && edit.bonus !== '' ? edit.bonus : action.bonus;
-      var damage = edit.damage !== undefined && edit.damage !== '' ? edit.damage : action.damage;
+      var edited = edit.damage !== undefined && edit.damage !== '';
+      /* A blow of several kinds rolls all of them at once, so its damage is
+         the sum of the parts the book writes. */
+      var damage = edited ? edit.damage
+        : (action.damages && action.damages.length
+          ? action.damages.map(function (d) { return compact(d.formula); }).join(' + ')
+          : action.damage);
       var result = C().R.rollAttack(bonus, damage, !!card.adv);
+      /* The kinds of a blow that deals several ride on the groups of its
+         damage, in the order the book writes them. */
+      if (action.damages && action.damages.length) {
+        var typed = action.damages.filter(function (d) { return /\d*d\d+/i.test(d.formula || ''); });
+        result.damages = action.damages;
+        (result.groups || []).forEach(function (g, i) { if (typed[i]) g.type = typed[i].type; });
+      }
       if (!card.rolls) card.rolls = {};
       var list = rollsOf(card, name);
       while (list.length <= ix) list.push(null);

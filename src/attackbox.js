@@ -127,12 +127,39 @@
 
     /* One swing: the attack on the left, its damage under it, the die in the
        middle, what was rolled and what it adds up to on the right. */
+    /* The kinds of a blow: one, or several when the book deals two (the
+       trident of a mezzoloth is piercing and force). A caller that names one
+       damage keeps the single line it always had. */
+    function partsOf(o) {
+      if (o.damages && o.damages.length) return o.damages;
+      return [{ formula: o.damage || '', type: o.type || '' }];
+    }
+
+    /* The kinds written after the total, each in its colour. */
+    function kindsOf(parts) {
+      var types = [];
+      parts.forEach(function (p) { if (p.type && types.indexOf(p.type) < 0) types.push(p.type); });
+      return types.map(function (t) {
+        var c = colour(t);
+        return '<em class="stype"' + (c ? ' style="color:' + c + '"' : '') + '>' + esc(t) + '</em>';
+      }).join('<span class="splus">+</span>');
+    }
+
     function swing(opts) {
       var o = opts || {};
       var res = o.res || null;
-      var col = colour(o.type);
-      var beam = trio(o.type);
+      var parts = partsOf(o);
+      var first = parts[0] || { formula: '', type: '' };
+      var col = colour(first.type);
+      var beam = trio(first.type);
       var trioStyle = beam ? ' style="--beam:' + beam + '"' : '';
+      /* The dice of a blow of several kinds take the colour of the kind they
+         come from, in the order the book writes them. */
+      var typed = parts.filter(function (p) { return /\d*d\d+/i.test(p.formula || ''); });
+      var groups = (o.groups || []).map(function (g, i) {
+        if (g.type || !typed[i]) return g;
+        return { label: g.label, rolls: g.rolls, count: g.count, sides: g.sides, type: typed[i].type };
+      });
       var die = dieBig(20, res ? res.total : '');
       var st = o.state || state(res, o.ac, o.flip);
       var out = '<div class="sblock' + (st === 'crit' ? ' crit' : '') + (st === 'miss' ? ' miss' : '') + '"' +
@@ -143,7 +170,10 @@
       out += '<div class="scell-atk"><span class="sk">Attack</span>' +
         '<span class="snum2">' + esc(o.bonus || '') + '</span></div>';
       out += '<div class="scell-dmg"><span class="sk">Damage</span>' +
-        '<span class="sformula"' + (col ? ' style="color:' + col + '"' : '') + '>' + esc(o.damage || '') + '</span></div>';
+        parts.map(function (p) {
+          var c = colour(p.type);
+          return '<span class="sformula"' + (c ? ' style="color:' + c + '"' : '') + '>' + esc(p.formula || '') + '</span>';
+        }).join('<span class="splus">+</span>') + '</div>';
       out += '<div class="scell-die"><button type="button" class="sdie" data-role="roll"' +
         ' data-ix="' + (o.ix || 0) + '" aria-label="Roll the attack">' + die + '</button></div>';
       out += '<div class="scell-hit"><span class="sdmini">' + dieIcon(20) + '</span>' +
@@ -153,11 +183,10 @@
       /* A miss deals nothing, so the damage roll and its total stay off the
          box; the outline and the attack roll say the rest. */
       if (st !== 'miss') {
-        out += '<div class="scell-dmgres">' + diceShapes(o.groups, !!res, col) +
+        out += '<div class="scell-dmgres">' + diceShapes(groups, !!res, col) +
           (o.flat ? '<span class="smod">' + sign(o.flat) + '</span>' : '') + '</div>';
         out += '<div class="scell-dmgtot"><span class="snum2"' + (col ? ' style="color:' + col + '"' : '') + '>' +
-          (res ? res.damage : '--') + '</span>' +
-          (o.type ? '<em class="stype"' + (col ? ' style="color:' + col + '"' : '') + '>' + esc(o.type) + '</em>' : '') + '</div>';
+          (res ? res.damage : '--') + '</span>' + kindsOf(parts) + '</div>';
       }
       out += '</div>';
       /* A line the page brings rides inside the box, under the swing: the
