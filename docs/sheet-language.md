@@ -1,0 +1,8 @@
+# The sheet language
+
+*What a character carries as config rather than code: values by name, effects, its CSS, its library, and the wiring of a page the fairy wrote. The router is [AGENTS.md](../AGENTS.md).*
+
+- **the sheet language (`src/index.html`, the rules: `ATTRIBUTES`, `effectValue`, `sheetGet`, `sheetSet`, `effectsOf`, `withEffects`)**: every value of a character has a name (`init`, `AC`, `save.dex`, `skill.stealth.prof`, `hpMax`, `slot.3`, `uses.<key>`…); a formula reads any of them, a set writes the settable ones once, and an effect (`init + prof`; several split by `;`) on a feature or a worn item moves the ones marked effect every time the sheet is drawn. `attributeList()` is the documentation the fairy reads; its tools are `sheet_get`, `sheet_set`, `set_effect`
+- **`rec.layout` (shell: `scopeCss`, `setLayout`, `layoutMap`)**: a character's own CSS for a page, each selector held inside `#view-<page>`, no `url()` or `@import`, worn while it is played; the fairy reads `layout_map` (elements, boxes, what wraps or overflows) and writes `style_page`
+- **`src/own.js`**: the character's own library: `rec.library = {features, spells, items}`, entries in the shape of the books (config, never code), laid into the in-memory books while the character is played (`core.own.sync` before each paint) so every page finds them like book entries; `core.own.write` checks an entry's shape
+- **`src/wire.js`**: the wiring of a written page: `data-show`, `data-pips`, `data-add` (with `data-cost`), `data-set`, `data-spend` and `data-roll` work with no listener, save the sheet and repaint; `block.js` runs it around every plugin page's mount and render, and gives page code `C`, the core

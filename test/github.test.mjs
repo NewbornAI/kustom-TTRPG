@@ -235,7 +235,55 @@ console.log('a campaign');
   cShelf.useCampaign('gm/second');
   cShelf.removeCampaign('gm/second');
   check('leaving the campaign in use goes back to the shelf of the sign in', [cShelf.campaigns().length, cShelf.current(), cShelf.repo()], [1, null, 'NewbornAI/kustom-mandal']);
-  check('a name is made a repository name', [cShelf.slug('Curse of Strahd'), cShelf.slug('Épées & Dragons!')], ['curse-of-strahd', 'epees-dragons']);
+  /* GitHub answers 404 for a repository a token may not see. */
+  {
+    const bHeld = { gh: { token: 'gho_signedin', expires: 0 } };
+    const bNet = { putFile: () => { const e = new Error('Not Found'); e.status = 404; return Promise.reject(e); } };
+    const bShelf = S({ net: bNet, store: { get: (k) => bHeld[k], set: (k, v) => { bHeld[k] = v; } }, openUrl: () => {}, packageOf: (rec) => ({ record: rec }) });
+    check('a shelf not refused yet is not called refused', bShelf.refused(), false);
+    const barred = await bShelf.put({ char: { name: 'Pip' } });
+    check('a sign in the shelf refuses gets a sentence and not a 404', [barred.ok, barred.why], [false, 'this sign in cannot write NewbornAI/kustom-mandal: start or join a campaign, in the settings']);
+    check('the shelf that refused is remembered', bShelf.refused(), true);
+    bNet.putFile = () => Promise.resolve({ content: { html_url: 'u' } });
+    check('a push that gets through clears it', [(await bShelf.put({ char: { name: 'Pip' } })).ok, bShelf.refused()], [true, false]);
+    bNet.putFile = () => { const e = new Error('Not Found'); e.status = 404; return Promise.reject(e); };
+    bShelf.addCampaign({ name: 'Gone', repo: 'gm/gone', key: 'github_pat_gone' });
+    check('a campaign whose key is refused asks for a new invite', /new invite/.test((await bShelf.put({ char: { name: 'Pip' } })).why), true);
+  }
+  /* A switch keeps every key, and the shelf of a sign in stays a place to go. */
+  {
+    const sHeld = {};
+    const sShelf = S({ net: {}, store: { get: (k) => sHeld[k], set: (k, v) => { sHeld[k] = v; } }, openUrl: () => {}, packageOf: (rec) => ({ record: rec }) });
+    sShelf.addCampaign({ name: 'One', repo: 'gm/one', key: 'github_pat_one' });
+    sShelf.addCampaign({ name: 'Two', repo: 'gm/two', key: 'github_pat_two' });
+    check('the key of a campaign is not a sign in', [sShelf.signedIn(), sShelf.hasSession(), sShelf.ownRepo()], [true, false, 'NewbornAI/kustom-mandal']);
+    sShelf.useCampaign('');
+    check('off the campaigns, both keys are still there', [sShelf.current(), sShelf.campaigns().map((c) => c.key)], [null, ['github_pat_one', 'github_pat_two']]);
+    sShelf.useCampaign('gm/one');
+    check('back in one tap, with its key and nothing to paste', [sShelf.repo(), sShelf.token()], ['gm/one', 'github_pat_one']);
+    sHeld.gh = { token: 'gho_signedin', expires: 0 };
+    check('a sign in behind a campaign is seen', [sShelf.hasSession(), sShelf.token()], [true, 'github_pat_one']);
+  }
+  /* The owner comes back with a new key, and no invite: the repository and its
+     file are already there, and the file is written over. */
+  {
+    const oHeld = {};
+    const oPuts = [];
+    const oNet = {
+      whoAmI: () => Promise.resolve('gm'),
+      api: (method, path, body) => {
+        if (path === '/repos/gm/epicentre') return Promise.resolve({ full_name: 'gm/epicentre' });
+        if (path.indexOf('/user/repos') === 0) return Promise.resolve([{ full_name: 'gm/epicentre', name: 'epicentre', permissions: { push: true } }]);
+        if (path === '/repos/gm/epicentre/contents/campaign.json' && method === 'GET') return Promise.resolve({ sha: 'abc' });
+        if (method === 'PUT') { oPuts.push(body); return Promise.resolve({}); }
+        return Promise.reject(Object.assign(new Error('Not Found'), { status: 404 }));
+      }
+    };
+    const oShelf = S({ net: oNet, store: { get: (k) => oHeld[k], set: (k, v) => { oHeld[k] = v; } }, openUrl: () => {}, packageOf: (rec) => ({ record: rec }) });
+    const back = await oShelf.claimCampaign('Epicentre', 'github_pat_newkey00000000000000000000', '');
+    check('the owner rejoins a campaign with a new key and no invite', [back.ok, oShelf.repo(), oShelf.token(), oPuts[0].sha], [true, 'gm/epicentre', 'github_pat_newkey00000000000000000000', 'abc']);
+  }
+  check('a name is made a repository name',[cShelf.slug('Curse of Strahd'), cShelf.slug('Épées & Dragons!')], ['curse-of-strahd', 'epees-dragons']);
   check('the page that makes the repository is filled in, private', cShelf.newRepoUrl('Curse of Strahd'), 'https://github.com/new?name=curse-of-strahd&description=The%20characters%20of%20the%20campaign%20Curse%20of%20Strahd%2C%20kept%20by%20custom-sheet&visibility=private');
   const keyPage = new URL(cShelf.keyUrl('Curse of Strahd'));
   check('the page that makes the key asks for contents write, a year, and nothing else', [keyPage.pathname, keyPage.searchParams.get('contents'), keyPage.searchParams.get('expires_in'), [...keyPage.searchParams.keys()].sort()], ['/settings/personal-access-tokens/new', 'write', '366', ['contents', 'description', 'expires_in', 'name']]);
@@ -245,24 +293,49 @@ console.log('a campaign');
   const claimed = await cShelf.claimCampaign('Strahd', 'github_pat_goodkey0000000000000000', 'https://github.com/gm/strahd');
   check('a key and the address of its repository start the campaign, and the first file is written', [claimed.ok, cShelf.current().name, cCalls.filter((c) => c[0] === 'PUT' && c[1].indexOf('campaign.json') > 0).length], [true, 'Strahd', 1]);
   /* The key is checked to open one repository only. */
-  const wide = { rows: [] };
+  const wide = { rows: [], asked: [], answer: 403 };
   const wNet = Object.assign({}, cNet, {
     api: (method, path, body, token) => {
       if (path.indexOf('/user/repos') === 0) return Promise.resolve(wide.rows);
       if (path === '/repos/gm/strahd') return Promise.resolve({ full_name: 'gm/strahd' });
+      if (path === '/repos/NewbornAI/kustom-mandal') return Promise.resolve({ full_name: 'NewbornAI/kustom-mandal' });
+      if (method === 'POST' && path.slice(-9) === '/git/refs') {
+        wide.asked.push(path);
+        const e = new Error('probe'); e.status = wide.answer; return Promise.reject(e);
+      }
       return cNet.api(method, path, body, token);
     }
   });
   const wShelf = S({ net: wNet, store: { get: (k) => cHeld.ui[k], set: (k, v) => { cHeld.ui[k] = v; } }, openUrl: () => {}, packageOf: (rec) => ({ record: rec }) });
   const KEY = 'github_pat_goodkey0000000000000000';
-  wide.rows = [{ full_name: 'gm/strahd', permissions: { push: true } }, { full_name: 'gm/secret-notes', permissions: { push: true } }, { full_name: 'gm/forked', permissions: { push: false } }];
+  wide.rows = [{ full_name: 'gm/strahd', private: true, permissions: { push: true } }, { full_name: 'gm/secret-notes', private: true, permissions: { push: true } }, { full_name: 'gm/forked', private: true, permissions: { push: false } }];
   cHeld.ui = {};
   const broad = await wShelf.claimCampaign('Strahd', KEY, 'gm/strahd');
-  check('a key that opens other repositories than the campaign is refused, and says how to make it again',
-    [broad.ok, broad.tooWide, /2 repositories/.test(broad.why), /Only select repositories/.test(broad.why), wShelf.campaigns().length], [false, true, true, true, 0]);
-  wide.rows = [{ full_name: 'gm/strahd', permissions: { push: true } }];
+  check('a key that opens another private repository is refused, names it, and says how to make it again',
+    [broad.ok, broad.tooWide, /gm\/secret-notes/.test(broad.why), /Only select repositories/.test(broad.why), wShelf.campaigns().length], [false, true, true, true, 0]);
+  /* Every key lists every public repository, with the rights of its owner. */
+  const PUBLIC = [{ full_name: 'gm/strahd', private: true, permissions: { push: true } }, { full_name: 'gm/open-one', private: false, permissions: { push: true } }, { full_name: 'gm/open-two', private: false, permissions: { push: true } }];
+  wide.rows = PUBLIC;
+  wide.answer = 422;
+  wide.asked = [];
+  const allOfThem = await wShelf.claimCampaign('Strahd', KEY, 'gm/strahd');
+  check('a key that may write a public repository is refused, at the first one asked', [allOfThem.ok, allOfThem.tooWide, /gm\/open-one/.test(allOfThem.why), wide.asked.length, wShelf.campaigns().length], [false, true, true, 1, 0]);
+  wide.answer = 403;
+  wide.asked = [];
+  const limited = await wShelf.claimCampaign('Strahd', KEY, 'gm/strahd');
+  check('a key limited to the campaign is taken though it lists the public repositories, and the campaign itself is not asked', [limited.ok, wide.asked, wShelf.campaigns().length], [true, ['/repos/gm/open-one/git/refs', '/repos/gm/open-two/git/refs'], 1]);
+  cHeld.ui = {};
+  wide.rows = [{ full_name: 'gm/strahd', private: true, permissions: { push: true } }];
   const narrow = await wShelf.claimCampaign('Strahd', KEY, 'gm/strahd');
   check('a key that opens the campaign only is taken', [narrow.ok, wShelf.campaigns().length], [true, 1]);
+  cHeld.ui = {};
+  const ownApp = await wShelf.claimCampaign('Epicentre', KEY, 'https://github.com/NewbornAI/kustom-mandal');
+  check('a key of the repository of the app is refused, for an invite would hand it out', [ownApp.ok, /repository of the app/.test(ownApp.why), wShelf.campaigns().length], [false, true, 0]);
+  cHeld.ui = {};
+  wide.rows = [{ full_name: 'gm/renamed', name: 'renamed', private: true, permissions: { push: true } }, { full_name: 'gm/open-one', name: 'open-one', private: false, permissions: { push: true } }];
+  const renamed = await wShelf.claimCampaign('Nothing like it', KEY, '');
+  check('the one private repository of a key is found under another name, whatever public ones it lists', [renamed.ok, renamed.campaign && renamed.campaign.repo], [true, 'gm/renamed']);
+  cHeld.ui = {};
   const classic = await wShelf.claimCampaign('Strahd', 'ghp_' + 'a'.repeat(36), 'gm/strahd');
   check('a classic key, which cannot be limited to a repository, is refused', [classic.ok, /classic/.test(classic.why)], [false, true]);
 

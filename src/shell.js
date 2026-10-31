@@ -908,6 +908,9 @@
          declare their files, read by every page that needs them */
       weapons: [],
       gear: { armour: [], magic: [] },
+      /* every item of the books, beside the gear the sheet computes with:
+         filled by the equipment page when its picker opens */
+      items: [],
       /* the feats of the books, filled by the features page */
       feats: [],
       /* the species of the books and the rules of making a character,
@@ -1020,6 +1023,10 @@
     }
 
     function close() {
+      /* A layer that holds the only way forward stays while nothing else
+         is there to go back to. */
+      var held = top();
+      if (held && held.hold && held.hold()) return;
       var layer = stack.pop();
       if (layer) layer.scroll = el.sheetIn.scrollTop;
       if (layer && layer.onClose) layer.onClose();
@@ -1039,6 +1046,7 @@
       el.condTip.hidden = true;
       if (!layer) { el.sheet.hidden = true; return; }
       el.sheet.classList.toggle('dock', !!layer.dock);
+      el.sheetClose.hidden = !!(layer.hold && layer.hold());
       el.sheet.hidden = false;
       el.sheetTitle.textContent = layer.title || '';
       el.sheetTag.textContent = layer.tag || '';
@@ -1335,6 +1343,7 @@
         id: 'intake',
         title: 'A character',
         dock: true,
+        hold: function () { return !Object.keys(state.characters).length; },
         rows: intakeRows() +
           '<div class="crow ghrow' + (gh.open ? ' open' : '') + '" role="button" tabindex="0" data-gh="1">' +
           '<span class="ghico">' + GH_MARK + '</span>' +

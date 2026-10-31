@@ -22,7 +22,7 @@ The rules text comes from the SRD. The characters are yours. The shape of the ap
 | background | The story of the character: the event that pushed them out, and what they want now. Off until the character has one. |
 | settings | The pages of the app, the shelf, the exchange and the update. |
 
-Each page is one file in `src/pages/` and carries its own blurb. The seams, the package format and the house rules are in [`AGENTS.md`](AGENTS.md).
+Each page is one file in `src/pages/` and carries its own blurb. The seams and the house rules are in [`AGENTS.md`](AGENTS.md), the package format in [`docs/package.md`](docs/package.md).
 
 ## Install it
 
@@ -34,7 +34,7 @@ The APK carries the page in its assets, so it works offline and keeps its charac
 https://github.com/NewbornAI/kustom-TTRPG/releases/latest/download/custom-sheet.apk
 ```
 
-Open that on the phone, allow the install, and the icon lands on the home screen. The signing key is deliberately not in this repository, so an APK you build yourself cannot update that one in place: uninstall the old one first.
+Open that on the phone, allow the install, and the icon lands on the home screen. A private repository answers that link with a 404 unless the browser is signed in to GitHub with access to it. The signing key is deliberately not in this repository, so an APK you build yourself cannot update that one in place: uninstall the old one first.
 
 ### On a desktop
 
@@ -52,6 +52,7 @@ node build.mjs                                  # src to dist, the font and the 
 node test/rules.test.mjs                        # the rules engine and the data
 node test/github.test.mjs                       # the sign in and the calls to GitHub
 node test/address.test.mjs                      # the address of a file on GitHub
+node test/markup.test.mjs                       # the grammar of the upstream text
 node tools/smoke.mjs                            # the shell in Chromium (needs playwright)
 node tools/fetch-5e-data.mjs                    # refetch the data from 5e.tools
 node tools/serve.mjs                            # serve the build and the whole bestiary
@@ -80,15 +81,15 @@ Two repositories hold this app. [`kustom-TTRPG`](https://github.com/NewbornAI/ku
 
 ## The characters
 
-A device with no character opens on the ways in: a class, nothing, a file someone sent, a link, or a character from the shelf. Nothing is ever decided by the dice alone unless you ask: the Randominator rolls a whole character (class, level, subclass, species, scores, a background of its own) through the creator's own checks, then asks the fairy to name it, dress it and paint it. Nothing ships inside the app.
+A device with no character opens on the ways in: a class, the Randominator, a file someone sent, a link, or a character from the shelf. Nothing is ever decided by the dice alone unless you ask: the Randominator rolls a whole character (class, level, subclass, species, scores, a background of its own) through the creator's own checks, then asks the fairy to name it, dress it and paint it. Nothing ships inside the app.
 
-**The shelf** is `characters/`, one package per file, read by every app with no secret at all. Drop a file in and commit it, or open a branch for a character that is not ready to share. The app can also write back to GitHub with a device flow, so nobody types a token. The format and the calls are in [`AGENTS.md`](AGENTS.md).
+**The shelf** is `characters/`, one package per file, read by every app with no secret at all. Drop a file in and commit it, or open a branch for a character that is not ready to share. The app can also write back to GitHub with a device flow, so nobody types a token. The format is in [`docs/package.md`](docs/package.md) and the calls in [`docs/shelf.md`](docs/shelf.md).
 
-**A campaign** is a repository the game master runs, one per table, and the shelf of every player in it. In the settings, under Campaign, the game master taps *Start a campaign*, names it, and the app opens the two pages of GitHub it needs already filled in: a private repository, and a key limited to that one repository (Contents, read and write). GitHub starts that page on All repositories and takes no address for the choice, so the app checks the pasted key and refuses one that opens more than the campaign. The key is pasted back with one tap, the app writes `campaign.json` to prove it works, and shows the invite: a QR code to scan across the table and a link to send. A player taps *Join a campaign* and pastes the link or scans the code, and types nothing. A character's picture is a file of its own beside it (`characters/pip.webp`), written only when it changes, so it can be seen on GitHub and arrives with the character. Players can join several campaigns and switch between them; *Leave* forgets one on that phone. The invite holds the key, so anyone with it can read and change that repository's characters: it is for the table only, the game master can revoke the key on GitHub, and the history of the repository keeps every version of every character.
+**A campaign** is a repository the game master runs, one per table, and the shelf of every player in it. In the settings, under Campaign, the game master taps *Start a campaign*, names it, and the app opens the two pages of GitHub it needs already filled in: a private repository, and a key limited to that one repository (Contents, read and write). GitHub starts that page on All repositories and takes no address for the choice, so the app checks the pasted key and refuses one that opens more than the campaign. The key is pasted back with one tap, the app writes `campaign.json` to prove it works, and shows the invite: a QR code to scan across the table and a link to send. A player taps *Join a campaign* and pastes the link or scans the code, and types nothing. A character's picture is a file of its own beside it (`characters/pip.webp`), written only when it changes, so it can be seen on GitHub and arrives with the character. Players can join several campaigns, and *Play* on any row of Campaign switches the shelf in one tap, the shelf of a sign in included, and every key stays. *Forget*, under the row's menu, removes a key from that phone and offers the invite first; the owner of the repository can come back without one, by *Start a campaign* with a new key, skipping the repository step. The invite holds the key, so anyone with it can read and change that repository's characters: it is for the table only, the game master can revoke the key on GitHub, and the history of the repository keeps every version of every character.
 
 ## For agents
 
-The README is the human entry point. [`AGENTS.md`](AGENTS.md) is the agent one: a table of jobs, the layout, the seams, the record, the package format, the traps and the house rules. Start there if you are about to change something.
+The README is the human entry point. [`AGENTS.md`](AGENTS.md) is the agent one: the layout, a table of jobs, the traps and the house rules, each pointing to its detail in `docs/` (the record, the package format, the fairy and the rest). Start there if you are about to change something.
 
 ## The licence
 
@@ -108,6 +109,7 @@ tools/        the build, the data fetch, the server, the icon maker
 test/         the test suites
 characters/   the shelf: one package per file
 dist/         the build output, and the package that ships
+docs/         the detail behind AGENTS.md, one subject per file
 ```
 
 One file per subject. The file-level map and the table of jobs are in [`AGENTS.md`](AGENTS.md).

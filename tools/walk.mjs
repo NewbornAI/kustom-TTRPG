@@ -1,6 +1,6 @@
 /* The walk: the shell's check, in a real browser.
 
-   node tools/walk.mjs --origin http://127.0.0.1:8123 --out shots --tag base
+   node tools/walk.mjs --origin http://127.0.0.1:8124 --out shots --tag base
 
    The shell is executed by no suite, because the suites have no DOM. The walk
    is what runs it: it opens the built page at 360x720, plants the fixture of
@@ -27,7 +27,7 @@ function arg(name, fallback) {
   return fallback;
 }
 
-const origin = arg('--origin', 'http://127.0.0.1:8123');
+const origin = arg('--origin', 'http://127.0.0.1:8124');
 const out = resolve(root, arg('--out', 'shots'));
 const tag = arg('--tag', 'walk');
 
@@ -58,7 +58,7 @@ function cliScript() {
 
 const CLI = cliScript();
 if (!CLI) {
-  console.error('the walk needs playwright-cli: npm install -g playwright-cli, or set PLAYWRIGHT_CLI_JS');
+  console.error('the walk needs playwright-cli: npm install -g @playwright/cli, or set PLAYWRIGHT_CLI_JS');
   process.exit(1);
 }
 

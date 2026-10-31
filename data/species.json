@@ -1,7 +1,7 @@
 {
   "edition": "The species of the 2024 handbook, the text from 5e.tools",
   "source": "https://5e.tools",
-  "fetched": "2026-10-30",
+  "fetched": "2026-10-31",
   "species": [
     {
       "name": "Dragonborn",
@@ -396,8 +396,8 @@
             {
               "t": "list",
               "items": [
-                "You know the Minor Illusion cantrip. You also always have the Speak with Animals spell prepared. You can cast it without a spell slot a number of times equal to your Proficiency, and you regain all expended uses when you finish a Long Rest. You can also use any spell slots you have to cast the spell.",
-                "You know the Mending and Prestidigitation cantrips. In addition, you can spend 10 minutes casting Prestidigitation to create a Tiny clockwork device (AC 5, 1 HP), such as a toy, fire starter, or music box. When you create the device, you determine its function by choosing one effect from Prestidigitation; the device produces that effect whenever you or another creature takes a Bonus Action to activate it with a touch. If the chosen effect has options within it, you choose one of those options for the device when you create it. For example, if you choose the spell's ignite-extinguish effect, you determine whether the device ignites or extinguishes fire; the device doesn't do both. You can have three such devices in existence at a time, and each falls apart 8 hours after its creation or when you dismantle it with a touch as a Utilize action."
+                "Forest Gnome. You know the Minor Illusion cantrip. You also always have the Speak with Animals spell prepared. You can cast it without a spell slot a number of times equal to your Proficiency, and you regain all expended uses when you finish a Long Rest. You can also use any spell slots you have to cast the spell.",
+                "Rock Gnome. You know the Mending and Prestidigitation cantrips. In addition, you can spend 10 minutes casting Prestidigitation to create a Tiny clockwork device (AC 5, 1 HP), such as a toy, fire starter, or music box. When you create the device, you determine its function by choosing one effect from Prestidigitation; the device produces that effect whenever you or another creature takes a Bonus Action to activate it with a touch. If the chosen effect has options within it, you choose one of those options for the device when you create it. For example, if you choose the spell's ignite-extinguish effect, you determine whether the device ignites or extinguishes fire; the device doesn't do both. You can have three such devices in existence at a time, and each falls apart 8 hours after its creation or when you dismantle it with a touch as a Utilize action."
               ]
             }
           ],
@@ -441,12 +441,12 @@
             {
               "t": "list",
               "items": [
-                "As a Bonus Action, you magically teleport up to 30 feet to an unoccupied space you can see.",
-                "When you hit a target with an attack roll and deal damage to it, you can also deal [[d:1d10 Fire damage]] to that target.",
-                "When you hit a target with an attack roll and deal damage to it, you can also deal [[d:1d6 Cold damage]] to that target and reduce its Speed by 10 feet until the start of your next turn.",
-                "When you hit a Large or smaller creature with an attack roll and deal damage to it, you can give that target the [[c:Prone]] condition.",
-                "When you take damage, you can take a Reaction to roll 1d12. Add your Constitution modifier to the number rolled and reduce the damage by that total.",
-                "When you take damage from a creature within 60 feet of you, you can take a Reaction to deal [[d:1d8 Thunder damage]] to that creature."
+                "Cloud's Jaunt (Cloud Giant). As a Bonus Action, you magically teleport up to 30 feet to an unoccupied space you can see.",
+                "Fire's Burn (Fire Giant). When you hit a target with an attack roll and deal damage to it, you can also deal [[d:1d10 Fire damage]] to that target.",
+                "Frost's Chill (Frost Giant). When you hit a target with an attack roll and deal damage to it, you can also deal [[d:1d6 Cold damage]] to that target and reduce its Speed by 10 feet until the start of your next turn.",
+                "Hill's Tumble (Hill Giant). When you hit a Large or smaller creature with an attack roll and deal damage to it, you can give that target the [[c:Prone]] condition.",
+                "Stone's Endurance (Stone Giant). When you take damage, you can take a Reaction to roll 1d12. Add your Constitution modifier to the number rolled and reduce the damage by that total.",
+                "Storm's Thunder (Storm Giant). When you take damage from a creature within 60 feet of you, you can take a Reaction to deal [[d:1d8 Thunder damage]] to that creature."
               ]
             }
           ],

@@ -19,6 +19,7 @@ import { fileURLToPath } from 'node:url';
 import { clean, textOf, cellText, blocksFrom, references } from './markup.mjs';
 import { BOOKS, BOOK_YEARS, newerBook, loadBestiary, creatureRecord } from './bestiary.mjs';
 import { writeSpecies } from './species.mjs';
+import { itemEntries, writeItems } from './items.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const cache = resolve(root, 'tools', '.5e-cache');
@@ -1104,50 +1105,6 @@ function bonusNumber(text) {
    printing it points at is the one that stands. */
 const gearSeen = (item) => !(item.reprintedAs || []).length && !!gearBook[item.source];
 
-/* The text of an item. Some items keep their text in a shared entry and
-   point at it, and the shared text holds the values of the item in its
-   placeholders: the dragon scale mail is written once for the seven
-   dragons, and each one names its own colour and its own resistance. */
-function itemEntries(item) {
-  const value = (field) => {
-    const v = item[field];
-    if (v === undefined || v === null) return '';
-    if (Array.isArray(v)) return v.join(', ');
-    return String(v);
-  };
-  const fill = (node) => {
-    if (typeof node === 'string') return node
-      .replace(/\{\{getFullImmRes item\.([A-Za-z0-9_]+)\}\}/g, (m, field) => {
-        const v = value(field);
-        return v ? v.charAt(0).toUpperCase() + v.slice(1) : v;
-      })
-      .replace(/\{\{item\.([A-Za-z0-9_]+)\}\}/g, (m, field) => value(field));
-    if (Array.isArray(node)) return node.map(fill);
-    if (node && typeof node === 'object') {
-      const out = {};
-      Object.keys(node).forEach((k) => { out[k] = fill(node[k]); });
-      return out;
-    }
-    return node;
-  };
-  const out = [];
-  (item.entries || []).forEach((entry) => {
-    if (typeof entry === 'string') {
-      const m = entry.match(/^\{#itemEntry ([^}]*)\}$/);
-      if (m) {
-        const bits = m[1].split('|');
-        const shared = (itemBook.itemEntry || []).find((e) => e.name === bits[0] && e.source === (bits[1] || item.source));
-        if (shared) {
-          fill(shared.entriesTemplate || []).forEach((e) => out.push(e));
-          return;
-        }
-      }
-    }
-    out.push(fill(entry));
-  });
-  return out;
-}
-
 /* The armour: the base table of the books and the magic armour of the same
    books, each with the class it gives and the dexterity that reaches it. */
 const armour = []
@@ -1168,7 +1125,7 @@ const armour = []
     acBonus: i.bonusAc === undefined ? undefined : bonusNumber(i.bonusAc),
     /* The book and the page it sits on, so a reader can look it up. */
     ref: refOf(i),
-    blocks: blocksFrom(itemEntries(i))
+    blocks: blocksFrom(itemEntries(i, itemBook))
   }));
 
 /* What a magic item does to the sheet, in the sheet language: the armour
@@ -1208,7 +1165,7 @@ const magic = itemList
     effect: effectOfItem(i) || undefined,
     /* The book and the page it sits on, so a reader can look it up. */
     ref: refOf(i),
-    blocks: blocksFrom(itemEntries(i))
+    blocks: blocksFrom(itemEntries(i, itemBook))
   }))
   .filter((i) => i.acBonus !== undefined || i.attackBonus !== undefined || i.damageBonus !== undefined || i.effect);
 
@@ -1239,6 +1196,10 @@ writeFileSync(
   'utf8'
 );
 console.log('wrote ' + armour.length + ' pieces of armour and ' + magic.length + ' magic items of ' + gearSources.length + ' books (' + gearSources.join(', ') + ')');
+
+/* The whole catalogue of items beside the gear the sheet computes with, from
+   the same cache and by the same module the standalone run uses. */
+console.log('wrote ' + writeItems({ cache: cache }).length + ' items of the books');
 
 /* ---------- the species ---------- */
 

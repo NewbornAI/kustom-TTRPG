@@ -1721,6 +1721,17 @@ console.log('the agent');
 }
 
 {
+  const items = JSON.parse(readFileSync(resolve(root, 'data', 'items.json'), 'utf8')).items;
+  const amulet = items.find((x) => x.name === 'Amulet of Health') || {};
+  check('the catalogue of items is the shelf and not only the gear the sheet computes with', items.length > 1000, true);
+  check('an item that sets a score is in it, with its rarity, its attunement and its words',
+    [amulet.rarity, amulet.attune, /Constitution score is 19/.test(JSON.stringify(amulet.blocks || []))].join(' | '), 'rare | true | true');
+  check('and it names what kind of thing it is', amulet.kind, 'Wondrous Item');
+  check('the picker reads the catalogue when it opens, not when the app starts',
+    harness.source('pages/equipment.js').indexOf("C.library.data('items').then(") >= 0, true);
+}
+
+{
   const feats = harness.source('pages/features.js');
   check('a feature card carries a short description in italics, the player\'s or the book\'s, editable',
     [feats.indexOf('function shortOf(data)') >= 0, feats.indexOf("'.fcard .fdt{font-style:italic}',") >= 0, feats.indexOf("roleEl.dataset.role === 'descin'") >= 0].join('/'), 'true/true/true');
@@ -1802,9 +1813,9 @@ check('a tapped hit die shows what is left even when its count has the focus',
   const sh = harness.source('shell.js');
   const java = harness.source('../app/java/com/newbornai/customsheet/MainActivity.java');
   const manifest = harness.source('../app/AndroidManifest.xml');
-  check('the settings carry a Campaign section: start, join, invite, switch, leave',
+  check('the settings carry a Campaign section: start, join, invite, switch, forget',
     [st.indexOf('id="settingsCampaign"') >= 0, st.indexOf("'Start a campaign as the game master'") >= 0, st.indexOf("'Join a campaign with its invite'") >= 0,
-      st.indexOf('function openInvite(c)') >= 0, st.indexOf('shelf.useCampaign(c.id)') >= 0, st.indexOf('shelf.removeCampaign(c.id)') >= 0].join('/'), 'true/true/true/true/true/true');
+      st.indexOf('function openInvite(c)') >= 0, st.indexOf('shelf.useCampaign(id)') >= 0, st.indexOf('shelf.removeCampaign(c.id)') >= 0].join('/'), 'true/true/true/true/true/true');
   check('the invite is a link of the repository with the campaign in the fragment, drawn as a QR code, and the paste door takes it',
     [sh.indexOf("LINK_BASE + 'c=' + toBase64Url") >= 0, sh.indexOf('qrSvg: qrSvg') >= 0, sh.indexOf('if (readInvite(where)) {') >= 0].join('/'), 'true/true/true');
   check('a player joins from the clipboard or the camera, and the camera is the only thing asked of the phone',

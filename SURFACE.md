@@ -19,7 +19,7 @@ with no reinstall of the phone:
 | add a class | `src/classes/<name>.js` | the class registry, `src/klass.js` |
 | add rules data | `data/*.json` | `tools/fetch-5e-data.mjs`, never a hand-written value |
 | reach a seam a page lacks | `src/shell.js`, `src/block.js`, `src/card.js`, `src/record.js` | as a branch of its own, which meets the same gate |
-| look at what it did | the suites, the walk, the page in a browser | `node build.mjs`, `test/*.test.mjs`, `tools/walk.mjs`, playwright-cli |
+| look at what it did | the suites, the walk, the page in a browser | `test/*.test.mjs`, `tools/walk.mjs`, the driver of `.claude/skills/run-kustom-mandal` |
 
 Out of its surface on purpose: `characters/`, which is Mandal's shelf; the store
 of the phone; the keystore and the package; and the backup of the run.

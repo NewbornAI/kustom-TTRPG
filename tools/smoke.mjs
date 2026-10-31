@@ -508,6 +508,51 @@ try {
   await page.evaluate(() => Sheet.show('character'));
   await wait(200);
 
+  console.log('the catalogue of items');
+  /* The picker carries every item of the books, not only the gear the sheet
+     computes with: an amulet that sets a Constitution is found by its name,
+     goes on the sheet, and carries the words of the book. */
+  await page.evaluate(() => Sheet.show('equipment'));
+  await wait(500);
+  await page.click('#gearAdd');
+  await wait(300);
+  await page.fill('#sheetSearch', 'amulet of health');
+  let amulet = '';
+  for (let k = 0; k < 40 && !amulet; k++) {
+    await wait(250);
+    amulet = await page.evaluate(() => {
+      const hit = Array.from(document.querySelectorAll('#sheetList .crow')).find((r) => /Amulet of Health/.test(r.textContent));
+      return hit ? hit.textContent.replace(/\s+/g, ' ').trim() : '';
+    });
+  }
+  check('the picker finds an item the sheet does not compute, and names its rarity', /Amulet of Health/.test(amulet) && /rare/i.test(amulet), true);
+  await page.evaluate(() => {
+    const hit = Array.from(document.querySelectorAll('#sheetList .crow')).find((r) => /Amulet of Health/.test(r.textContent));
+    if (hit) hit.click();
+  });
+  await wait(400);
+  check('and it goes on the sheet', await page.evaluate(() => {
+    const s = JSON.parse(localStorage.getItem('customsheet.state.v3'));
+    return s.characters[s.current].equipment.items.map((i) => i.name).indexOf('Amulet of Health') >= 0;
+  }), true);
+  /* The row of the item on the page, painted: the page under the layer keeps
+     the rows it had until it is painted again. */
+  await page.evaluate(() => Sheet.show('equipment'));
+  await wait(400);
+  await page.evaluate(() => {
+    /* A row of the sheet keeps its name in a field, not in its text. */
+    const hit = Array.from(document.querySelectorAll('.gitem')).find((r) => {
+      const field = r.querySelector('input');
+      return field && /Amulet of Health/.test(field.value);
+    });
+    if (hit) hit.click();
+  });
+  await wait(400);
+  check('a tap on the row reads what the book says of it',
+    await page.evaluate(() => (document.getElementById('sheetText').textContent || '').indexOf('Constitution score is 19') >= 0), true);
+  await page.evaluate(() => window.__sheetBack());
+  await wait(300);
+
   console.log('the picture and the characters');
   /* The name in the banner opens the picture over the whole screen, and back
      closes it; the characters are cards with their pictures. */

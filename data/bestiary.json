@@ -1,7 +1,7 @@
 {
   "edition": "The bestiary, every monster of the books the app carries, the newest printing of each name, from 5e.tools",
   "source": "https://5e.tools/bestiary.html",
-  "fetched": "2026-10-30",
+  "fetched": "2026-10-31",
   "creatures": {
     "aboleth|xmm": {
       "name": "Aboleth",

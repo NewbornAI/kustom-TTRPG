@@ -392,6 +392,8 @@
       if (!ok) return;
       api.toast('putting it on the shelf');
       return shelf.put(api.character()).then(function (answer) {
+        api.save();
+        api.refresh();
         if (!answer.ok) { api.toast(answer.why); return; }
         api.toast('it is on the shelf');
         showAddress(answer.url);
@@ -447,34 +449,42 @@
     E.campaign.innerHTML = '';
     var now = shelf.current();
     var list = shelf.campaigns();
-    var signed = !now && shelf.hasShelf() ? shelf.repo() : '';
+    /* The shelf of a sign in is a shelf only once there is a sign in: with
+       none, the repository the build names is not the player's to write. From
+       a campaign it stays a place to go, and its first push asks for the sign
+       in. */
+    var own = shelf.ownRepo();
+    var signed = own && (now || shelf.hasSession()) ? own : '';
 
-    list.forEach(function (c) {
-      var on = now && now.id === c.id;
-      var row = document.createElement('div');
-      row.className = 'srow camprow';
-      row.innerHTML = '<span class="t">' + C.chrome.esc(c.name) + '</span><span class="d">' + C.chrome.esc(c.repo) + '</span>';
-      if (on && c.key) row.appendChild(button('Invite', 'Invite the players of ' + c.name, function () { openInvite(c); }));
-      var pick = button(on ? 'Here' : 'Play', on ? c.name + ' is the campaign' : 'Play in ' + c.name, function () {
+    /* Every shelf is one row and one tap away, and a switch keeps every key:
+       forgetting one sits behind the row's menu. */
+    function pickButton(on, name, id) {
+      var pick = button(on ? 'Here' : 'Play', on ? name + ' is the shelf' : 'Play in ' + name, function () {
         if (on) return;
-        shelf.useCampaign(c.id);
+        shelf.useCampaign(id);
         api.save();
-        api.toast('the shelf is ' + c.name);
+        api.toast('the shelf is ' + name);
         api.refresh();
       });
       if (on) pick.classList.add('on');
-      row.appendChild(pick);
-      row.appendChild(button('Leave', 'Leave ' + c.name + ' on this phone', function () { leave(c); }));
+      return pick;
+    }
+
+    list.forEach(function (c) {
+      var row = document.createElement('div');
+      row.className = 'srow camprow';
+      row.innerHTML = '<span class="t">' + C.chrome.esc(c.name) + '</span><span class="d">' + C.chrome.esc(c.repo) + '</span>';
+      row.appendChild(pickButton(!!(now && now.id === c.id), c.name, c.id));
+      row.appendChild(button('⋯', 'More of ' + c.name, function () { campaignMenu(c); }));
       E.campaign.appendChild(row);
     });
 
     if (signed) {
       var mine = document.createElement('div');
       mine.className = 'srow camprow';
-      mine.innerHTML = '<span class="t">Your GitHub shelf</span><span class="d">' + C.chrome.esc(signed) + '</span>';
-      var here = button('Here', 'Your GitHub shelf is the shelf', function () {});
-      here.classList.add('on');
-      mine.appendChild(here);
+      var barred = shelf.refused();
+      mine.innerHTML = '<span class="t">Your GitHub shelf</span><span class="d">' + C.chrome.esc(signed) + (barred ? ': this sign in cannot write it' : '') + '</span>';
+      if (now || !barred) mine.appendChild(pickButton(!now, 'your GitHub shelf', ''));
       E.campaign.appendChild(mine);
     }
 
@@ -502,14 +512,22 @@
     return b;
   }
 
-  function leave(c) {
+  function campaignMenu(c) {
+    var actions = [];
+    if (c.key) actions.push({ label: 'Invite', onClick: function () { openInvite(c); } });
+    actions.push({ label: 'Forget', kind: 'quiet', onClick: function () { forget(c); } });
+    api.sheet.open({ id: 'camp:' + c.id, title: c.name, actions: actions });
+  }
+
+  function forget(c) {
     api.sheet.open({
-      id: 'campleave',
-      title: 'Leave ' + c.name + '?',
-      text: '<p>' + C.chrome.esc('This phone forgets the campaign and its key. The characters stay in the repository, and the invite brings it back.') + '</p>',
+      id: 'campforget',
+      title: 'Forget ' + c.name + '?',
+      text: '<p>' + C.chrome.esc('To play elsewhere, tap Play on another shelf instead: the key stays. Forgetting removes the key from this phone. The characters stay in the repository, and only the invite brings the campaign back, or a new key from the owner of the repository.') + '</p>',
       actions: [
-        { label: 'Leave', onClick: function () { shelf.removeCampaign(c.id); api.save(); api.sheet.close(); api.toast('left ' + c.name); api.refresh(); } },
-        { label: 'Stay', kind: 'quiet', onClick: function () { api.sheet.close(); } }
+        { label: 'Forget', onClick: function () { shelf.removeCampaign(c.id); api.save(); api.sheet.closeAll(); api.toast('forgot ' + c.name); api.refresh(); } },
+        { label: 'Keep the invite', kind: 'quiet', onClick: function () { openInvite(c); } },
+        { label: 'Cancel', kind: 'quiet', onClick: function () { api.sheet.close(); } }
       ]
     });
   }
@@ -578,7 +596,8 @@
             api.toast('joining');
             return C.exchange.joinInvite(got.text);
           }).then(joined);
-        } }
+        } },
+        { label: 'No invite: I own its repository', kind: 'quiet', onClick: function () { openStart(); } }
       ]
     });
   }
@@ -603,8 +622,8 @@
       dock: true,
       metaClass: 'sheet-meta one',
       meta: '<input class="sheet-search" id="campName" type="text" placeholder="Name of the campaign" aria-label="Name of the campaign" value="' + C.chrome.esc(st.name) + '">' +
-        step(1, 'Make its repository', 'GitHub opens with it filled in, private. Tap Create.', 'Open', 'campRepo') +
-        step(2, 'Make its key', 'GitHub opens with the key filled in, but it starts on All repositories: under Repository access choose Only select repositories and pick the repository you just made, then Generate and copy the key. The app refuses a key that reaches more.', 'Open', 'campKeyGo') +
+        step(1, 'Make its repository', 'GitHub opens with it filled in, private. Tap Create. A campaign that has one already skips this: its characters stay, and the keys of its players still work.', 'Open', 'campRepo') +
+        step(2, 'Make its key', 'GitHub opens with the key filled in, but it starts on All repositories: under Repository access choose Only select repositories and pick the repository of the campaign, then Generate and copy the key. The app refuses a key that reaches more.', 'Open', 'campKeyGo') +
         step(3, st.needRepo ? 'Paste the address of the repository' : 'Paste the key', st.needRepo ? 'The key reaches no repository the app can find: copy the address of the repository from GitHub and paste it.' : 'The app finds the repository with it and writes the first file.', 'Paste', 'campPaste') +
         '<input class="sheet-search" id="campKey" type="text" autocomplete="off" placeholder="or paste it here" aria-label="The key, pasted" value="">' +
         (st.note ? '<p class="campwarn">' + C.chrome.esc(st.note) + '</p>' : ''),
@@ -717,6 +736,7 @@
          the steps of a new one, and the QR code of the invite. */
       '.camprow{gap:6px}',
       '.camprow .stog{flex:0 0 auto}',
+      '.camprow .d{flex:1 1 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
       '.campacts{display:flex;gap:8px}',
       '.campacts .stog{flex:1 1 0;min-height:40px}',
       '.campstep{display:flex;align-items:center;gap:9px;padding:7px 0;border-top:1px solid var(--edge)}',

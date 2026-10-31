@@ -364,6 +364,17 @@ const write = {};
   write['gear.json'] = rewrite(data, { armour: armour, magic: magic });
 }
 
+/* items.json: every item of the books the app reads. The catalogue is not the
+   gear the sheet computes with, so it is filtered on its own. */
+{
+  const data = readData('items.json');
+  const drops = [];
+  const kept = keep(data.items || [], ['item'], drops);
+  verify('items.json', kept);
+  family('items.json', kept.length, drops);
+  write['items.json'] = rewrite(data, { items: kept });
+}
+
 /* rules.json is our own writing, not a book's, so it travels whole. */
 {
   const data = readData('rules.json');

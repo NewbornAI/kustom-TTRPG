@@ -148,6 +148,7 @@
       s.expires = (answer && answer.expires_in) ? Date.now() + Number(answer.expires_in) * 1000 : 0;
       set('gh', s);
       set('token', s.token || '');
+      set('shelfRefused', '');
     }
 
     /* The token, renewed when it has run out. A GitHub App hands a token for
@@ -402,11 +403,34 @@
           if (why.indexOf('401') < 0) throw e;
           return renew().then(function (fresh) { return send(fresh); }).catch(function () { return ranOut(); });
         });
+      }).then(function (answer) {
+        if (answer && answer.ok) set('shelfRefused', '');
+        return answer;
       }).catch(function (e) {
         var why = String((e && e.message) || e);
         if (why.indexOf('connect to GitHub first') >= 0) return { ok: false, why: why };
+        /* GitHub answers 404 for a repository a token may not see, so the
+           number says nothing to a player: the sentence says what to do. */
+        if (e && (e.status === 403 || e.status === 404)) {
+          if (current()) return { ok: false, why: 'the key of the campaign cannot write ' + repo() + ': ask the game master for a new invite' };
+          set('shelfRefused', repo());
+          return { ok: false, why: 'this sign in cannot write ' + repo() + ': start or join a campaign, in the settings' };
+        }
         throw e;
       });
+    }
+
+    /* The last push of a sign in was refused by this very shelf, so the page
+       does not call it the shelf. A new sign in may reach it. */
+    function refused() { return !!ownRepo() && get('shelfRefused') === ownRepo(); }
+
+    /* The shelf of a sign in, whichever shelf is in use, and whether there is
+       a sign in behind it: the key of a campaign does not count as one. */
+    function ownRepo() { return String(get('shelf') || DEFAULT_REPO); }
+
+    function hasSession() {
+      var s = session();
+      return !!((s && s.token) || get('token'));
     }
 
     /* The picture of a character as a file: the data URL is cut into its
@@ -513,7 +537,9 @@
         return check(login + '/' + slug(name)).then(function (found) {
           if (found) return found;
           return net.api('GET', '/user/repos?per_page=100&sort=created', null, key).then(function (rows) {
-            var mine = (Array.isArray(rows) ? rows : []).filter(function (r) { return r && (!r.permissions || r.permissions.push); });
+            /* Every key lists every public repository, so only a private one
+               says what this key was given. */
+            var mine = (Array.isArray(rows) ? rows : []).filter(function (r) { return r && r.private && (!r.permissions || r.permissions.push); });
             var named = mine.filter(function (r) { return r.name === slug(name); })[0];
             if (named) return named.full_name;
             return mine.length === 1 ? mine[0].full_name : '';
@@ -522,16 +548,34 @@
       }).catch(function () { return ''; });
     }
 
-    /* What a key can write. A key limited to one repository lists that one;
-       a key on all repositories lists every repository of its owner, and the
-       app refuses it: the invite hands the key to every player, so it must
-       open this table and nothing else. GitHub takes no address for the
-       choice of repositories, so it is checked here once the key is in. */
-    function reach(key) {
+    /* A branch asked of a commit that does not exist: GitHub answers 422 to a
+       key that may write there and 403 or 404 to one that may not, and nothing
+       is written either way. Another answer counts as a write, to stay safe. */
+    function writes(key, full) {
+      var body = { ref: 'refs/heads/custom-sheet-probe', sha: '0000000000000000000000000000000000000000' };
+      return net.api('POST', '/repos/' + full + '/git/refs', body, key).then(function () { return true; })
+        .catch(function (e) { return !(e && (e.status === 403 || e.status === 404)); });
+    }
+
+    /* What a key can write besides the campaign: the invite hands the key to
+       every player, so it must open this table and nothing else. GitHub takes
+       no address for the choice of repositories, so it is checked here once
+       the key is in. The list answers with the rights of the owner and not of
+       the key, and with every public repository whatever the key was given, so
+       a private one in it is one the key holds, and a public one is asked. A
+       key on all repositories answers at the first, so five are enough. */
+    function reach(key, full) {
       return net.api('GET', '/user/repos?per_page=100&affiliation=owner,collaborator,organization_member', null, key).then(function (rows) {
-        return (Array.isArray(rows) ? rows : []).filter(function (r) { return r && r.full_name && (!r.permissions || r.permissions.push); })
-          .map(function (r) { return r.full_name; });
-      }).catch(function () { return null; });
+        var others = (Array.isArray(rows) ? rows : []).filter(function (r) { return r && r.full_name && r.full_name !== full && (!r.permissions || r.permissions.push); });
+        var held = others.filter(function (r) { return r.private; }).map(function (r) { return r.full_name; });
+        if (held.length) return held;
+        return others.slice(0, 5).reduce(function (found, r) {
+          return found.then(function (list) {
+            if (list.length) return list;
+            return writes(key, r.full_name).then(function (yes) { return yes ? [r.full_name] : []; });
+          });
+        }, Promise.resolve([]));
+      }).catch(function () { return []; });
     }
 
     /* The key pasted, the repository found, the key checked to open that
@@ -549,9 +593,14 @@
       }
       return findRepo(k, name, address).then(function (full) {
         if (!full) return { ok: false, why: 'the key reaches no repository yet: on GitHub, give it the repository of the campaign', needRepo: true };
-        return reach(k).then(function (writable) {
-          if (writable && writable.length > 1) {
-            return { ok: false, tooWide: true, why: 'that key opens ' + writable.length + ' repositories, not only ' + full + ': on GitHub, make it again and under Repository access choose Only select repositories, then pick just ' + full };
+        /* The repository of the app holds its code and every character: a key
+           of it in an invite would hand all of that to the table. */
+        if (full === DEFAULT_REPO) {
+          return { ok: false, why: 'that key opens ' + full + ', the repository of the app, which an invite must not hand out: on GitHub, choose the repository of the campaign instead' };
+        }
+        return reach(k, full).then(function (others) {
+          if (others.length) {
+            return { ok: false, tooWide: true, why: 'that key also opens ' + others[0] + (others.length > 1 ? ' and ' + (others.length - 1) + ' more' : '') + ', not only ' + full + ': on GitHub, under Repository access choose Only select repositories, then pick just ' + full };
           }
           return null;
         }).then(function (tooWide) {
@@ -631,6 +680,9 @@
       read: read,
       branches: branches,
       put: put,
+      refused: refused,
+      ownRepo: ownRepo,
+      hasSession: hasSession,
       remove: remove,
       makeRepo: makeRepo,
       fork: fork

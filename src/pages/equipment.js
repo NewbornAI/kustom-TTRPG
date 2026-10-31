@@ -11,6 +11,9 @@
 
   var api = null;
   var E = {};
+  /* The items whose card waited for the catalogue once: one retry each, so a
+     file that cannot be read does not loop. */
+  var retried = {};
 
   var KINDS = [
     { id: 'armour', host: 'armour', label: 'Armour' },
@@ -53,6 +56,16 @@
     g.magic.length = 0;
     (json.armour || []).forEach(function (a) { g.armour.push(a); });
     (json.magic || []).forEach(function (m) { g.magic.push(m); });
+  });
+
+  /* Every item of the books beside the narrow list above, which holds only
+     what changes a number on the sheet: an amulet that sets a Constitution,
+     a potion, a rope. It is the big file of the two, so the picker is what
+     reads it, not the page. */
+  C.library.data('items', function (json) {
+    var list = C.library.items;
+    list.length = 0;
+    (json.items || []).forEach(function (i) { list.push(i); });
   });
 
   /* What a class starts with, so a new character can attack and stands in
@@ -129,6 +142,28 @@
         effect: m.effect || (m.acBonus ? 'AC + ' + m.acBonus : ''), mastery: '',
         note: [m.attackBonus ? '+' + m.attackBonus + ' to hit' : '', m.damageBonus ? '+' + m.damageBonus + ' damage' : '', m.acBonus ? '+' + m.acBonus + ' AC' : ''].filter(Boolean).join(', ') });
     });
+    /* Every other item of the books: a ring, a potion, a rope. It changes no
+       number here, and it is still something the character carries, so the
+       picker offers it and the row it makes carries the book's words. */
+    var named = {};
+    out.forEach(function (x) { named[String(x.name).toLowerCase()] = true; });
+    (C.library.items || []).forEach(function (m) {
+      var key = String(m.name).toLowerCase();
+      if (named[key]) return;
+      named[key] = true;
+      var money = m.value ? (m.value / 100) + ' gp' : '';
+      var heft = m.weight ? m.weight + ' lb' : '';
+      out.push({
+        name: m.name,
+        type: m.rarity ? 'Magic' : 'Gear',
+        source: m.source,
+        category: 'tool',
+        effect: '',
+        mastery: '',
+        note: m.rarity ? [m.rarity, m.attune ? 'attunement' : ''].filter(Boolean).join(' \u00b7 ')
+          : [heft, money].filter(Boolean).join(' \u00b7 ')
+      });
+    });
     return out;
   }
 
@@ -146,17 +181,25 @@
     return it;
   };
 
-  var TYPES = ['Weapon', 'Armour', 'Shield', 'Magic', 'Custom'];
+  var TYPES = ['Weapon', 'Armour', 'Shield', 'Magic', 'Gear', 'Custom'];
 
   /* The picker: a search, the types and the books as filters, then the
      items; a tap adds one, worn, and says so. Custom adds an empty row of
      the kind picked, for what no book holds. */
+  /* The picker is on screen: a file that lands while it waits repaints it
+     rather than waiting for the next tap. */
+  var picking = false;
+
   function openPicker() {
     C.library.data('weapons');
     C.library.data('gear');
+    /* The catalogue is the big file of the app: the picker is usable without
+       it, and offers every item of the books when it arrives. */
+    C.library.data('items').then(function () { if (picking) paint(); });
     var f = { type: '', source: '', text: '' };
 
     function paint() {
+      picking = true;
       var all = catalogue();
       var sources = [];
       all.forEach(function (x) { if (sources.indexOf(x.source) < 0) sources.push(x.source); });
@@ -192,6 +235,7 @@
         search: true,
         placeholder: 'Search the items',
         list: html,
+        onClose: function () { picking = false; },
         onSearch: function (term) { f.text = term || ''; paint(); },
         onList: function (ev) {
           var b = ev.target.closest('[data-type],[data-source],[data-item],[data-custom]');
@@ -249,7 +293,8 @@
     var weapon = byName(C.library.weapons, it.base || it.name);
     var magic = byName((C.library.gear || {}).magic, it.name);
     var armour = byName((C.library.gear || {}).armour, it.name);
-    return { weapon: weapon, magic: magic, armour: armour };
+    var item = byName(C.library.items, it.name);
+    return { weapon: weapon, magic: magic, armour: armour, item: item };
   }
 
   /* A weapon as the attack reads it, or null when the sheet cannot say
@@ -287,7 +332,9 @@
     if (!it) return;
     var e = entryOf(it);
     var w = C.library.weaponOf(it);
-    var meta = C.chrome.field('Kind', it.category === 'weapon' ? 'Weapon' : it.category === 'armour' ? 'Armour' : 'Gear');
+    /* The kind of the thing: what the book calls it when it says, and the
+       bucket of the sheet otherwise. */
+    var meta = C.chrome.field('Kind', (e.item && e.item.kind) || (it.category === 'weapon' ? 'Weapon' : it.category === 'armour' ? 'Armour' : 'Gear'));
     if (it.category === 'weapon') {
       meta += w ? C.chrome.field('Damage', w.damage + (w.damageType ? ' ' + w.damageType : '')) : C.chrome.field('Damage', 'none yet: pick its weapon below');
       if (w && w.properties.length) meta += C.chrome.field('Properties', w.properties.join(', '));
@@ -296,8 +343,20 @@
       if (w && w.base && w.base !== it.name) meta += C.chrome.field('Weapon', w.base);
     }
     if (e.armour) meta += C.chrome.field('AC', (e.armour.category === 'shield' ? '+' : '') + e.armour.ac);
+    /* What the book says of the item itself: its rarity, the attunement it
+       asks for, and the kind of thing it is. */
+    if (e.item) {
+      if (e.item.rarity) meta += C.chrome.field('Rarity', e.item.rarity);
+      if (e.item.attune) meta += C.chrome.field('Attune', e.item.attune === true ? 'required' : e.item.attune);
+    }
     if (it.effect) meta += C.chrome.field('Effect', it.effect);
-    var book = e.magic || e.weapon || e.armour;
+    var book = e.magic || e.item || e.weapon || e.armour;
+    /* The catalogue is read when the page paints, and it lands when it lands:
+       a card opened before it arrived paints again with the words. */
+    if (!C.library.items.length && !e.item && !retried[id]) {
+      retried[id] = true;
+      C.library.data('items').then(function () { if (C.library.items.length) openItem(id); });
+    }
     var words = book && book.blocks && book.blocks.length ? C.chrome.renderBlocks(book.blocks)
       : (it.text ? '<p>' + C.chrome.esc(it.text) + '</p>' : '');
     var list = '';
@@ -531,6 +590,9 @@
          from its entry. */
       C.library.data('weapons');
       C.library.data('gear');
+      /* Every item of the books, so a row of the sheet can say what it is: it
+         is read once and stays in the library of the app. */
+      C.library.data('items');
       paint();
     }
   });

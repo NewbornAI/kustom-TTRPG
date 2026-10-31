@@ -1,7 +1,10 @@
 /**
  * The machine that serves the app.
  *
- *   node tools/serve.mjs [port]
+ *   node tools/serve.mjs [port] [--dist folder]
+ *
+ * The folder is a parameter, like the output of the build, so a check can serve
+ * a build of its own and leave the dist the phone is served alone.
  *
  * It answers two routes. The build route serves the page, the data beside it
  * and the package of the update, the way the update route expects. The
@@ -21,7 +24,8 @@ import { fileURLToPath } from 'node:url';
 import { loadBestiary, creatureRecord } from './bestiary.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const dist = resolve(root, 'dist');
+const distAt = process.argv.indexOf('--dist');
+const dist = resolve(root, distAt > -1 && process.argv[distAt + 1] ? process.argv[distAt + 1] : 'dist');
 const cache = resolve(root, 'tools', '.5e-cache');
 const port = Number(process.argv[2] || process.env.PORT || 8123);
 

@@ -177,7 +177,10 @@ export function textOf(entries) {
   if (typeof entries === 'string') return clean(entries);
   if (Array.isArray(entries)) return entries.map(textOf).filter(Boolean).join(' ');
   if (entries && typeof entries === 'object') {
+    /* A body may sit in `entries` or in `entry`, the singular form a list
+       item and a table cell use. */
     if (entries.entries) return textOf(entries.entries);
+    if (entries.entry) return textOf(entries.entry);
     if (entries.text) return clean(entries.text);
     if (entries.name) return clean(entries.name);
   }
@@ -222,7 +225,16 @@ export function blocksFrom(entries) {
       continue;
     }
     if (e.type === 'list') {
-      const items = (e.items || []).map((i) => (typeof i === 'string' ? clean(i) : textOf(i))).filter(Boolean);
+      /* An item of a list may name itself and keep its body in one field:
+         "Determine surprise. The DM determines whether...". */
+      const items = (e.items || []).map((i) => {
+        if (typeof i === 'string') return clean(i);
+        if (i && i.name && (i.entry || i.entries)) {
+          const body = textOf(i.entry || i.entries);
+          return body ? clean(i.name).replace(/[.:;,]$/, '') + '. ' + body : clean(i.name);
+        }
+        return textOf(i);
+      }).filter(Boolean);
       if (items.length) out.push({ t: 'list', items });
       continue;
     }
@@ -243,6 +255,11 @@ export function blocksFrom(entries) {
       continue;
     }
     if (e.entries) { out.push(...blocksFrom(e.entries)); continue; }
+    if (e.entry) {
+      if (e.name) out.push({ t: 'h', text: clean(e.name) });
+      out.push(...blocksFrom([e.entry]));
+      continue;
+    }
     if (e.text) { out.push({ t: 'p', text: clean(e.text) }); continue; }
     if (e.name) { out.push({ t: 'h', text: clean(e.name) }); }
   }

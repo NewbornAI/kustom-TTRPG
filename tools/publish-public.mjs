@@ -38,7 +38,7 @@ const MAIL = 'mandal@newbornai.dev';
 
 /* The files the app reads beside the page. A missing one is not a smaller
    corpus, it is a page that cannot start. */
-const NEEDED = ['bestiary', 'classes', 'conditions', 'feats', 'features', 'gear', 'rules', 'species', 'spellbook', 'weapons'];
+const NEEDED = ['bestiary', 'classes', 'conditions', 'feats', 'features', 'gear', 'items', 'rules', 'species', 'spellbook', 'weapons'];
 
 function run(cmd, args, cwd, quiet) {
   const r = spawnSync(cmd, args, { cwd: cwd, encoding: 'utf8', stdio: quiet ? 'pipe' : 'inherit' });
@@ -138,6 +138,16 @@ const apkAt = join(tree, 'tools', 'build-apk.ps1');
 let apk = readFileSync(apkAt, 'utf8');
 apk = apk.split('NewbornAI/kustom-mandal').join(REPO);
 writeFileSync(apkAt, apk, 'utf8');
+
+/* The install link names the repository whose releases hold the package: the
+   alpha goes out from the private tree, and the public build names its own. */
+const RELEASES = 'NewbornAI/kustom-mandal/releases/latest';
+['README.md', join('src', 'pages', 'settings.js')].forEach((name) => {
+  const at = join(tree, name);
+  const text = readFileSync(at, 'utf8');
+  if (text.indexOf(RELEASES) < 0) throw new Error('the install link moved: check ' + name + ' before publishing');
+  writeFileSync(at, text.split(RELEASES).join(REPO + '/releases/latest'), 'utf8');
+});
 
 /* The icon generator reaches for a playwright install by an absolute path on
    this machine: a tool of the private tree, not of the public one. */
